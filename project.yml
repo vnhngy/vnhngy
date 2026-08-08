@@ -1,0 +1,74 @@
+name: MessageStats
+options:
+  bundleIdPrefix: com.vnhngy
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    CODE_SIGN_STYLE: Automatic
+    # Set your own Apple Developer Team ID here (Xcode > Signing & Capabilities also works).
+    DEVELOPMENT_TEAM: ""
+    TARGETED_DEVICE_FAMILY: "1"
+    IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+
+targets:
+  MessageStats:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: MessageStats
+      - path: Shared
+    resources:
+      - path: MessageStats/Resources/Assets.xcassets
+    entitlements:
+      path: Entitlements/MessageStats.entitlements
+    info:
+      path: MessageStats/Info.plist
+      properties:
+        CFBundleDisplayName: Message Stats
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        ITSAppUsesNonExemptEncryption: false
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: NO
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.vnhngy.messagestats
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+    dependencies:
+      - target: MessageStatsWidgetExtension
+        embed: true
+
+  MessageStatsWidgetExtension:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: MessageStatsWidget
+      - path: Shared
+    entitlements:
+      path: Entitlements/MessageStatsWidget.entitlements
+    info:
+      path: MessageStatsWidget/Info.plist
+      properties:
+        CFBundleDisplayName: Message Stats
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.vnhngy.messagestats.widget
+        SKIP_INSTALL: true
+
+schemes:
+  MessageStats:
+    build:
+      targets:
+        MessageStats: all
+        MessageStatsWidgetExtension: all
+    run:
+      config: Debug
+    archive:
+      config: Release
