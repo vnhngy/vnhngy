@@ -57,7 +57,7 @@ export default function HostPage() {
         </p>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[1.3fr_1fr]">
-          <div>
+          <div className="min-w-0">
             {playing ? (
               <>
                 <YoutubePlayer videoId={playing.song.youtubeId} onEnded={handleEnded} />
@@ -86,7 +86,7 @@ export default function HostPage() {
             )}
           </div>
 
-          <div>
+          <div className="min-w-0">
             <h2 className="mb-3 font-display text-lg font-bold">
               Warteschlange ({waiting.length})
             </h2>
