@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: #0a0512;
+  overscroll-behavior-y: none;
+}
+
+::selection {
+  background: rgba(255, 60, 172, 0.35);
+}
+
+/* iPhone Safe Areas (Notch/Home-Indicator) */
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}

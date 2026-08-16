@@ -1,0 +1,74 @@
+// SingNight Karaoke — Datenmodell
+// Standard: SQLite (Zero-Config, läuft auf jedem Host mit Dateisystem).
+// Für Serverless-Hosting (Vercel etc.) provider auf "postgresql" umstellen
+// und DATABASE_URL auf eine gehostete Postgres-DB (z. B. Neon, Supabase) zeigen lassen.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// SQLite unterstützt keine nativen Enums — Status/Plan werden als String
+// gespeichert und auf Anwendungsebene (Zod) auf feste Werte validiert:
+// QueueStatus: "WAITING" | "PLAYING" | "PLAYED" | "SKIPPED"
+// PlanTier:    "SOLO" | "GROUP" | "EVENT"
+
+/// Ein Song, der irgendwann gesucht/gesungen wurde.
+/// Fungiert als lokaler Cache/Verlauf der YouTube-Datenbank:
+/// jeder gesuchte & zur Warteschlange hinzugefügte Song wird hier gespeichert,
+/// sodass beliebte Songs künftig auch ohne neuen YouTube-API-Call gefunden werden.
+model Song {
+  id              String       @id @default(cuid())
+  youtubeId       String       @unique
+  title           String
+  channelTitle    String
+  thumbnailUrl    String
+  durationSeconds Int?
+  timesRequested  Int          @default(0)
+  timesPlayed     Int          @default(0)
+  firstAddedAt    DateTime     @default(now())
+  lastPlayedAt    DateTime?
+  queueEntries    QueueEntry[]
+
+  @@index([title])
+}
+
+/// Ein Gast/Sänger, der seinen Namen eingegeben hat, bevor er auftritt.
+model Singer {
+  id           String       @id @default(cuid())
+  name         String
+  createdAt    DateTime     @default(now())
+  queueEntries QueueEntry[]
+}
+
+/// Ein Eintrag in der Warteschlange: wer singt welchen Song, in welcher Reihenfolge.
+model QueueEntry {
+  id         String    @id @default(cuid())
+  position   Int
+  status     String    @default("WAITING")
+  singerId   String
+  singer     Singer    @relation(fields: [singerId], references: [id], onDelete: Cascade)
+  songId     String
+  song       Song      @relation(fields: [songId], references: [id], onDelete: Cascade)
+  createdAt  DateTime  @default(now())
+  startedAt  DateTime?
+  finishedAt DateTime?
+
+  @@index([status, position])
+}
+
+/// Abo-/Buchungs-Interessent von der Preis-Seite (einfache Lead-Erfassung,
+/// kein Zahlungsanbieter angebunden — kann später mit Stripe verknüpft werden).
+model PlanInquiry {
+  id        String    @id @default(cuid())
+  plan      String
+  name      String
+  email     String
+  guests    Int?
+  eventDate DateTime?
+  message   String?
+  createdAt DateTime  @default(now())
+}
