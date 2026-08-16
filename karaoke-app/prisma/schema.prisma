@@ -1,18 +1,18 @@
 // SingNight Karaoke — Datenmodell
-// Standard: SQLite (Zero-Config, läuft auf jedem Host mit Dateisystem).
-// Für Serverless-Hosting (Vercel etc.) provider auf "postgresql" umstellen
-// und DATABASE_URL auf eine gehostete Postgres-DB (z. B. Neon, Supabase) zeigen lassen.
+// Provider: PostgreSQL — läuft produktiv auf jeder gehosteten Postgres-DB
+// (z. B. Neon, Supabase) und lokal entweder über Docker Compose
+// (siehe docker-compose.yml) oder eine eigene Postgres-Installation.
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-// SQLite unterstützt keine nativen Enums — Status/Plan werden als String
-// gespeichert und auf Anwendungsebene (Zod) auf feste Werte validiert:
+// Status/Plan werden als String gespeichert und auf Anwendungsebene (Zod)
+// auf feste Werte validiert — das hält das Schema portabel:
 // QueueStatus: "WAITING" | "PLAYING" | "PLAYED" | "SKIPPED"
 // PlanTier:    "SOLO" | "GROUP" | "EVENT"
 

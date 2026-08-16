@@ -30,8 +30,8 @@ Live-Warteschlange ein.
 
 - **Next.js 14** (App Router, TypeScript) — SSR + API-Routen in einem
   Projekt, ideal für schnelles, günstiges Hosting.
-- **Prisma + SQLite** als Datenbank (zero-config, läuft ohne externen
-  DB-Server). Für Serverless-Hosting (siehe unten) auf Postgres umstellbar.
+- **Prisma + PostgreSQL** als Datenbank — läuft produktiv auf jedem
+  Serverless-Host (Vercel etc.) und lokal per Docker Compose.
 - **Tailwind CSS** für das Design (dunkles Bühnenlicht-Theme, Neon-Akzente,
   mobile-first).
 - **YouTube Data API v3** für die Songsuche.
@@ -41,13 +41,18 @@ Live-Warteschlange ein.
 
 ## Lokale Einrichtung
 
+Voraussetzung: [Docker](https://www.docker.com/) (für die lokale Postgres-DB) —
+alternativ eine eigene Postgres-Instanz mit passender `DATABASE_URL`.
+
 ```bash
 cd karaoke-app
 npm install
 cp .env.example .env
 # YOUTUBE_API_KEY in .env eintragen (siehe unten)
-npm run db:push      # legt die SQLite-Datenbank an
-npm run db:seed       # optional: ein paar Demo-Songs
+
+docker compose up -d   # startet lokale Postgres-DB (Port 5432)
+npm run db:migrate     # wendet die Datenbank-Migrationen an
+npm run db:seed        # optional: ein paar Demo-Songs
 npm run dev
 ```
 
@@ -69,21 +74,41 @@ Einheiten) reicht für mehrere hundert Songsuchen pro Tag.
 
 ## Deployment (Hosting)
 
-Am einfachsten mit **Vercel**:
+Am einfachsten mit **Vercel** — Schritt für Schritt:
 
-1. Repository zu Vercel verbinden, `karaoke-app/` als Root-Verzeichnis wählen.
-2. Environment-Variablen setzen: `YOUTUBE_API_KEY`, `DATABASE_URL`.
-3. **Wichtig für Serverless-Hosting**: SQLite-Dateien sind auf Vercel nicht
-   dauerhaft beschreibbar. Für den Produktivbetrieb `prisma/schema.prisma`
-   auf `provider = "postgresql"` umstellen und `DATABASE_URL` auf eine
-   gehostete Postgres-Datenbank zeigen lassen (z. B. kostenlos bei
-   [Neon](https://neon.tech) oder [Supabase](https://supabase.com)).
-4. Deploy — `npm run build` führt automatisch `prisma migrate deploy` aus.
+### 1. Gehostete Postgres-Datenbank anlegen (kostenlos)
 
-Alternativ funktioniert die App unverändert (inkl. SQLite-Datei) auch auf
-jedem klassischen Host mit Node.js (VPS, Railway, Render, Fly.io) — dort
-bleibt die SQLite-Datenbankdatei zwischen Deployments erhalten, solange ein
-persistentes Volume genutzt wird.
+Bei [Neon](https://neon.tech) (empfohlen, sehr einfach) oder
+[Supabase](https://supabase.com):
+
+1. Kostenloses Konto erstellen, neues Projekt anlegen.
+2. Die **Connection String** kopieren (bei Neon: „Connection Details“ →
+   Modus „Pooled connection“ verwenden — Format
+   `postgresql://user:passwort@host/datenbank?sslmode=require`).
+
+### 2. Bei Vercel deployen
+
+1. Auf [vercel.com](https://vercel.com) mit GitHub einloggen.
+2. „Add New… → Project“ → das Repository auswählen.
+3. **Root Directory** auf `karaoke-app` setzen (wichtig!).
+4. Unter „Environment Variables“ eintragen:
+   - `DATABASE_URL` → die Connection-String aus Schritt 1
+   - `YOUTUBE_API_KEY` → dein YouTube-API-Key (siehe oben)
+5. „Deploy“ klicken.
+
+`npm run build` führt dabei automatisch `prisma migrate deploy` aus, wendet
+also die in `prisma/migrations/` enthaltenen Migrationen auf die neue
+Datenbank an — kein manueller DB-Setup-Schritt nötig.
+
+Nach dem Deploy bekommst du eine URL wie `singnight.vercel.app`. Die kannst
+du direkt auf dem iPhone öffnen und wie unten beschrieben zum Home-Bildschirm
+hinzufügen.
+
+### Alternative Hosts
+
+Die App läuft unverändert auch auf jedem klassischen Node.js-Host (VPS,
+Railway, Render, Fly.io) — einfach dieselben zwei Umgebungsvariablen setzen
+und `npm run build && npm run start` ausführen.
 
 ## Als iPhone-App nutzen
 

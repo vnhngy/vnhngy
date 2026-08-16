@@ -1,0 +1,16 @@
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: singnight
+      POSTGRES_PASSWORD: singnight
+      POSTGRES_DB: singnight
+    ports:
+      - "5432:5432"
+    volumes:
+      - singnight_db_data:/var/lib/postgresql/data
+
+volumes:
+  singnight_db_data:
