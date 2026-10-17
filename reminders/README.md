@@ -1,6 +1,6 @@
 # Nudge Reminders
 
-A full-featured reminder app in a single HTML page. No build step and no dependencies.
+A full-featured reminder app in a single HTML page, styled in a Liquid Glass look: translucent, blurred panels over a slowly drifting colour field. No build step and no dependencies.
 
 - **Use it online:** published as a private claude.ai artifact, with reminders synced to your account.
 - **Use it offline:** open `index.html` in any browser. Reminders are saved in that browser.
