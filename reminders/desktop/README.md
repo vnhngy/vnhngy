@@ -13,6 +13,17 @@ im Liquid-Glass-Design und ergänzt, was ein Browser-Tab nicht kann:
 - **Eigenes Fenster:** Unter macOS gibt es keine Titelleiste, die Fenster-Knöpfe sitzen im Glas-Design.
 - **Speicherort:** Die Daten liegen lokal auf dem Rechner. Backups lassen sich als JSON exportieren und importieren, der Kalender als `.ics`.
 
+## Windows
+
+- **Installer:** `Nudge-Setup-1.0.0-x64.exe` für normale PCs, `…-arm64.exe` für Windows auf ARM (z. B. Surface Pro X oder Snapdragon-Laptops).
+  Er installiert ohne Admin-Rechte in deinen Benutzerordner und legt Startmenü- und Desktop-Verknüpfung an. Deinstallieren geht über *Einstellungen → Apps*.
+- **Portable:** `Nudge-Portable-1.0.0.exe` läuft ohne Installation, z. B. vom USB-Stick.
+- **Taskleiste:** Rechtsklick auf das Nudge-Symbol öffnet die Sprungliste mit *Neue Erinnerung*, *Überfällige durchgehen* und *Heute*.
+  Gibt es Überfälliges, zeigt das Taskleisten-Symbol einen kleinen Hinweis.
+- **Mitteilungen** erscheinen im Windows-Infobereich, wenn Nudge über den Installer installiert wurde.
+- **SmartScreen:** Die App ist nicht mit einem kostenpflichtigen Code-Zertifikat signiert. Windows zeigt deshalb beim ersten Start
+  „Der Computer wurde durch Windows geschützt“. Klicke dann auf *Weitere Informationen* und *Trotzdem ausführen*.
+
 ## Starten
 
 Du brauchst [Node.js](https://nodejs.org) 20 oder neuer.
@@ -27,7 +38,7 @@ npm start
 
 ```sh
 npm run dist:mac     # .dmg   (auf einem Mac ausführen)
-npm run dist:win     # .exe   (Installer, am besten unter Windows)
+npm run dist:win     # Installer (x64 + ARM) und portable .exe; unter macOS/Linux wird Wine benötigt
 npm run dist:linux   # .AppImage
 ```
 

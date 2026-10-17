@@ -13,7 +13,30 @@ let quitting = false;
 if (!app.requestSingleInstanceLock()) {
   app.quit();
 } else {
-  app.on('second-instance', () => showWindow());
+  // A second launch (e.g. from the Windows jump list) hands its arguments to this instance.
+  app.on('second-instance', (_e, argv) => {
+    if (!handleLaunchArgs(argv)) showWindow();
+  });
+}
+
+/** Runs the action a launch argument asks for. Returns true when one was handled. */
+function handleLaunchArgs(argv) {
+  if (argv.includes('--new-reminder')) { actions.newReminder(); return true; }
+  if (argv.includes('--review')) { actions.review(); return true; }
+  if (argv.includes('--today')) { actions.view('today'); return true; }
+  return false;
+}
+
+// Windows taskbar jump list: right-click the taskbar icon for these shortcuts.
+function setJumpList() {
+  if (process.platform !== 'win32') return;
+  const exe = process.execPath;
+  const base = app.isPackaged ? [] : [path.resolve(__dirname)];
+  app.setUserTasks([
+    { program: exe, arguments: [...base, '--new-reminder'].join(' '), iconPath: exe, iconIndex: 0, title: 'New Reminder', description: 'Add a reminder' },
+    { program: exe, arguments: [...base, '--review'].join(' '), iconPath: exe, iconIndex: 0, title: 'Review Overdue', description: 'Go through overdue reminders' },
+    { program: exe, arguments: [...base, '--today'].join(' '), iconPath: exe, iconIndex: 0, title: 'Today', description: 'Show today' },
+  ]);
 }
 
 app.setAppUserModelId('com.vnhngy.nudge'); // needed for Windows notifications
@@ -45,6 +68,7 @@ function createWindow() {
   win.once('ready-to-show', () => {
     if (!process.argv.includes('--hidden')) win.show();
   });
+  win.webContents.once('did-finish-load', () => handleLaunchArgs(process.argv));
 
   win.on('close', (e) => {
     if (!quitting) {
@@ -222,6 +246,7 @@ app.whenReady().then(() => {
   createWindow();
   createMenu();
   createTray();
+  setJumpList();
   if (!globalShortcut.register(QUICK_ADD_SHORTCUT, actions.newReminder)) {
     console.warn(`Could not register ${QUICK_ADD_SHORTCUT}; another app may be using it.`);
   }

@@ -18,7 +18,8 @@
   },
   "devDependencies": {
     "electron": "33.2.1",
-    "electron-builder": "25.1.8"
+    "electron-builder": "25.1.8",
+    "resedit": "^2.0.3"
   },
   "build": {
     "appId": "com.vnhngy.nudge",
@@ -45,13 +46,35 @@
     },
     "win": {
       "target": [
-        "nsis"
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
       ],
-      "icon": "build/icon.png"
+      "icon": "build/icon.ico",
+      "artifactName": "Nudge-${version}-${arch}-${target}.${ext}",
+      "signAndEditExecutable": false
     },
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Nudge",
+      "runAfterFinish": true,
+      "artifactName": "Nudge-Setup-${version}-${arch}.${ext}",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico"
     },
     "linux": {
       "target": [
@@ -59,6 +82,10 @@
       ],
       "category": "Office",
       "icon": "build/icon.png"
-    }
+    },
+    "portable": {
+      "artifactName": "Nudge-Portable-${version}.${ext}"
+    },
+    "afterPack": "build/set-exe-resources.mjs"
   }
 }
