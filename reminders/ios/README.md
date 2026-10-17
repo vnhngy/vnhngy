@@ -10,7 +10,22 @@ verwenden `glassEffect` über einem farbigen Mesh-Hintergrund.
 - iPhone oder iPad mit **iOS 26** (oder der Simulator)
 - [XcodeGen](https://github.com/yonaskolb/XcodeGen): `brew install xcodegen`
 
-## Starten
+## Ohne Mac (mit Windows-PC)
+
+GitHub baut die App bei jeder Änderung automatisch auf einem Mac in der Cloud
+(Workflow `.github/workflows/nudge-ios.yml`) und legt eine `Nudge.ipa` ab.
+
+1. Auf GitHub: **Actions → Nudge iOS build →** oberster grüner Lauf **→ Artifacts → Nudge-iOS** herunterladen und entpacken.
+2. Auf dem PC [iTunes](https://www.apple.com/itunes/download/win64) und iCloud von apple.com (nicht aus dem Microsoft Store)
+   sowie [Sideloadly](https://sideloadly.io) installieren.
+3. iPhone per USB anschließen, entsperren und dem Computer vertrauen. In Sideloadly `Nudge.ipa` hineinziehen,
+   die Apple-ID eintragen und **Start** klicken.
+4. Auf dem iPhone unter *Einstellungen → Datenschutz & Sicherheit* den **Entwicklermodus** einschalten und unter
+   *Allgemein → VPN & Geräteverwaltung* der Apple-ID vertrauen.
+
+Mit einer kostenlosen Apple-ID läuft die App 7 Tage. Danach in Sideloadly erneut auf **Start** klicken, die Daten bleiben erhalten.
+
+## Mit Mac starten
 
 ```sh
 cd reminders/ios

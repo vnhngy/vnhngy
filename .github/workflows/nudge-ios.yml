@@ -7,6 +7,7 @@ on:
     branches: [claude/nudge-reminder-app]
     paths:
       - 'reminders/ios/**'
+      - '!reminders/ios/**/*.md'
       - '.github/workflows/nudge-ios.yml'
   workflow_dispatch:
 
