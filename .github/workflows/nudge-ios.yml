@@ -1,0 +1,72 @@
+# Builds the Nudge iOS app on a GitHub-hosted Mac and uploads an unsigned .ipa.
+# Install it from Windows or a Mac with Sideloadly or AltStore, which sign it with your Apple ID.
+name: Nudge iOS build
+
+on:
+  push:
+    branches: [claude/nudge-reminder-app]
+    paths:
+      - 'reminders/ios/**'
+      - '.github/workflows/nudge-ios.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: nudge-ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select the newest Xcode 26
+        run: |
+          ls -d /Applications/Xcode*.app
+          XCODE="$(ls -d /Applications/Xcode_26*.app | sort -V | tail -1)"
+          sudo xcode-select -s "$XCODE"
+          xcodebuild -version
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate the Xcode project
+        working-directory: reminders/ios
+        run: xcodegen generate
+
+      - name: Build (unsigned, for iPhone and iPad)
+        working-directory: reminders/ios
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project Nudge.xcodeproj \
+            -scheme Nudge \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            | tee build.log | grep -E "error:|warning:|BUILD (SUCCEEDED|FAILED)" || true
+          test -d build/Build/Products/Release-iphoneos/Nudge.app
+
+      - name: Show compiler errors
+        if: failure()
+        working-directory: reminders/ios
+        run: grep -E "error:" build.log | sort -u | head -80 || true
+
+      - name: Package .ipa
+        working-directory: reminders/ios
+        run: |
+          mkdir -p Payload
+          cp -R build/Build/Products/Release-iphoneos/Nudge.app Payload/
+          zip -qry Nudge.ipa Payload
+          ls -la Nudge.ipa
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Nudge-iOS
+          path: reminders/ios/Nudge.ipa
+          retention-days: 30
