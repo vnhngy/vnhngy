@@ -30,8 +30,26 @@ A full-featured reminder app in a single HTML page. No build step and no depende
   move or delete them together.
 - **Undo** after completing, deleting or adding a reminder.
 - **Keyboard shortcuts:** `n` new, `/` search, `j`/`k` move, `x` complete, `e` edit, `f` flag,
-  `1`–`3` priority, `t`/`m` today or tomorrow, `s` snooze, `g t` go to Today, `?` for help.
+  `1`–`3` priority, `t`/`m` today or tomorrow, `s` snooze, `z` focus, `r` review overdue,
+  `g t` / `g b` / `g r` go to Today, Board or Recently deleted, `?` for help.
 - **Settings:** light, dark or system theme; six accent colours; first day of the week; the alert time
   for all-day reminders; 24-hour clock; sound; a default early alert.
+- **Focus timer:** start a 5–90 minute timer on any reminder. It shows a countdown ring you can
+  pause or extend by 5 minutes, and it survives a reload. Focused time counts toward the reminder and your stats.
+- **Review overdue:** step through overdue reminders one at a time and move each one to today,
+  tomorrow, the weekend or next week, mark it done, delete it, or skip it.
+- **Board view:** columns for Overdue, Today, Tomorrow, Next 7 days, Later and Someday.
+  Drag a card to another column to reschedule it; reminders with a time keep their time.
+- **Up next:** a card on Today that shows your next timed reminder with a countdown, how much is left today
+  with its estimated time, and a button to review anything overdue.
+- **Templates:** start reminders from reusable checklists (four built in, such as trip packing and weekly review),
+  or save any reminder as a template.
+- **Recently deleted:** deleted reminders stay for 30 days and can be restored one at a time or all at once.
+- **Search filters:** `is:overdue`, `#tag`, `list:work`, `p:high`, `due:week`, `has:notes`, and `-` in front to exclude.
+  Search covers every list.
+- **Habit streaks:** repeating reminders show their current streak, with a 14-day grid in the details panel
+  and a streaks panel in Statistics.
+- **Time estimates:** set one in details, or type `~30m` or `~1.5h` when adding.
+- **Suggest steps:** on the online version, Claude can break a reminder into checklist steps.
 - **Your data:** export a JSON backup, import it again, export to `.ics` for any calendar app
   (with repeat rules and alarms), or delete everything.

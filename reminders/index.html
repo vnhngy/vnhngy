@@ -290,6 +290,78 @@ kbd { font: 12px var(--font-mono); border: 1px solid var(--line); border-bottom-
 .loading { display: grid; place-items: center; height: 100%; color: var(--muted); font-size: 14px; }
 .note { font-size: 13px; color: var(--muted); }
 
+
+/* Up next */
+.upnext { display: flex; gap: 16px; align-items: stretch; flex-wrap: wrap; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin: 6px 0 4px; }
+.un-main { flex: 1 1 260px; min-width: 0; }
+.un-k { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+.un-t { font: 700 20px/1.25 var(--font-display); margin-top: 4px; cursor: pointer; overflow-wrap: anywhere; }
+.un-s { color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+.un-side { display: flex; flex-direction: column; justify-content: space-between; gap: 8px; align-items: flex-end; }
+.un-stat { color: var(--muted); font-size: 13.5px; }
+.un-stat b { color: var(--fg); font: 700 18px var(--font-display); }
+.un-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+@media (max-width: 760px) { .un-side { align-items: flex-start; } .un-actions { justify-content: flex-start; } }
+.streak { color: var(--flag); font-weight: 600; }
+
+/* Board */
+.board { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(230px, 1fr); gap: 12px; overflow-x: auto; padding-bottom: 10px; align-items: start; }
+.col { background: var(--surface-2); border-radius: 12px; padding: 8px; display: flex; flex-direction: column; gap: 8px; min-height: 120px; border: 2px solid transparent; }
+.col.drop { border-color: var(--accent); border-style: dashed; }
+.col-h { font: 700 14px var(--font-display); color: var(--muted); padding: 4px 6px 2px; display: flex; gap: 8px; align-items: baseline; }
+.col-h .n { font: 500 12px var(--font-mono); color: var(--faint); }
+.col-over .col-h { color: var(--danger); }
+.col-body { display: flex; flex-direction: column; gap: 8px; }
+.col-empty { border: 1px dashed var(--line); border-radius: 9px; padding: 14px; text-align: center; color: var(--faint); font-size: 13px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--line); border-radius: 10px; padding: 9px 8px 9px 10px; cursor: grab; box-shadow: 0 1px 2px rgba(20,30,50,.05); }
+.card.dragging { opacity: .4; }
+.card-top { display: grid; grid-template-columns: auto minmax(0,1fr) auto; gap: 8px; align-items: start; }
+.card-t { font-size: 14.5px; cursor: pointer; overflow-wrap: anywhere; padding-top: 1px; }
+.card-t .prio { color: var(--danger); font-weight: 700; margin-right: 4px; font-family: var(--font-mono); }
+.card .check { width: 20px; height: 20px; }
+.card .r-meta { margin-left: 28px; }
+
+/* Trash */
+.trash-ico { color: var(--faint); padding-top: 2px; }
+
+/* Focus timer */
+.focus { position: fixed; left: 286px; bottom: calc(env(safe-area-inset-bottom, 0px) + 18px); z-index: 55; display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 6px 8px 6px 6px; box-shadow: var(--shadow); max-width: min(420px, calc(100vw - 28px)); animation: slide .25s ease; }
+.f-ring { width: 54px; height: 54px; border-radius: 50%; background: conic-gradient(var(--accent) calc(var(--p) * 1%), var(--surface-2) 0); display: grid; place-items: center; flex: none; }
+.f-ring span { width: 44px; height: 44px; border-radius: 50%; background: var(--surface); display: grid; place-items: center; font-size: 12.5px; font-weight: 500; }
+.f-info { min-width: 0; flex: 1; }
+.f-k { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+.f-t { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.f-actions { display: flex; gap: 2px; }
+.f-actions .icon-btn { font: 600 12.5px var(--font-mono); }
+@media (max-width: 760px) { .focus { left: 14px; right: 14px; max-width: none; bottom: calc(env(safe-area-inset-bottom, 0px) + 74px); } }
+.focus-total { display: flex; align-items: center; justify-content: space-between; gap: 8px; border: 1px solid var(--line); border-radius: 8px; padding: 4px 4px 4px 10px; background: var(--bg); }
+
+/* Habits */
+.habit { display: grid; grid-template-columns: repeat(14, minmax(0, 1fr)); gap: 4px; }
+.habit i { aspect-ratio: 1; border-radius: 4px; background: var(--surface-2); border: 1px solid var(--line); max-width: 100%; }
+.habit i.on { background: var(--ok); border-color: var(--ok); }
+.habit i.today { outline: 2px solid var(--accent); outline-offset: 1px; }
+.field-h { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.field-h .btn { text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--fg); }
+
+/* Templates & review */
+.tpl-list { display: flex; flex-direction: column; gap: 6px; }
+.tpl { display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 10px; padding: 8px 8px 8px 12px; }
+.tpl-main { flex: 1; min-width: 0; }
+.tpl-n { font-weight: 600; }
+.rv-prog { font-size: 12.5px; color: var(--muted); }
+.rv-bar { height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
+.rv-bar i { display: block; height: 100%; background: var(--accent); }
+.rv-card { border: 1px solid var(--line); border-radius: 12px; padding: 14px; background: var(--bg); }
+.rv-t { font: 700 19px/1.3 var(--font-display); overflow-wrap: anywhere; }
+.rv-t .prio { color: var(--danger); font-family: var(--font-mono); margin-right: 4px; }
+.rv-card .note { margin: 8px 0 0; }
+.rv-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.rv-done { text-align: center; padding: 12px 0; }
+.rv-done .art { width: 56px; height: 56px; margin: 0 auto; border-radius: 18px; background: var(--ok-soft); color: var(--ok); display: grid; place-items: center; }
+.rv-done h4 { font: 700 19px var(--font-display); margin: 10px 0 4px; }
+.filters { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: 14px; }
+.filters code { font: 12.5px var(--font-mono); background: var(--surface-2); padding: 1px 5px; border-radius: 4px; white-space: nowrap; }
 .scrim { display: none; }
 @media (max-width: 1100px) {
   .editor { position: fixed; top: 0; right: 0; bottom: 0; z-index: 40; width: min(420px, 100%); box-shadow: var(--shadow); padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
@@ -320,6 +392,7 @@ kbd { font: 12px var(--font-mono); border: 1px solid var(--line); border-bottom-
 </div>
 <div class="alerts" id="alerts" aria-live="assertive"></div>
 <div class="toasts" id="toasts" aria-live="polite"></div>
+<div class="focus" id="focus" hidden role="timer" aria-live="off"></div>
 <input type="file" id="importFile" accept=".json,application/json" hidden>
 
 <script>
@@ -352,6 +425,16 @@ const I = {
   gear: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
   key: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 15h10"/></svg>',
   select: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 12l3 3 5-6"/></svg>',
+  board: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="4" width="5" height="16" rx="1.5"/><rect x="10" y="4" width="5" height="10" rx="1.5"/><rect x="17" y="4" width="4" height="13" rx="1.5"/></svg>',
+  timer: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="14" r="7"/><path d="M12 10v4l2.5 1.5M10 3h4M12 3v4"/></svg>',
+  spark: '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 5 5.5 5 11a5 5 0 0 1-10 0c0-2.5 1.5-4 2.5-5 .3 2 1.3 3 2.5 3 0-3-1-6 0-9z"/></svg>',
+  trash: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>',
+  tpl: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>',
+  ai: '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8zM19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg>',
+  play: '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"/></svg>',
+  pause: '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>',
+  stop: '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>',
+  review: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg>',
 };
 
 /* ---------- Utilities ---------- */
@@ -373,7 +456,13 @@ const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch {} };
 /* ---------- State ---------- */
 const LIST_COLORS = ['#2f5bea', '#e0483e', '#e07a10', '#d4a106', '#1f9d55', '#0e9aa7', '#7b4fe0', '#d6408f', '#6b7280', '#8b5e34'];
 const ACCENTS = { cobalt: ['#2f5bea', '#7d9bff', '#e5ebff', '#212c4d'], teal: ['#0b7f86', '#4fd1d9', '#dcf3f4', '#123537'], violet: ['#6d3fd8', '#b29bff', '#ece5ff', '#2b2147'], rose: ['#c2305d', '#ff8fb0', '#fde4ec', '#3e1c27'], forest: ['#1d7a45', '#6bd69a', '#dcf2e5', '#173325'], amber: ['#a65d00', '#f5b14f', '#fff0d9', '#3a2c14'] };
-const DEFAULT_SETTINGS = { theme: 'system', accent: 'cobalt', weekStart: 1, allDayTime: '09:00', sound: true, clock24: false, showCompleted: false, sort: 'due', group: 'date', defaultEarly: 0, confirmDelete: true };
+const DEFAULT_SETTINGS = { theme: 'system', accent: 'cobalt', weekStart: 1, allDayTime: '09:00', sound: true, clock24: false, showCompleted: false, sort: 'due', group: 'date', defaultEarly: 0, confirmDelete: true, focusMinutes: 25 };
+const DEFAULT_TEMPLATES = [
+  { id: 'tpl-pack', name: 'Trip packing', title: 'Pack for trip', subtasks: ['Passport or ID', 'Phone charger', 'Toiletries', 'Clothes for each day', 'Medication', 'Headphones'], tags: ['travel'], priority: 0, estimate: 45 },
+  { id: 'tpl-review', name: 'Weekly review', title: 'Weekly review', subtasks: ['Clear inbox', 'Check next week\u2019s calendar', 'Update project list', 'Pick top 3 for next week'], tags: ['planning'], priority: 0, estimate: 30, repeat: { freq: 'week', interval: 1, until: null } },
+  { id: 'tpl-groc', name: 'Grocery run', title: 'Groceries', subtasks: ['Milk', 'Eggs', 'Bread', 'Fruit', 'Vegetables'], tags: ['shopping'], priority: 0, estimate: 40 },
+  { id: 'tpl-bill', name: 'Monthly bill', title: 'Pay bill', subtasks: [], tags: ['money'], priority: 2, estimate: 10, repeat: { freq: 'month', interval: 1, until: null } },
+];
 
 const S = {
   lists: [
@@ -384,7 +473,10 @@ const S = {
   reminders: {},
   settings: { ...DEFAULT_SETTINGS },
   log: [],
+  templates: clone(DEFAULT_TEMPLATES),
+  focusLog: [],
 };
+const AI = { sample: null };
 const UI = { view: 'today', mode: 'list', tag: null, query: '', editing: null, selected: new Set(), selecting: false, kbIndex: -1, calMonth: startOfDay(Date.now()), calPick: startOfDay(Date.now()), navOpen: false };
 const visibleIds = [];
 
@@ -412,6 +504,8 @@ const Store = {
             if (Array.isArray(d.lists) && d.lists.length) S.lists = d.lists;
             Object.assign(S.settings, DEFAULT_SETTINGS, d.settings || {});
             S.log = Array.isArray(d.log) ? d.log : [];
+            if (Array.isArray(d.templates)) S.templates = d.templates;
+            if (Array.isArray(d.focusLog)) S.focusLog = d.focusLog;
           }
           if (!gotP) { gotP = true; done(); } else onRemoteChange();
         }, () => this.setStatus('err'));
@@ -435,6 +529,8 @@ const Store = {
           S.reminders = d.reminders || {};
           S.settings = { ...DEFAULT_SETTINGS, ...(d.settings || {}) };
           S.log = d.log || [];
+          if (Array.isArray(d.templates)) S.templates = d.templates;
+          if (Array.isArray(d.focusLog)) S.focusLog = d.focusLog;
         } catch {}
       }
       this.setStatus(this.mode === 'local' ? 'ok' : 'idle');
@@ -443,7 +539,7 @@ const Store = {
   setStatus(s) { this.status = s; renderSync(); },
   saveLocal() {
     clearTimeout(this._lt);
-    this._lt = setTimeout(() => lsSet(LS_KEY, JSON.stringify({ lists: S.lists, reminders: S.reminders, settings: S.settings, log: S.log })), 150);
+    this._lt = setTimeout(() => lsSet(LS_KEY, JSON.stringify({ lists: S.lists, reminders: S.reminders, settings: S.settings, log: S.log, templates: S.templates, focusLog: S.focusLog })), 150);
   },
   enqueue(key, run) {
     const entry = this.queue.get(key) || { busy: false, dirty: false, timer: null, run };
@@ -479,7 +575,7 @@ const Store = {
   },
   saveProfile() {
     if (this.mode === 'cloud') {
-      this.enqueue('profile', () => this.profileRef().set({ lists: clone(S.lists), settings: clone(S.settings), log: S.log.slice(-1500) }));
+      this.enqueue('profile', () => this.profileRef().set({ lists: clone(S.lists), settings: clone(S.settings), log: S.log.slice(-1500), templates: clone(S.templates), focusLog: S.focusLog.slice(-1000) }));
     } else this.saveLocal();
   },
 };
@@ -494,7 +590,7 @@ function newReminder(p = {}) {
     due: null, allDay: false, repeat: null, early: S.settings.defaultEarly || 0,
     priority: 0, flagged: false, tags: [], subtasks: [], url: '', location: '',
     done: false, doneAt: null, createdAt: now, updatedAt: now,
-    order: -now, lastFired: 0, snoozedUntil: null, history: [], ...p,
+    order: -now, lastFired: 0, snoozedUntil: null, history: [], estimate: 0, deletedAt: null, ...p,
   };
 }
 function currentListId() { return UI.view.startsWith('list:') ? UI.view.slice(5) : null; }
@@ -552,7 +648,7 @@ function toggleDone(id, opts = {}) {
       let guard = 0;
       while (next < startOfDay(now) && guard++ < 1000) next = nextOccurrence(next, r.repeat);
       const until = r.repeat.until ? new Date(r.repeat.until + 'T23:59:59').getTime() : Infinity;
-      r.history = [...(r.history || []), now].slice(-30);
+      r.history = [...(r.history || []), now].slice(-400);
       if (next > until) { r.done = true; r.doneAt = now; }
       else { r.due = next; r.subtasks = (r.subtasks || []).map(s => ({ ...s, done: false })); r.lastFired = 0; r.snoozedUntil = null; }
       r.updatedAt = now;
@@ -578,15 +674,23 @@ function restore(snapshot) {
   render();
 }
 function removeReminders(ids) {
-  const saved = ids.map(id => clone(S.reminders[id])).filter(Boolean);
-  for (const id of ids) { delete S.reminders[id]; Store.saveReminder(id); dismissAlert(id); UI.selected.delete(id); }
+  const now = Date.now();
+  ids = ids.filter(id => S.reminders[id] && !S.reminders[id].deletedAt);
+  if (!ids.length) return;
+  for (const id of ids) { S.reminders[id].deletedAt = now; S.reminders[id].updatedAt = now; Store.saveReminder(id); dismissAlert(id); UI.selected.delete(id); }
   if (UI.editing && ids.includes(UI.editing)) closeEditor();
+  if (focus && ids.includes(focus.rid)) finishFocus(false);
   render();
-  toast(saved.length === 1 ? `Deleted “${trunc(saved[0].title, 40)}”` : `Deleted ${saved.length} reminders`, () => {
-    for (const r of saved) { S.reminders[r.id] = r; Store.saveReminder(r.id); }
-    render();
-  });
+  const first = S.reminders[ids[0]];
+  toast(ids.length === 1 ? `Moved “${trunc(first.title || 'Untitled', 34)}” to Recently deleted` : `Moved ${ids.length} reminders to Recently deleted`, () => { ids.forEach(undelete); render(); });
 }
+function undelete(id) {
+  const r = S.reminders[id]; if (!r) return;
+  r.deletedAt = null; r.updatedAt = Date.now();
+  if (!listById(r.listId)) r.listId = S.lists[0].id;
+  Store.saveReminder(id);
+}
+function purge(ids) { for (const id of ids) { delete S.reminders[id]; Store.saveReminder(id); } }
 function snooze(id, until) {
   update(id, { snoozedUntil: until }, { silent: true });
   dismissAlert(id);
@@ -628,6 +732,7 @@ function relative(t) {
   if (s === 'now') return 'now';
   return diff < 0 ? `${s} ago` : `in ${s}`;
 }
+function fmtMins(m) { m = Math.round(m || 0); if (m < 60) return `${m} min`; const h = Math.floor(m / 60), r = m % 60; return r ? `${h}h ${r}m` : `${h}h`; }
 function earlyLabel(m) { if (!m) return 'At time of event'; if (m < 60) return `${m} min before`; if (m < 1440) return `${m / 60} h before`; return `${m / 1440} day${m === 1440 ? '' : 's'} before`; }
 
 /* ---------- Natural-language quick add ---------- */
@@ -639,7 +744,7 @@ const monIndex = (s) => MONTHS.findIndex(m => m.startsWith(s.toLowerCase().slice
 
 function parseQuick(input, now = Date.now()) {
   let s = ' ' + input + ' ';
-  const out = { title: '', due: null, allDay: false, priority: 0, flagged: false, tags: [], listId: null, repeat: null, early: null, chips: [] };
+  const out = { estimate: null, title: '', due: null, allDay: false, priority: 0, flagged: false, tags: [], listId: null, repeat: null, early: null, chips: [] };
   let date = null, time = null; // date: ms at midnight; time: [h, m]
   const cut = (re, fn) => { s = s.replace(re, (...m) => { const r = fn(...m); return r === false ? m[0] : ' '; }); };
 
@@ -648,6 +753,7 @@ function parseQuick(input, now = Date.now()) {
   cut(/\s!(high|hi|medium|med|low|lo)\b/i, (_, p) => { out.priority = /^h/i.test(p) ? 3 : /^m/i.test(p) ? 2 : 1; });
   cut(/\s(!{1,3})(?=\s)/, (_, p) => { out.priority = p.length; });
   cut(/\s(\*|!flag(?:ged)?)(?=\s)/i, () => { out.flagged = true; });
+  cut(/\s~(\d+(?:\.\d+)?)\s*(m|mins?|minutes?|h|hrs?|hours?)(?=\s)/i, (_, n, u) => { out.estimate = Math.round(parseFloat(n) * (/^h/i.test(u) ? 60 : 1)); });
   cut(/\s(?:remind me\s+)?(\d+|an?|one|two|five|ten|fifteen|twenty|thirty)\s*(m|mins?|minutes?|h|hrs?|hours?|d|days?)\s+(?:before|early|ahead)(?=\s)/i, (_, n, u) => {
     const v = NUM_WORDS[n.toLowerCase()] ?? parseInt(n, 10);
     out.early = v * (/^h/i.test(u) ? 60 : /^d/i.test(u) ? 1440 : 1);
@@ -740,6 +846,7 @@ function parseQuick(input, now = Date.now()) {
   if (out.due != null) out.chips.push(['cal', out.allDay ? fmtDate(out.due) : fmtWhen(out.due)]);
   if (out.repeat) out.chips.push(['repeat', repeatLabel(out.repeat)]);
   if (out.early) out.chips.push(['alarm', earlyLabel(out.early)]);
+  if (out.estimate) out.chips.push(['timer', '~' + fmtMins(out.estimate)]);
   if (out.priority) out.chips.push(['warn', ['', 'Low', 'Medium', 'High'][out.priority] + ' priority']);
   if (out.flagged) out.chips.push(['flag', 'Flagged']);
   if (out.listId) out.chips.push(['list', listById(out.listId).name]);
@@ -748,7 +855,8 @@ function parseQuick(input, now = Date.now()) {
 }
 
 /* ---------- Queries ---------- */
-const all = () => Object.values(S.reminders);
+const all = () => Object.values(S.reminders).filter(r => !r.deletedAt);
+const trashed = () => Object.values(S.reminders).filter(r => r.deletedAt);
 function isOverdue(r, now = Date.now()) { if (r.done || r.due == null) return false; return r.allDay ? r.due < startOfDay(now) : r.due < now; }
 function isToday(r, now = Date.now()) { return !r.done && r.due != null && r.due < addDays(startOfDay(now), 1); }
 const SMART = {
@@ -760,23 +868,54 @@ const SMART = {
   completed: { name: 'Completed', icon: 'done', color: '#6b7280', test: (r) => r.done },
 };
 function viewName() {
+  if (UI.view === 'trash') return 'Recently deleted';
+  if (UI.query && UI.mode === 'list') return 'Search';
   if (UI.view.startsWith('list:')) return listById(UI.view.slice(5))?.name || 'List';
   if (UI.view.startsWith('tag:')) return '#' + UI.view.slice(4);
   return SMART[UI.view]?.name || 'Reminders';
 }
+function parseSearch(q) {
+  const filters = [], words = [];
+  for (const tok of q.trim().split(/\s+/)) {
+    const m = tok.match(/^(-?)(is|list|tag|p|priority|due|has):(.+)$/i) || tok.match(/^(-?)(#)(.+)$/);
+    if (m) filters.push({ neg: !!m[1], key: m[2] === '#' ? 'tag' : m[2].toLowerCase(), val: m[3].toLowerCase() });
+    else if (tok) words.push(tok.toLowerCase());
+  }
+  return { filters, text: words.join(' ') };
+}
+function testFilter(r, f) {
+  const now = Date.now(), today = startOfDay(now), v = f.val;
+  switch (f.key) {
+    case 'is': return !!({ overdue: isOverdue(r), flagged: r.flagged, done: r.done, completed: r.done, open: !r.done, repeating: !!r.repeat, recurring: !!r.repeat, today: isToday(r), undated: r.due == null, snoozed: !!(r.snoozedUntil && r.snoozedUntil > now) }[v]);
+    case 'list': { const l = listById(r.listId); return !!l && l.name.toLowerCase().replace(/\s+/g, '-').startsWith(v); }
+    case 'tag': return r.tags.some(t => t.startsWith(v));
+    case 'p': case 'priority': { const n = { high: 3, h: 3, med: 2, medium: 2, m: 2, low: 1, l: 1, none: 0 }[v] ?? parseInt(v, 10); return r.priority === n; }
+    case 'due': {
+      if (v === 'none') return r.due == null;
+      if (r.due == null) return false;
+      const d = startOfDay(r.due), nd = new Date(r.due), n = new Date(now);
+      return !!({ today: d === today, tomorrow: d === addDays(today, 1), week: d >= today && d < addDays(today, 7), overdue: isOverdue(r), month: nd.getMonth() === n.getMonth() && nd.getFullYear() === n.getFullYear() }[v]);
+    }
+    case 'has': return !!({ subtasks: (r.subtasks || []).length, steps: (r.subtasks || []).length, notes: r.notes, link: r.url, url: r.url, location: r.location, estimate: r.estimate, alert: r.early }[v]);
+  }
+  return true;
+}
 function matchesQuery(r, q) {
   if (!q) return true;
-  q = q.toLowerCase();
-  return r.title.toLowerCase().includes(q) || (r.notes || '').toLowerCase().includes(q) || r.tags.some(t => t.includes(q.replace(/^#/, ''))) || (r.location || '').toLowerCase().includes(q) || (r.subtasks || []).some(s => s.title.toLowerCase().includes(q));
+  const { filters, text } = parseSearch(q);
+  for (const f of filters) if (testFilter(r, f) === f.neg) return false;
+  if (!text) return true;
+  return [r.title, r.notes || '', r.location || '', ...r.tags, ...(r.subtasks || []).map(x => x.title)].join('\n').toLowerCase().includes(text);
 }
 function currentItems() {
-  let items = all();
   const v = UI.view;
+  if (v === 'trash') return trashed().filter(r => matchesQuery(r, UI.query)).sort((a, b) => b.deletedAt - a.deletedAt);
+  let items = all();
   if (v.startsWith('list:')) { const id = v.slice(5); items = items.filter(r => r.listId === id && (S.settings.showCompleted || !r.done)); }
   else if (v.startsWith('tag:')) { const t = v.slice(4); items = items.filter(r => r.tags.includes(t) && (S.settings.showCompleted || !r.done)); }
   else if (v === 'all') items = items.filter(r => S.settings.showCompleted || !r.done);
   else if (SMART[v]) items = items.filter(SMART[v].test);
-  if (UI.query) items = items.filter(r => matchesQuery(r, UI.query));
+  if (UI.query) { const wantDone = parseSearch(UI.query).filters.some(f => !f.neg && f.key === 'is' && (f.val === 'done' || f.val === 'completed')); items = all().filter(r => (wantDone || !r.done) && matchesQuery(r, UI.query)); }
   return sortItems(items);
 }
 function sortItems(items) {
@@ -846,10 +985,12 @@ function buildShell() {
         <div class="tags" id="tags"></div>
       </div>
       <div>
-        <div class="sec-h"><span>Insights</span></div>
+        <div class="sec-h"><span>Views</span></div>
         <nav class="nav">
+          <button class="nav-item" data-act="mode" data-mode="board" id="navBoard"><span style="color:var(--muted)">${I.board}</span><span class="name">Board</span></button>
           <button class="nav-item" data-act="mode" data-mode="calendar" id="navCal"><span style="color:var(--muted)">${I.cal}</span><span class="name">Calendar</span></button>
           <button class="nav-item" data-act="mode" data-mode="stats" id="navStats"><span style="color:var(--muted)">${I.chart}</span><span class="name">Statistics</span></button>
+          <button class="nav-item" data-act="view" data-view="trash" id="navTrash"><span style="color:var(--muted)">${I.trash}</span><span class="name">Recently deleted</span><span class="cnt" id="trashCnt"></span></button>
         </nav>
       </div>
     </div>
@@ -861,9 +1002,10 @@ function buildShell() {
     <div class="topbar">
       <button class="icon-btn menu-btn" data-act="open-nav" aria-label="Open lists">${I.menu}</button>
       <div class="title-wrap"><h2 class="view-title" id="viewTitle"></h2><span class="view-sub mono" id="viewSub"></span></div>
-      <div class="search">${I.search}<input id="search" type="search" placeholder="Search  ( / )" aria-label="Search reminders" autocomplete="off"></div>
+      <div class="search">${I.search}<input id="search" type="search" placeholder="Search or filter  ( / )" title="Try is:overdue, #tag, list:work, p:high, due:week, has:notes" aria-label="Search reminders" autocomplete="off"></div>
       <div class="seg" role="group" aria-label="View">
         <button data-act="mode" data-mode="list" id="modeList" title="List view">${I.list}<span>List</span></button>
+        <button data-act="mode" data-mode="board" id="modeBoard" title="Board view">${I.board}<span>Board</span></button>
         <button data-act="mode" data-mode="calendar" id="modeCal" title="Calendar view">${I.cal}<span>Calendar</span></button>
       </div>
       <button class="icon-btn" data-act="list-menu" id="listMenuBtn" title="More" aria-label="More options">${I.dots}</button>
@@ -879,9 +1021,10 @@ function buildShell() {
     <div class="quick" id="quick">
       <div class="quick-row"><span class="plus">${I.plus}</span>
         <input id="quickInput" type="text" autocomplete="off" placeholder="Add a reminder…  try “Call dentist tomorrow 3pm !high #health”" aria-label="Add a reminder">
+        <button class="icon-btn" data-act="templates" title="Start from a template" aria-label="Start from a template">${I.tpl}</button>
         <button class="btn primary small" data-act="quick-add">Add</button></div>
       <div class="quick-preview" id="quickPreview"></div>
-      <div class="quick-hint" id="quickHint">Dates: <code>tomorrow 9am</code> <code>fri</code> <code>in 2 hours</code> <code>oct 20</code> · repeat: <code>every week</code> · <code>!!</code> priority · <code>#tag</code> · <code>@list</code> · <code>*</code> flag · <code>15m before</code></div>
+      <div class="quick-hint" id="quickHint">Dates: <code>tomorrow 9am</code> <code>fri</code> <code>in 2 hours</code> <code>oct 20</code> · repeat: <code>every week</code> · <code>!!</code> priority · <code>#tag</code> · <code>@list</code> · <code>*</code> flag · <code>15m before</code> · <code>~30m</code> estimate</div>
     </div>
     <div class="content" id="content"></div>
   </main>
@@ -916,6 +1059,9 @@ function renderSide() {
   $('#tags').innerHTML = tags.map(([t, n]) => `<button class="chip" data-act="view" data-view="tag:${esc(t)}" aria-pressed="${UI.view === 'tag:' + t}">#${esc(t)} <span class="mono">${n}</span></button>`).join('');
   $('#navCal').setAttribute('aria-current', UI.mode === 'calendar');
   $('#navStats').setAttribute('aria-current', UI.mode === 'stats');
+  $('#navBoard').setAttribute('aria-current', UI.mode === 'board');
+  $('#navTrash').setAttribute('aria-current', UI.mode === 'list' && UI.view === 'trash');
+  const tc = trashed().length; $('#trashCnt').textContent = tc || '';
 }
 function renderSync() {
   const dot = $('#syncDot'), txt = $('#syncText'); if (!dot) return;
@@ -929,17 +1075,20 @@ function renderMain() {
   $('#viewTitle').textContent = statsMode ? 'Statistics' : calMode ? 'Calendar' : viewName();
   $('#modeList').setAttribute('aria-pressed', UI.mode === 'list');
   $('#modeCal').setAttribute('aria-pressed', calMode);
-  $('#toolbar').hidden = UI.mode !== 'list';
-  $('#quick').hidden = statsMode || UI.view === 'completed' && UI.mode === 'list';
+  $('#modeBoard').setAttribute('aria-pressed', UI.mode === 'board');
+  $('#toolbar').hidden = UI.mode !== 'list' || UI.view === 'trash';
+  $('#quick').hidden = statsMode || (UI.mode === 'list' && (UI.view === 'completed' || UI.view === 'trash'));
   $('#listMenuBtn').hidden = UI.mode !== 'list';
   $('#sortSel').value = S.settings.sort; $('#groupSel').value = S.settings.group; $('#showDone').checked = S.settings.showCompleted;
   $('#groupSel').disabled = S.settings.sort === 'manual';
   $('#selBtn').innerHTML = UI.selecting ? 'Done selecting' : `${I.select} Select`;
   const now = new Date();
-  $('#viewSub').textContent = UI.mode === 'list' && UI.view === 'today' ? now.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' }) : '';
+  $('#viewSub').textContent = UI.mode === 'board' ? 'Board' : UI.mode === 'list' && UI.view === 'today' && !UI.query ? now.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' }) : '';
   renderBulk();
   if (statsMode) return renderStats();
   if (calMode) return renderCalendar();
+  if (UI.mode === 'board') return renderBoard();
+  if (UI.view === 'trash') return renderTrash();
   renderList();
 }
 
@@ -954,6 +1103,9 @@ function rowHTML(r) {
   if (r.done && r.doneAt) meta.push(`<span class="due">Done ${esc(fmtWhen(r.doneAt))}</span>`);
   if (r.snoozedUntil && r.snoozedUntil > now && !r.done) meta.push(`<span class="m">${I.alarm} snoozed to ${esc(fmtTime(r.snoozedUntil))}</span>`);
   if (r.repeat) meta.push(`<span class="m">${I.repeat} ${esc(repeatLabel(r.repeat))}</span>`);
+  if (r.repeat && !r.done) { const st = streakOf(r); if (st >= 2) meta.push(`<span class="m streak">${I.spark} ${st}-${streakUnit(r)} streak</span>`); }
+  if (r.estimate) meta.push(`<span class="m">${I.timer} ~${esc(fmtMins(r.estimate))}</span>`);
+  if (focus && focus.rid === r.id) meta.push(`<span class="m streak">${I.timer} focusing</span>`);
   if (r.early) meta.push(`<span class="m">${I.alarm} ${esc(earlyLabel(r.early))}</span>`);
   if (!UI.view.startsWith('list:') && l) meta.push(`<span class="lst"><i style="background:${esc(l.color)}"></i>${esc(l.name)}</span>`);
   if (subN) meta.push(`<span class="m"><span class="sub-bar"><i style="width:${(subDone / subN) * 100}%"></i></span> ${subDone}/${subN}</span>`);
@@ -985,15 +1137,16 @@ function renderList() {
   for (const g of groups) for (const r of g.rows) visibleIds.push(r.id);
   const c = $('#content');
   c.classList.toggle('manual', S.settings.sort === 'manual');
+  const head = (UI.view === 'today' || UI.view === 'overdue') && !UI.query ? upNextHTML() : '';
   if (!items.length) {
     const empty = !all().length;
-    c.innerHTML = `<div class="empty"><div class="art">${I.bell}</div>
+    c.innerHTML = head + `<div class="empty"><div class="art">${I.bell}</div>
       <h3>${UI.query ? 'No matches' : empty ? 'Nothing to remember yet' : UI.view === 'overdue' ? 'Nothing overdue' : UI.view === 'today' ? 'Today is clear' : 'All clear here'}</h3>
       <p>${UI.query ? `No reminders match “${esc(UI.query)}”.` : empty ? 'Type a reminder above in plain English. Nudge picks out the date, time, repeat, priority and tags for you.' : 'Add something above, or pick another list.'}</p>
       ${empty && !UI.query ? '<button class="btn" data-act="load-examples">Load example reminders</button>' : ''}</div>`;
     return;
   }
-  c.innerHTML = groups.map(g => `<section class="group">
+  c.innerHTML = head + groups.map(g => `<section class="group">
     ${g.name ? `<div class="group-h ${g.cls || ''}">${esc(g.name)} <span class="n">${g.rows.length}</span></div>` : ''}
     <div class="rows">${g.rows.map(rowHTML).join('')}</div></section>`).join('')
     + (UI.view === 'completed' ? `<div style="margin-top:16px"><button class="btn danger" data-act="clear-completed">Clear all completed</button></div>` : '');
@@ -1069,6 +1222,74 @@ function renderCalendar() {
     </div>`;
 }
 
+/* Up next, board, trash */
+function upNextHTML() {
+  const now = Date.now(), open = all().filter(r => !r.done);
+  const next = open.filter(r => r.due != null && !r.allDay && r.due > now).sort((a, b) => a.due - b.due)[0];
+  const todayLeft = open.filter(r => isToday(r));
+  const est = todayLeft.reduce((sum, r) => sum + (r.estimate || 0), 0);
+  const over = open.filter(r => isOverdue(r)).length;
+  if (!next && !todayLeft.length && !over) return '';
+  return `<div class="upnext">
+    ${next ? `<div class="un-main" data-id="${next.id}"><div class="un-k">Up next · <span class="mono">${esc(relative(next.due))}</span></div><div class="un-t" data-act="edit">${esc(next.title || 'Untitled')}</div><div class="un-s mono">${esc(fmtWhen(next.due))}${next.estimate ? ' · ~' + esc(fmtMins(next.estimate)) : ''}</div></div>`
+      : `<div class="un-main"><div class="un-k">Up next</div><div class="un-t" style="cursor:default">Nothing else with a set time</div></div>`}
+    <div class="un-side"><div class="un-stat"><b>${todayLeft.length}</b> left today${est ? ` · ~${esc(fmtMins(est))} estimated` : ''}</div>
+      <div class="un-actions">${next ? `<button class="btn small" data-act="focus-start" data-rid="${next.id}">${I.timer} Focus</button>` : ''}${over ? `<button class="btn small primary" data-act="review">${I.review} Review ${over} overdue</button>` : ''}</div></div></div>`;
+}
+const BOARD_COLS = [['overdue', 'Overdue'], ['today', 'Today'], ['tomorrow', 'Tomorrow'], ['week', 'Next 7 days'], ['later', 'Later'], ['none', 'Someday']];
+function boardCol(r, today) {
+  if (r.due == null) return 'none';
+  if (isOverdue(r)) return 'overdue';
+  if (r.due < addDays(today, 1)) return 'today';
+  if (r.due < addDays(today, 2)) return 'tomorrow';
+  if (r.due < addDays(today, 7)) return 'week';
+  return 'later';
+}
+function colDue(k) { const t = startOfDay(Date.now()); return { today: t, tomorrow: addDays(t, 1), week: addDays(t, 2), later: addDays(t, 7), none: null }[k]; }
+function renderBoard() {
+  const saved = UI.view;
+  if (saved === 'completed' || saved === 'trash') UI.view = 'all';
+  const items = currentItems().filter(r => !r.done);
+  UI.view = saved;
+  const today = startOfDay(Date.now());
+  const cols = Object.fromEntries(BOARD_COLS.map(([k]) => [k, []]));
+  for (const r of items) cols[boardCol(r, today)].push(r);
+  visibleIds.length = 0;
+  const c = $('#content'); c.classList.remove('manual');
+  c.innerHTML = `<p class="note" style="margin:0 0 10px">Drag a card to another column to reschedule it. Reminders with a time keep their time.</p>
+    <div class="board">${BOARD_COLS.map(([k, n]) => (k === 'overdue' && !cols[k].length) ? '' : `<section class="col ${k === 'overdue' ? 'col-over' : ''}" data-col="${k}" aria-label="${n}">
+      <div class="col-h">${n} <span class="n">${cols[k].length}</span></div>
+      <div class="col-body">${cols[k].map(cardHTML).join('') || `<div class="col-empty">${k === 'overdue' ? '' : 'Drop a card here'}</div>`}</div></section>`).join('')}</div>`;
+}
+function cardHTML(r) {
+  const l = listById(r.listId);
+  visibleIds.push(r.id);
+  const subN = (r.subtasks || []).length;
+  return `<div class="card" data-id="${r.id}" draggable="true" style="border-left-color:${esc(l?.color || 'var(--line)')}">
+    <div class="card-top"><button class="check p${r.priority}" data-act="toggle" aria-label="Complete: ${esc(r.title)}">${I.done}</button>
+      <div class="card-t" data-act="edit">${r.priority ? `<span class="prio">${'!'.repeat(r.priority)}</span>` : ''}${esc(r.title || 'Untitled')}</div>
+      <button class="icon-btn" data-act="row-menu" aria-label="More actions">${I.dots}</button></div>
+    <div class="r-meta">${r.due != null ? `<span class="due ${isOverdue(r) ? 'over' : ''}">${esc(fmtDue(r))}</span>` : ''}${r.flagged ? `<span class="flag-on">${I.flag}</span>` : ''}${r.repeat ? `<span class="m" title="${esc(repeatLabel(r.repeat))}">${I.repeat}</span>` : ''}${r.estimate ? `<span class="m">~${esc(fmtMins(r.estimate))}</span>` : ''}${subN ? `<span class="m">${r.subtasks.filter(x => x.done).length}/${subN}</span>` : ''}</div></div>`;
+}
+function renderTrash() {
+  const items = currentItems();
+  visibleIds.length = 0;
+  const c = $('#content'); c.classList.remove('manual');
+  if (!items.length) {
+    c.innerHTML = `<div class="empty"><div class="art">${I.trash}</div><h3>${UI.query ? 'No matches' : 'Nothing deleted'}</h3><p>Deleted reminders stay here for 30 days, so you can bring them back.</p></div>`;
+    return;
+  }
+  c.innerHTML = `<p class="note" style="margin:4px 0 10px">Reminders here are removed for good 30 days after you delete them.</p>
+    <div class="rows">${items.map(r => {
+      const left = Math.max(0, 30 - Math.floor((Date.now() - r.deletedAt) / DAY)); const l = listById(r.listId);
+      return `<div class="row" data-id="${r.id}"><span class="trash-ico">${I.trash}</span>
+        <div class="r-main" style="cursor:default"><div class="r-title">${esc(r.title || 'Untitled')}</div>
+          <div class="r-meta"><span class="due">Deleted ${esc(fmtWhen(r.deletedAt))}</span><span>${left} day${left === 1 ? '' : 's'} left</span>${l ? `<span class="lst"><i style="background:${esc(l.color)}"></i>${esc(l.name)}</span>` : ''}</div></div>
+        <div class="r-side"><button class="btn small" data-act="restore">Restore</button><button class="btn small danger" data-act="purge">Delete now</button></div></div>`;
+    }).join('')}</div>
+    <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-act="restore-all">Restore all</button><button class="btn danger" data-act="empty-trash">Empty Recently deleted</button></div>`;
+}
+
 /* Stats */
 function renderStats() {
   const now = Date.now(), today = startOfDay(now);
@@ -1091,6 +1312,7 @@ function renderStats() {
       <div class="stat"><div class="k">This week</div><div class="v">${doneWeek}</div><div class="s">completed since ${new Date(wkStart).toLocaleDateString(undefined, { weekday: 'short' })}</div></div>
       <div class="stat"><div class="k">Streak</div><div class="v">${streak}<span style="font-size:16px"> day${streak === 1 ? '' : 's'}</span></div><div class="s">best ${best} day${best === 1 ? '' : 's'}</div></div>
       <div class="stat"><div class="k">Open</div><div class="v">${open.length}</div><div class="s" style="${overdue ? 'color:var(--danger)' : ''}">${overdue} overdue</div></div>
+      <div class="stat"><div class="k">Focus this week</div><div class="v">${esc(fmtMins(S.focusLog.filter(x => x.t >= wkStart).reduce((a, x) => a + x.m, 0)))}</div><div class="s">${S.focusLog.filter(x => x.t >= wkStart).length} session${S.focusLog.filter(x => x.t >= wkStart).length === 1 ? '' : 's'}</div></div>
       <div class="stat"><div class="k">On time</div><div class="v">${onTime == null ? '—' : onTime + '%'}</div><div class="s">dated reminders done by their day</div></div>
     </div>
     <div class="panel"><h4>Completed, last 14 days</h4>
@@ -1100,7 +1322,8 @@ function renderStats() {
       <p class="note" style="margin:8px 0 0">Open per list: ${byList.map(x => `${esc(x.l.name)} ${x.open}`).join(' · ')}</p></div>
     <div class="panel"><h4>When you get things done</h4>
       <div class="heat">${hours.map((n, h) => `<i title="${pad(h)}:00 — ${n} completed" style="opacity:${n ? 0.15 + 0.85 * n / maxH : 0.07}"></i>`).join('')}</div>
-      <div class="heat-l"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>23:00</span></div></div>`;
+      <div class="heat-l"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>23:00</span></div></div>
+    ${(() => { const hs = all().filter(r => r.repeat && (r.history || []).length).sort((a, b) => streakOf(b) - streakOf(a)); return hs.length ? `<div class="panel"><h4>Habit streaks</h4>${hs.map(r => `<div class="hbar"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.title)}</span><span class="note">${esc(repeatLabel(r.repeat))} · ${r.history.length} done</span><span class="num">${streakOf(r)}</span></div>`).join('')}<p class="note" style="margin:8px 0 0">The number is the current streak in the habit\u2019s own unit (days, weeks or months).</p></div>` : ''; })()}`;
 }
 
 /* ---------- Editor ---------- */
@@ -1113,6 +1336,8 @@ function openEditor(id) {
   const rep = r.repeat || { freq: '', interval: 1, until: '' };
   ed.innerHTML = `
     <div class="ed-head"><span class="grow">Details</span>
+      <button class="icon-btn" data-act="focus-start" data-rid="${r.id}" title="Start focus timer" aria-label="Start focus timer">${I.timer}</button>
+      <button class="icon-btn" data-act="ed-tpl" title="Save as template" aria-label="Save as template">${I.tpl}</button>
       <button class="icon-btn" data-act="ed-dup" title="Duplicate" aria-label="Duplicate"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button>
       <button class="icon-btn" data-act="ed-delete" title="Delete" aria-label="Delete" style="color:var(--danger)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>
       <button class="icon-btn" data-act="ed-close" title="Close (Esc)" aria-label="Close">${I.x}</button></div>
@@ -1131,6 +1356,10 @@ function openEditor(id) {
         <label class="field" for="edEarly"><span>Alert</span><select id="edEarly">${[0, 5, 10, 15, 30, 60, 120, 1440, 2880].map(m => `<option value="${m}" ${r.early === m ? 'selected' : ''}>${earlyLabel(m)}</option>`).join('')}</select></label>
         <label class="field" for="edList"><span>List</span><select id="edList">${S.lists.map(l => `<option value="${esc(l.id)}" ${l.id === r.listId ? 'selected' : ''}>${esc(l.name)}</option>`).join('')}</select></label>
       </div>
+      <div class="two">
+        <label class="field" for="edEst"><span>Time estimate</span><select id="edEst">${[...new Set([0, 5, 10, 15, 20, 30, 45, 60, 90, 120, 180, 240, r.estimate || 0])].sort((a, b) => a - b).map(m => `<option value="${m}" ${(r.estimate || 0) === m ? 'selected' : ''}>${m ? fmtMins(m) : 'None'}</option>`).join('')}</select></label>
+        <div class="field"><span>Focused</span><div class="focus-total"><span class="mono">${esc(fmtMins(focusedMins(r.id)))}</span><button class="btn small" data-act="focus-start" data-rid="${r.id}">${I.timer} Start</button></div></div>
+      </div>
       <div class="field"><span>Repeat</span>
         <div class="two">
           <select id="edRepeat" aria-label="Repeat">${[['', 'Never'], ['hour', 'Hourly'], ['day', 'Daily'], ['weekday', 'Weekdays'], ['week', 'Weekly'], ['month', 'Monthly'], ['year', 'Yearly']].map(([v, n]) => `<option value="${v}" ${rep.freq === v ? 'selected' : ''}>${n}</option>`).join('')}</select>
@@ -1138,12 +1367,13 @@ function openEditor(id) {
         </div>
         <label style="display:flex;align-items:center;gap:8px;font-size:14px" ${rep.freq ? '' : 'hidden'} id="edUntilWrap">End repeat <input type="date" id="edUntil" value="${rep.until || ''}" aria-label="End repeat date" style="flex:1"></label>
       </div>
+      ${r.repeat ? habitHTML(r) : ''}
       <div class="field"><span>Priority</span>
         <div class="seg prio-seg" role="group" aria-label="Priority">${['None', 'Low', 'Medium', 'High'].map((n, i) => `<button data-act="ed-prio" data-p="${i}" aria-pressed="${r.priority === i}">${i ? '!'.repeat(i) + ' ' : ''}${n}</button>`).join('')}</div></div>
       <div class="toggle-row"><span style="display:flex;gap:8px;align-items:center"><span class="flag-on">${I.flag}</span> Flagged</span><label class="switch"><input type="checkbox" id="edFlag" ${r.flagged ? 'checked' : ''} aria-label="Flagged"><i></i></label></div>
       <div class="field"><span>Tags</span><div class="tag-input" id="edTags">${r.tags.map(t => `<span class="chip">#${esc(t)} <button class="x" data-act="ed-untag" data-t="${esc(t)}" aria-label="Remove tag ${esc(t)}">×</button></span>`).join('')}<input id="edTagIn" type="text" placeholder="Add tag, press Enter" aria-label="Add tag" list="tagList"></div>
         <datalist id="tagList">${allTags().map(([t]) => `<option value="${esc(t)}">`).join('')}</datalist></div>
-      <div class="field"><span>Subtasks</span><div class="subtasks" id="edSubs">${(r.subtasks || []).map(s => `
+      <div class="field"><span class="field-h">Subtasks ${AI.sample ? `<button class="btn small" data-act="ai-steps">${I.ai} Suggest steps</button>` : ''}</span><div class="subtasks" id="edSubs">${(r.subtasks || []).map(s => `
         <div class="sub ${s.done ? 'done' : ''}" data-sid="${s.id}"><input type="checkbox" data-act="sub-toggle" ${s.done ? 'checked' : ''} aria-label="Subtask done"><input type="text" value="${esc(s.title)}" data-sub-title aria-label="Subtask"><button class="icon-btn" data-act="sub-del" aria-label="Remove subtask">${I.x}</button></div>`).join('')}
         <div class="sub"><span style="width:17px;color:var(--faint);display:grid;place-items:center">${I.plus}</span><input type="text" id="edSubNew" placeholder="Add a step" aria-label="New subtask"></div></div></div>
       <label class="field" for="edLoc"><span>Location</span><input type="text" id="edLoc" value="${esc(r.location)}" placeholder="e.g. Pharmacy on Main St"></label>
@@ -1209,6 +1439,7 @@ function bindEditor() {
   $('#edDate').addEventListener('change', setDue);
   $('#edTime').addEventListener('change', setDue);
   $('#edEarly').addEventListener('change', (e) => update(id, { early: +e.target.value }));
+  $('#edEst').addEventListener('change', (e) => update(id, { estimate: +e.target.value }));
   $('#edList').addEventListener('change', (e) => update(id, { listId: e.target.value }));
   const setRepeat = () => {
     const f = $('#edRepeat').value;
@@ -1270,7 +1501,7 @@ function tick() {
     r.lastFired = c.t; Store.saveReminder(r.id);
     fireAlert(r, c.kind);
   }
-  if (UI.mode === 'list' && !document.querySelector('.menu') && !isTyping()) renderList();
+  if ((UI.mode === 'list' || UI.mode === 'board') && !UI.dragging && !document.querySelector('.menu') && !isTyping()) renderMain();
   renderSide();
 }
 function isTyping() { const a = document.activeElement; return a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA' || a.tagName === 'SELECT'); }
@@ -1320,9 +1551,9 @@ function chime() {
 }
 
 /* ---------- Toasts, menus, modals ---------- */
-function toast(msg, undo) {
+function toast(msg, undo, label = 'Undo') {
   const el = document.createElement('div'); el.className = 'toast';
-  el.innerHTML = `<span>${esc(msg)}</span>${undo ? '<button>Undo</button>' : ''}`;
+  el.innerHTML = `<span>${esc(msg)}</span>${undo ? `<button>${esc(label)}</button>` : ''}`;
   if (undo) el.querySelector('button').onclick = () => { undo(); el.remove(); };
   $('#toasts').appendChild(el);
   while ($('#toasts').children.length > 3) $('#toasts').firstChild.remove();
@@ -1376,9 +1607,9 @@ function listModal(list) {
 function deleteList(list) {
   const items = all().filter(r => r.listId === list.id);
   if (S.lists.length <= 1) { toast('Keep at least one list.'); return; }
-  confirmDialog(`Delete “${list.name}”?`, items.length ? `This also deletes its ${items.length} reminder${items.length === 1 ? '' : 's'}.` : 'This list is empty.', 'Delete list', () => {
+  confirmDialog(`Delete “${list.name}”?`, items.length ? `Its ${items.length} reminder${items.length === 1 ? '' : 's'} move${items.length === 1 ? 's' : ''} to Recently deleted, where you can restore ${items.length === 1 ? 'it' : 'them'} for 30 days.` : 'This list is empty.', 'Delete list', () => {
     S.lists = S.lists.filter(l => l.id !== list.id);
-    for (const r of items) { delete S.reminders[r.id]; Store.saveReminder(r.id); }
+    for (const r of items) { r.deletedAt = Date.now(); Store.saveReminder(r.id); }
     UI.view = 'today'; Store.saveProfile(); render();
     toast(`Deleted list “${list.name}”`);
   });
@@ -1402,13 +1633,221 @@ function rescheduleModal(ids) {
       root.querySelector('.quick-dates').addEventListener('click', (e) => { const b = e.target.closest('[data-q]'); if (!b) return; const q = quickDue(b.dataset.q); apply(q.due, q.allDay); root.remove(); });
     });
   function apply(due, allDay) {
-    for (const id of ids) {
-      const r = S.reminders[id];
-      if (due != null && r.due != null && !r.allDay) { const t = new Date(due); const o = new Date(r.due); t.setHours(o.getHours(), o.getMinutes()); update(id, { due: t.getTime(), allDay: false }, { silent: true }); }
-      else update(id, { due, allDay: due == null ? false : allDay }, { silent: true });
-    }
+    for (const id of ids) rescheduleOne(id, due, allDay);
     render(); toast(`Rescheduled ${ids.length}`);
   }
+}
+
+function rescheduleOne(id, due, allDay = true) {
+  const r = S.reminders[id]; if (!r) return;
+  if (due != null && r.due != null && !r.allDay) { const t = new Date(due), o = new Date(r.due); t.setHours(o.getHours(), o.getMinutes(), 0, 0); update(id, { due: t.getTime(), allDay: false }, { silent: true }); }
+  else update(id, { due, allDay: due == null ? false : allDay }, { silent: true });
+}
+function defaultDueForView() {
+  const today = startOfDay(Date.now());
+  if (UI.mode === 'calendar') return { due: UI.calPick, allDay: true };
+  if (UI.mode === 'list' && (UI.view === 'today' || UI.view === 'overdue')) return { due: today, allDay: true };
+  if (UI.mode === 'list' && UI.view === 'scheduled') return { due: addDays(today, 1), allDay: true };
+  return {};
+}
+
+/* ---------- Templates ---------- */
+function templatesModal() {
+  const draw = (root) => {
+    root.querySelector('#tplList').innerHTML = S.templates.length ? S.templates.map(t => {
+      const bits = [(t.subtasks || []).length ? `${t.subtasks.length} steps` : '', t.repeat ? repeatLabel(t.repeat) : '', t.estimate ? '~' + fmtMins(t.estimate) : '', ...(t.tags || []).map(x => '#' + x)].filter(Boolean);
+      return `<div class="tpl" data-tid="${esc(t.id)}"><div class="tpl-main"><div class="tpl-n">${esc(t.name)}</div><div class="note">${esc(bits.join(' · ') || 'Title only')}</div></div>
+        <button class="btn small primary" data-tpl-use>Use</button><button class="icon-btn" data-tpl-del aria-label="Delete template ${esc(t.name)}" title="Delete template">${I.x}</button></div>`;
+    }).join('') : '<p class="note">No templates yet. Open a reminder and choose Save as template.</p>';
+  };
+  modal('Templates', `<p class="note" style="margin:0">Start a reminder from a saved checklist. To save your own, open any reminder and use the template button at the top.</p><div id="tplList" class="tpl-list"></div>`, [{ label: 'Close' }], (root) => {
+    draw(root);
+    root.querySelector('#tplList').addEventListener('click', (e) => {
+      const row = e.target.closest('[data-tid]'); if (!row) return;
+      const t = S.templates.find(x => x.id === row.dataset.tid); if (!t) return;
+      if (e.target.closest('[data-tpl-del]')) { S.templates = S.templates.filter(x => x !== t); Store.saveProfile(); draw(root); toast(`Deleted template “${t.name}”`); return; }
+      if (e.target.closest('[data-tpl-use]')) { root.remove(); useTemplate(t); }
+    });
+  });
+}
+function useTemplate(t) {
+  const patch = { title: t.title || t.name, notes: t.notes || '', subtasks: (t.subtasks || []).map(x => ({ id: uid(), title: x, done: false })), tags: [...(t.tags || [])], priority: t.priority || 0, estimate: t.estimate || 0, repeat: t.repeat ? { ...clone(t.repeat), until: null } : null, ...defaultDueForView() };
+  if (t.listId && listById(t.listId)) patch.listId = t.listId;
+  if (patch.repeat && patch.due == null) { patch.due = startOfDay(Date.now()); patch.allDay = true; }
+  if (patch.repeat?.freq === 'month') patch.repeat.anchorDay = new Date(patch.due).getDate();
+  const r = addReminder(patch);
+  render(); openEditor(r.id); toast(`Created from “${t.name}”`);
+}
+function saveAsTemplate(id) {
+  const r = S.reminders[id]; if (!r) return;
+  const name = r.title.trim() || 'Untitled';
+  S.templates.push({ id: uid(), name, title: r.title, notes: r.notes, subtasks: (r.subtasks || []).map(x => x.title), tags: [...r.tags], priority: r.priority, estimate: r.estimate || 0, repeat: r.repeat ? { ...clone(r.repeat), until: null } : null, listId: r.listId });
+  Store.saveProfile();
+  toast(`Saved “${trunc(name, 30)}” as a template`);
+}
+
+/* ---------- Focus timer ---------- */
+const FOCUS_KEY = 'nudge.focus.v1';
+let focus = (() => { try { return JSON.parse(lsGet(FOCUS_KEY) || 'null'); } catch { return null; } })();
+let focusTimer = null;
+const saveFocus = () => lsSet(FOCUS_KEY, JSON.stringify(focus));
+const focusLeft = () => (focus ? (focus.pausedLeft != null ? focus.pausedLeft : focus.endsAt - Date.now()) : 0);
+const focusedMins = (rid) => S.focusLog.filter(x => x.r === rid).reduce((a, x) => a + x.m, 0);
+function focusModal(rid) {
+  const r = S.reminders[rid]; if (!r) return;
+  if (focus) { toast(focus.rid === rid ? 'You’re already focusing on this.' : 'A focus session is running. Stop it first.'); return; }
+  const def = S.settings.focusMinutes || 25;
+  const lens = [...new Set([5, 15, 25, 45, 60, 90, def])].sort((a, b) => a - b);
+  modal(`Focus: ${trunc(r.title || 'Untitled', 40)}`, `<p class="note" style="margin:0">Pick a length. The timer keeps running while you use the rest of the app, and the time is added to your statistics.</p>
+    <div class="quick-dates" id="fmLen">${lens.map(m => `<button class="chip" data-m="${m}" aria-pressed="${m === def}">${m} min</button>`).join('')}</div>`,
+  [{ label: 'Cancel' }, { label: 'Start focus', primary: true, run: (root) => startFocus(rid, +root.querySelector('#fmLen [aria-pressed="true"]').dataset.m) }], (root) => {
+    root.querySelector('#fmLen').addEventListener('click', (e) => { const b = e.target.closest('[data-m]'); if (!b) return; root.querySelectorAll('#fmLen .chip').forEach(c => c.setAttribute('aria-pressed', c === b)); });
+  });
+}
+function startFocus(rid, mins) {
+  const now = Date.now();
+  focus = { rid, mins, startedAt: now, endsAt: now + mins * MIN, pausedLeft: null };
+  if (S.settings.focusMinutes !== mins) { S.settings.focusMinutes = mins; Store.saveProfile(); }
+  saveFocus(); runFocus(); render();
+}
+function runFocus() { clearInterval(focusTimer); if (focus) { focusTimer = setInterval(focusTick, 1000); focusTick(); } else renderFocus(); }
+function focusTick() { if (!focus) return; if (focus.pausedLeft == null && focus.endsAt <= Date.now()) return finishFocus(true); renderFocus(); }
+function focusPause() {
+  if (!focus) return;
+  if (focus.pausedLeft != null) { focus.endsAt = Date.now() + focus.pausedLeft; focus.pausedLeft = null; }
+  else focus.pausedLeft = Math.max(0, focus.endsAt - Date.now());
+  saveFocus(); renderFocus();
+}
+function focusPlus() { if (!focus) return; focus.mins += 5; if (focus.pausedLeft != null) focus.pausedLeft += 5 * MIN; else focus.endsAt += 5 * MIN; saveFocus(); renderFocus(); }
+function finishFocus(completed) {
+  const f = focus; if (!f) return;
+  focus = null; saveFocus(); clearInterval(focusTimer);
+  const used = completed ? f.mins : Math.round((f.mins * MIN - Math.max(0, f.pausedLeft ?? (f.endsAt - Date.now()))) / MIN);
+  if (used >= 1) { S.focusLog.push({ t: Date.now(), m: used, r: f.rid }); if (S.focusLog.length > 1000) S.focusLog = S.focusLog.slice(-1000); Store.saveProfile(); }
+  renderFocus();
+  const r = S.reminders[f.rid];
+  if (completed) { chime(); toast(`Focus done: ${used} min${r ? ` on “${trunc(r.title, 28)}”` : ''}`, r && !r.done && !r.deletedAt ? () => toggleDone(f.rid) : null, 'Mark done'); }
+  else if (used >= 1) toast(`Logged ${used} min of focus`);
+  if (UI.editing === f.rid) openEditor(f.rid); else render();
+}
+function renderFocus() {
+  const el = $('#focus'); if (!el) return;
+  if (!focus) { el.hidden = true; el.innerHTML = ''; return; }
+  const r = S.reminders[focus.rid];
+  const left = Math.max(0, focusLeft()), total = focus.mins * MIN;
+  const mm = Math.floor(left / MIN), ss = Math.floor((left % MIN) / 1000);
+  const paused = focus.pausedLeft != null;
+  el.hidden = false;
+  el.innerHTML = `<div class="f-ring" style="--p:${((1 - left / total) * 100).toFixed(1)}"><span class="mono">${pad(mm)}:${pad(ss)}</span></div>
+    <div class="f-info"><div class="f-k">${paused ? 'Paused' : 'Focusing'}</div><div class="f-t" data-id="${focus.rid}"><span data-act="edit" style="cursor:pointer">${esc(r ? r.title || 'Untitled' : 'Deleted reminder')}</span></div></div>
+    <div class="f-actions"><button class="icon-btn" data-act="focus-pause" aria-label="${paused ? 'Resume' : 'Pause'}" title="${paused ? 'Resume' : 'Pause'}">${paused ? I.play : I.pause}</button>
+      <button class="icon-btn" data-act="focus-plus" title="Add 5 minutes" aria-label="Add 5 minutes">+5</button>
+      <button class="icon-btn" data-act="focus-stop" title="Stop and log the time so far" aria-label="Stop">${I.stop}</button></div>`;
+  if (!paused) document.title = `${pad(mm)}:${pad(ss)} · ${r ? r.title : 'Focus'}`;
+}
+
+/* ---------- Review overdue ---------- */
+function reviewOverdue() {
+  const queue = all().filter(r => isOverdue(r)).sort((a, b) => a.due - b.due).map(r => r.id);
+  if (!queue.length) { toast('Nothing is overdue.'); return; }
+  let i = 0; const tally = { moved: 0, done: 0, deleted: 0, skipped: 0 };
+  modal('Review overdue', '<div id="rvBody" style="display:flex;flex-direction:column;gap:12px"></div>', [{ label: 'Finish', primary: true }], (root) => {
+    const body = root.querySelector('#rvBody');
+    const draw = () => {
+      while (i < queue.length && (!S.reminders[queue[i]] || S.reminders[queue[i]].deletedAt || S.reminders[queue[i]].done)) i++;
+      if (i >= queue.length) {
+        body.innerHTML = `<div class="rv-done"><div class="art">${I.done}</div><h4>All caught up</h4><p class="note" style="margin:0">${tally.moved} rescheduled · ${tally.done} completed · ${tally.deleted} deleted · ${tally.skipped} skipped</p></div>`;
+        return;
+      }
+      const r = S.reminders[queue[i]], l = listById(r.listId);
+      body.innerHTML = `<div class="rv-prog">${i + 1} of ${queue.length}</div><div class="rv-bar"><i style="width:${(i / queue.length) * 100}%"></i></div>
+        <div class="rv-card"><div class="rv-t">${r.priority ? `<span class="prio">${'!'.repeat(r.priority)}</span>` : ''}${esc(r.title || 'Untitled')}</div>
+          <div class="r-meta"><span class="due over">${esc(fmtDue(r))} · ${esc(relative(effectiveDue(r)))}</span>${l ? `<span class="lst"><i style="background:${esc(l.color)}"></i>${esc(l.name)}</span>` : ''}${r.repeat ? `<span class="m">${I.repeat} ${esc(repeatLabel(r.repeat))}</span>` : ''}</div>
+          ${r.notes ? `<p class="note">${esc(trunc(r.notes, 160))}</p>` : ''}</div>
+        <div class="note" style="margin:0">Move it to</div>
+        <div class="rv-actions"><button class="btn primary" data-rv="today">Today</button><button class="btn" data-rv="tomorrow">Tomorrow</button><button class="btn" data-rv="weekend">Weekend</button><button class="btn" data-rv="nextweek">Next week</button><button class="btn" data-rv="none">No date</button></div>
+        <div class="rv-actions"><button class="btn" data-rv="done">${I.done} Mark done</button><button class="btn danger" data-rv="delete">Delete</button><button class="btn" data-rv="skip">Skip</button></div>`;
+      body.querySelector('[data-rv="today"]').focus();
+    };
+    body.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-rv]'); if (!b) return;
+      const id = queue[i], k = b.dataset.rv;
+      if (k === 'done') { toggleDone(id, { quiet: true }); tally.done++; }
+      else if (k === 'delete') { removeReminders([id]); tally.deleted++; }
+      else if (k === 'skip') tally.skipped++;
+      else { const q = quickDue(k); rescheduleOne(id, q.due, q.allDay); tally.moved++; render(); }
+      i++; draw();
+    });
+    draw();
+  });
+}
+
+/* ---------- Habits ---------- */
+function streakOf(r) {
+  const h = r.history || [];
+  if (!r.repeat || !h.length) return 0;
+  const f = r.repeat.freq;
+  if (f === 'day' || f === 'weekday') {
+    const days = new Set(h.map(startOfDay));
+    let d = startOfDay(Date.now()), n = 0, guard = 0;
+    if (!days.has(d)) d = addDays(d, -1);
+    while (guard++ < 800) {
+      const dow = new Date(d).getDay();
+      if (f === 'weekday' && (dow === 0 || dow === 6)) { d = addDays(d, -1); continue; }
+      if (!days.has(d)) break;
+      n++; d = addDays(d, -1);
+    }
+    return n;
+  }
+  if (f === 'week') {
+    const wk = (t) => { let d = startOfDay(t); while (new Date(d).getDay() !== S.settings.weekStart) d = addDays(d, -1); return d; };
+    const weeks = new Set(h.map(wk)); let w = wk(Date.now()), n = 0;
+    if (!weeks.has(w)) w = addDays(w, -7);
+    while (weeks.has(w)) { n++; w = addDays(w, -7); }
+    return n;
+  }
+  if (f === 'month') {
+    const key = (t) => { const d = new Date(t); return d.getFullYear() * 12 + d.getMonth(); };
+    const ms = new Set(h.map(key)); let m = key(Date.now()), n = 0;
+    if (!ms.has(m)) m--;
+    while (ms.has(m)) { n++; m--; }
+    return n;
+  }
+  return 0;
+}
+const streakUnit = (r) => ({ week: 'week', month: 'month' }[r.repeat?.freq] || 'day');
+function habitHTML(r) {
+  const hist = r.history || [];
+  if (!['day', 'weekday'].includes(r.repeat.freq) && !hist.length) return '';
+  const days = new Set(hist.map(startOfDay)), today = startOfDay(Date.now()), cells = [];
+  for (let i = 13; i >= 0; i--) { const d = addDays(today, -i); cells.push(`<i class="${days.has(d) ? 'on' : ''} ${d === today ? 'today' : ''}" title="${new Date(d).toDateString()}${days.has(d) ? ': done' : ''}"></i>`); }
+  const st = streakOf(r);
+  return `<div class="field"><span>Habit · last 14 days</span><div class="habit" role="img" aria-label="${hist.filter(t => t >= addDays(today, -13)).length} completions in the last 14 days">${cells.join('')}</div>
+    <div class="note">${st ? `${st}-${streakUnit(r)} streak` : 'No current streak'} · ${hist.length} completed in total</div></div>`;
+}
+
+/* ---------- Ask Claude ---------- */
+async function aiSteps(btn) {
+  const id = UI.editing, r = S.reminders[id];
+  if (!r || !AI.sample) return;
+  if (!r.title.trim()) { toast('Give the reminder a title first.'); return; }
+  btn.disabled = true; btn.innerHTML = `${I.ai} Thinking…`;
+  try {
+    const steps = await AI.sample.json(`Break this to-do into 3 to 7 short, concrete checklist steps, in the order you would do them. Each step is under 60 characters and starts with a verb. Leave out steps that are already listed.
+Task: ${JSON.stringify(r.title)}
+Notes: ${JSON.stringify(r.notes || '')}
+Already listed: ${JSON.stringify((r.subtasks || []).map(x => x.title))}
+Reply with only a JSON array of strings.`, { modelTier: 'quick' });
+    const list = (Array.isArray(steps) ? steps : []).filter(x => typeof x === 'string' && x.trim()).slice(0, 7).map(x => x.trim().slice(0, 120));
+    const cur = S.reminders[id];
+    if (!list.length) toast('No steps came back. Try a more specific title.');
+    else if (cur) { update(id, { subtasks: [...(cur.subtasks || []), ...list.map(t => ({ id: uid(), title: t, done: false }))] }); toast(`Added ${list.length} steps`); }
+  } catch (e) {
+    const code = e && e.code;
+    if (code === 'not_granted') AI.sample = null;
+    if (code !== 'cancelled') toast({ not_granted: 'Claude isn’t allowed on this page, so suggestions are off.', rate_limited: 'Too many requests right now. Try again in a minute.' }[code] || 'Couldn’t get suggestions right now. Try again later.');
+  }
+  if (UI.editing === id) openEditor(id);
 }
 
 function settingsModal() {
@@ -1450,8 +1889,11 @@ function settingsModal() {
   });
 }
 function shortcutsModal() {
-  const k = [['N', 'New reminder (quick add)'], ['/', 'Search'], ['J / K', 'Move down / up'], ['X or Space', 'Complete selected row'], ['E or Enter', 'Open details'], ['F', 'Flag / unflag'], ['1 2 3', 'Set priority (0 clears)'], ['T', 'Due today'], ['M', 'Due tomorrow'], ['S', 'Snooze 1 hour'], ['Delete', 'Delete'], ['G then T / A / S / F / C', 'Go to Today, All, Scheduled, Flagged, Calendar'], ['Esc', 'Close panel / clear search'], ['?', 'This help']];
-  modal('Keyboard shortcuts', `<div class="keys">${k.map(([a, b]) => `<span>${a.split(' ').map(x => /^(or|then|\/)$/.test(x) ? `<span class="note">${x}</span>` : `<kbd>${esc(x)}</kbd>`).join(' ')}</span><span>${esc(b)}</span>`).join('')}</div>`, [{ label: 'Close', primary: true }]);
+  const k = [['N', 'New reminder (quick add)'], ['/', 'Search'], ['J / K', 'Move down / up'], ['X or Space', 'Complete selected row'], ['E or Enter', 'Open details'], ['F', 'Flag / unflag'], ['1 2 3', 'Set priority (0 clears)'], ['T', 'Due today'], ['M', 'Due tomorrow'], ['S', 'Snooze 1 hour'], ['Z', 'Focus timer on selected row'], ['R', 'Review overdue'], ['Delete', 'Delete'], ['G then T / A / S / F', 'Go to Today, All, Scheduled, Flagged'], ['G then B / C / R', 'Board, Calendar, Recently deleted'], ['Esc', 'Close panel / clear search'], ['?', 'This help']];
+  const f = [['is:overdue', 'also flagged, today, open, done, repeating, undated, snoozed'], ['#gym  tag:gym', 'has a tag'], ['list:work', 'in a list'], ['p:high', 'priority high, med, low or none'], ['due:week', 'also today, tomorrow, month, none'], ['has:notes', 'also subtasks, link, location, estimate, alert'], ['-#work', 'put a minus in front to exclude']];
+  modal('Shortcuts and search', `<div class="keys">${k.map(([a, b]) => `<span>${a.split(' ').map(x => /^(or|then|\/)$/.test(x) ? `<span class="note">${x}</span>` : `<kbd>${esc(x)}</kbd>`).join(' ')}</span><span>${esc(b)}</span>`).join('')}</div>
+    <div class="field"><span>Search filters</span><div class="filters">${f.map(([a, b]) => `<span>${a.split('  ').map(x => `<code>${esc(x)}</code>`).join(' ')}</span><span>${esc(b)}</span>`).join('')}</div>
+    <p class="note" style="margin:6px 0 0">Combine filters with words, for example <code>is:open #health vitamins</code>. Search looks across all lists.</p></div>`, [{ label: 'Close', primary: true }]);
 }
 
 /* ---------- Import / export ---------- */
@@ -1555,6 +1997,7 @@ function bindShell() {
   const app = $('#app');
   app.addEventListener('click', onClick);
   $('#alerts').addEventListener('click', onClick);
+  $('#focus').addEventListener('click', onClick);
   $('#search').addEventListener('input', (e) => { UI.query = e.target.value.trim(); UI.kbIndex = -1; renderMain(); });
   $('#search').addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.target.value = ''; UI.query = ''; renderMain(); e.target.blur(); } });
   $('#sortSel').addEventListener('change', (e) => { S.settings.sort = e.target.value; Store.saveProfile(); render(); });
@@ -1571,20 +2014,30 @@ function bindShell() {
 
   // Drag & drop: reorder (manual sort) and drop onto a list in the sidebar
   let dragId = null;
-  app.addEventListener('dragstart', (e) => { const row = e.target.closest('.row'); if (!row) return; dragId = row.dataset.id; row.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', dragId); } catch {} });
-  app.addEventListener('dragend', () => { dragId = null; document.querySelectorAll('.dragging,.drop-before,.drop').forEach(el => el.classList.remove('dragging', 'drop-before', 'drop')); });
+  app.addEventListener('dragstart', (e) => { const row = e.target.closest('.row[draggable], .card'); if (!row) return; dragId = row.dataset.id; UI.dragging = true; row.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', dragId); } catch {} });
+  app.addEventListener('dragend', () => { dragId = null; UI.dragging = false; document.querySelectorAll('.dragging,.drop-before,.drop').forEach(el => el.classList.remove('dragging', 'drop-before', 'drop')); });
   app.addEventListener('dragover', (e) => {
     if (!dragId) return;
     const navT = e.target.closest('[data-list-drop]');
     const row = e.target.closest('.row');
+    const col = e.target.closest('[data-col]');
     document.querySelectorAll('.drop-before,.drop').forEach(el => el.classList.remove('drop-before', 'drop'));
     if (navT) { e.preventDefault(); navT.classList.add('drop'); }
+    else if (col && col.dataset.col !== 'overdue') { e.preventDefault(); col.classList.add('drop'); }
     else if (row && S.settings.sort === 'manual' && row.dataset.id !== dragId) { e.preventDefault(); row.classList.add('drop-before'); }
   });
   app.addEventListener('drop', (e) => {
     if (!dragId) return; e.preventDefault();
     const navT = e.target.closest('[data-list-drop]');
     if (navT) { update(dragId, { listId: navT.dataset.listDrop }); toast(`Moved to ${listById(navT.dataset.listDrop).name}`); return; }
+    const col = e.target.closest('[data-col]');
+    if (col && col.dataset.col !== 'overdue') {
+      const id = dragId, k = col.dataset.col;
+      rescheduleOne(id, colDue(k), true); render();
+      const r = S.reminders[id];
+      toast(r.due == null ? 'Moved to Someday (no date)' : `Rescheduled to ${fmtDue(r)}`);
+      return;
+    }
     const row = e.target.closest('.row'); if (!row || S.settings.sort !== 'manual') return;
     const ids = visibleIds.filter(x => x !== dragId);
     const idx = ids.indexOf(row.dataset.id);
@@ -1610,9 +2063,8 @@ function quickAdd(openAfter) {
   if (p.early != null) patch.early = p.early;
   if (p.listId) patch.listId = p.listId;
   if (UI.view.startsWith('tag:') && !patch.tags.includes(UI.view.slice(4))) patch.tags.push(UI.view.slice(4));
-  if (patch.due == null && UI.mode === 'calendar') { patch.due = UI.calPick; patch.allDay = true; }
-  else if (patch.due == null && (UI.view === 'today' || UI.view === 'overdue') && UI.mode === 'list') { patch.due = startOfDay(Date.now()); patch.allDay = true; }
-  else if (patch.due == null && UI.view === 'scheduled') { patch.due = addDays(startOfDay(Date.now()), 1); patch.allDay = true; }
+  if (p.estimate) patch.estimate = p.estimate;
+  if (patch.due == null) Object.assign(patch, defaultDueForView());
   const r = addReminder(patch);
   qi.value = ''; qi.dispatchEvent(new Event('input'));
   render();
@@ -1634,6 +2086,8 @@ function rowMenu(anchor, id) {
     { label: r.flagged ? 'Unflag' : 'Flag', run: () => update(id, { flagged: !r.flagged }) },
     { label: 'Move to list…', run: () => moveModal([id]) },
     { label: 'Duplicate', run: () => duplicate(id) },
+    { label: 'Save as template', run: () => saveAsTemplate(id) },
+    ...(!r.done ? [{ label: 'Start focus timer…', run: () => focusModal(id) }] : []),
     { label: 'Copy as text', run: () => copyText(`${r.title}${r.due != null ? ' — ' + fmtDue(r) : ''}${r.notes ? '\n' + r.notes : ''}`) },
     '-',
     { label: 'Delete', danger: true, run: () => removeReminders([id]) },
@@ -1651,18 +2105,30 @@ function copyText(t) {
 function onClick(e) {
   const el = e.target.closest('[data-act]'); if (!el) return;
   const act = el.dataset.act;
-  const row = el.closest('.row'); const id = row?.dataset.id;
+  const holder = el.closest('[data-id]'); const id = holder?.dataset.id;
   const alertEl = el.closest('.alert'); const aid = alertEl?.dataset.id;
   if (audioCtx == null && S.settings.sound) { try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch {} }
   switch (act) {
     case 'view': UI.view = el.dataset.view; UI.mode = 'list'; UI.selected.clear(); UI.kbIndex = -1; UI.navOpen = false; $('#app').classList.remove('nav-open'); render(); break;
-    case 'mode': UI.mode = el.dataset.mode; UI.navOpen = false; $('#app').classList.remove('nav-open'); render(); break;
+    case 'mode': if (el.dataset.mode !== 'list' && (UI.view === 'trash' || UI.view === 'completed')) UI.view = 'all'; UI.mode = el.dataset.mode; UI.navOpen = false; $('#app').classList.remove('nav-open'); render(); break;
     case 'open-nav': $('#app').classList.add('nav-open'); break;
     case 'close-nav': $('#app').classList.remove('nav-open'); break;
     case 'new-list': listModal(null); break;
     case 'settings': settingsModal(); break;
     case 'shortcuts': shortcutsModal(); break;
     case 'quick-add': quickAdd(false); break;
+    case 'templates': templatesModal(); break;
+    case 'review': reviewOverdue(); break;
+    case 'focus-start': focusModal(el.dataset.rid || id); break;
+    case 'focus-pause': focusPause(); break;
+    case 'focus-plus': focusPlus(); break;
+    case 'focus-stop': finishFocus(false); break;
+    case 'ed-tpl': saveAsTemplate(UI.editing); break;
+    case 'ai-steps': aiSteps(el); break;
+    case 'restore': undelete(id); render(); toast('Restored'); break;
+    case 'purge': purge([id]); render(); toast('Deleted for good'); break;
+    case 'restore-all': { const ids = trashed().map(r => r.id); ids.forEach(undelete); render(); toast(`Restored ${ids.length}`); break; }
+    case 'empty-trash': { const ids = trashed().map(r => r.id); confirmDialog('Empty Recently deleted?', `Delete ${ids.length} reminder${ids.length === 1 ? '' : 's'} for good. This can’t be undone.`, 'Delete for good', () => { purge(ids); render(); toast('Recently deleted is empty'); }); break; }
     case 'toggle': el.classList.add('pop'); setTimeout(() => toggleDone(id), 160); break;
     case 'flag': update(id, { flagged: !S.reminders[id].flagged }); break;
     case 'edit': if (UI.selecting) { toggleSel(id); } else openEditor(id); break;
@@ -1728,8 +2194,8 @@ function onKey(e) {
   const k = e.key;
   if (gPending) {
     gPending = false;
-    const m = { t: 'today', a: 'all', s: 'scheduled', f: 'flagged', o: 'overdue', d: 'completed' }[k.toLowerCase()];
-    if (m) { UI.view = m; UI.mode = 'list'; render(); } else if (k.toLowerCase() === 'c') { UI.mode = 'calendar'; render(); }
+    const m = { t: 'today', a: 'all', s: 'scheduled', f: 'flagged', o: 'overdue', d: 'completed', r: 'trash' }[k.toLowerCase()];
+    if (m) { UI.view = m; UI.mode = 'list'; render(); } else if (k.toLowerCase() === 'c') { UI.mode = 'calendar'; render(); } else if (k.toLowerCase() === 'b') { UI.mode = 'board'; render(); }
     return;
   }
   const id = visibleIds[UI.kbIndex];
@@ -1737,6 +2203,8 @@ function onKey(e) {
     case 'n': case 'N': e.preventDefault(); if (UI.mode === 'stats') { UI.mode = 'list'; render(); } $('#quickInput').focus(); break;
     case '/': e.preventDefault(); $('#search').focus(); break;
     case '?': shortcutsModal(); break;
+    case 'r': reviewOverdue(); break;
+    case 'z': if (id) focusModal(id); break;
     case 'g': gPending = true; setTimeout(() => gPending = false, 1200); break;
     case 'j': case 'ArrowDown': if (!visibleIds.length) return; e.preventDefault(); UI.kbIndex = Math.min(visibleIds.length - 1, UI.kbIndex + 1); markKb(); break;
     case 'k': case 'ArrowUp': if (!visibleIds.length) return; e.preventDefault(); UI.kbIndex = Math.max(0, UI.kbIndex - 1); markKb(); break;
@@ -1754,6 +2222,8 @@ function onKey(e) {
 /* ---------- Boot ---------- */
 async function boot() {
   await Store.init();
+  { const cutoff = Date.now() - 30 * DAY; const old = trashed().filter(r => r.deletedAt < cutoff).map(r => r.id); if (old.length) purge(old); }
+  if (window.claude?.use) window.claude.use('sample').then((x) => { AI.sample = x || null; }).catch(() => {});
   applyTheme();
   buildShell();
   renderSync();
@@ -1761,9 +2231,10 @@ async function boot() {
   renderAlerts();
   tick();
   setInterval(tick, 15000);
+  runFocus();
   document.addEventListener('visibilitychange', () => { if (!document.hidden) tick(); });
   // expose for tests
-  window.__nudge = { parseQuick, S, nextOccurrence };
+  window.__nudge = { parseQuick, S, nextOccurrence, matchesQuery, streakOf, AI };
 }
 boot();
 })();
