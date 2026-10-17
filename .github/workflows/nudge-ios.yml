@@ -49,8 +49,11 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
-            | tee build.log | grep -E "error:|warning:|BUILD (SUCCEEDED|FAILED)" || true
-          test -d build/Build/Products/Release-iphoneos/Nudge.app
+            > build.log 2>&1 || true
+          grep -E "error:|warning: .*\.swift|BUILD (SUCCEEDED|FAILED)" build.log | sort -u || true
+          # Fail unless Xcode really finished and the app contains its executable.
+          grep -q "BUILD SUCCEEDED" build.log
+          test -f build/Build/Products/Release-iphoneos/Nudge.app/Nudge
 
       - name: Show compiler errors
         if: failure()

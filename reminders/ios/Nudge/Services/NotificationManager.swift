@@ -55,7 +55,7 @@ final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
             .flatMap { requests(for: $0) }
             .sorted { fireDate($0) < fireDate($1) }
             .prefix(pendingLimit)
-        for request in upcoming { center.add(request) }
+        for request in upcoming { try? await center.add(request) }
     }
 
     private func fireDate(_ request: UNNotificationRequest) -> Date {
