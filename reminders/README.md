@@ -4,6 +4,8 @@ A full-featured reminder app in a single HTML page, styled in a Liquid Glass loo
 
 - **Use it online:** published as a private claude.ai artifact, with reminders synced to your account.
 - **Use it offline:** open `index.html` in any browser. Reminders are saved in that browser.
+- **iPhone and iPad:** a native SwiftUI app with real notifications and iOS 26 Liquid Glass, in [`ios/`](ios/README.md).
+- **Mac, Windows and Linux:** a desktop app with a tray icon, a global quick-add shortcut and background alerts, in [`desktop/`](desktop/README.md).
 
 `src/app.html` is the source. After editing it, run `node build.mjs` to regenerate `index.html`.
 

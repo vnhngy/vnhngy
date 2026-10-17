@@ -1,0 +1,64 @@
+{
+  "name": "nudge-desktop",
+  "productName": "Nudge",
+  "version": "1.0.0",
+  "description": "Nudge Reminders for macOS, Windows and Linux",
+  "main": "main.js",
+  "author": "vnhngy",
+  "private": true,
+  "repository": "github:vnhngy/vnhngy",
+  "scripts": {
+    "prestart": "node ../build.mjs",
+    "start": "electron .",
+    "predist": "node ../build.mjs",
+    "dist": "electron-builder",
+    "dist:mac": "node ../build.mjs && electron-builder --mac",
+    "dist:win": "node ../build.mjs && electron-builder --win",
+    "dist:linux": "node ../build.mjs && electron-builder --linux"
+  },
+  "devDependencies": {
+    "electron": "33.2.1",
+    "electron-builder": "25.1.8"
+  },
+  "build": {
+    "appId": "com.vnhngy.nudge",
+    "productName": "Nudge",
+    "files": [
+      "main.js",
+      "preload.js",
+      "app/**",
+      "build/icon.png",
+      "build/tray.png",
+      "build/trayTemplate.png",
+      "build/trayTemplate@2x.png"
+    ],
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        "dmg"
+      ],
+      "icon": "build/icon.png"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Office",
+      "icon": "build/icon.png"
+    }
+  }
+}

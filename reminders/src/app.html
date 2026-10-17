@@ -1200,8 +1200,8 @@ function renderSide() {
 function renderSync() {
   const dot = $('#syncDot'), txt = $('#syncText'); if (!dot) return;
   dot.className = 'sync-dot ' + ({ ok: 'ok', busy: 'busy', err: 'err' }[Store.status] || '');
-  const where = Store.mode === 'cloud' ? 'your account' : Store.mode === 'local' ? 'this browser' : 'memory only';
-  txt.textContent = Store.status === 'busy' ? 'Saving…' : Store.status === 'err' ? 'Not saved — retrying on next edit' : Store.mode === 'memory' ? 'Not saved (storage blocked)' : `Saved to ${where}`;
+  const where = Store.mode === 'cloud' ? 'your account' : Store.mode === 'local' ? (window.nudgeDesktop ? 'this computer' : 'this browser') : 'memory only';
+  txt.textContent = Store.status === 'busy' ? 'Saving…' : Store.status === 'err' ? 'Not saved — retrying on next edit' : Store.mode === 'memory' ? 'Not saved (storage blocked)' : `Saved ${where === 'your account' ? 'to' : 'on'} ${where}`;
 }
 
 function renderMain() {
@@ -1645,7 +1645,7 @@ function fireAlert(r, kind) {
   renderAlerts();
   chime();
   try {
-    if ('Notification' in window && Notification.permission === 'granted') new Notification(r.title || 'Reminder', { body: fmtDue(r), tag: r.id });
+    if ('Notification' in window && Notification.permission === 'granted') { const n = new Notification(r.title || 'Reminder', { body: fmtDue(r), tag: r.id }); n.onclick = () => { try { window.nudgeDesktop?.show(); window.focus(); } catch {} openEditor(r.id); }; }
   } catch {}
   document.title = `⏰ ${r.title}`;
 }
@@ -2001,7 +2001,7 @@ function settingsModal() {
     <div class="field"><span>Your data</span><div class="quick-dates">
       <button class="btn small" id="stExport">Export backup (.json)</button><button class="btn small" id="stIcs">Export calendar (.ics)</button><button class="btn small" id="stImport">Import backup…</button>
       <button class="btn small" id="stExamples">Add example reminders</button><button class="btn small danger" id="stReset">Delete everything…</button></div>
-      <p class="note" style="margin:4px 0 0">${Store.mode === 'cloud' ? 'Reminders sync to your account and are private to you.' : Store.mode === 'local' ? 'Reminders are saved in this browser only. Export a backup to move them.' : 'Storage is blocked here, so changes last only until you close the page. Export a backup to keep them.'}</p></div>`,
+      <p class="note" style="margin:4px 0 0">${Store.mode === 'cloud' ? 'Reminders sync to your account and are private to you.' : Store.mode === 'local' ? (window.nudgeDesktop ? 'Reminders are saved on this computer. Export a backup to move them.' : 'Reminders are saved in this browser only. Export a backup to move them.') : 'Storage is blocked here, so changes last only until you close the page. Export a backup to keep them.'}</p></div>`,
   [{ label: 'Done', primary: true }], (root) => {
     const save = () => { Store.saveProfile(); applyTheme(); render(); };
     root.addEventListener('click', (e) => {
@@ -2368,7 +2368,7 @@ async function boot() {
   runFocus();
   document.addEventListener('visibilitychange', () => { if (!document.hidden) tick(); });
   // expose for tests
-  window.__nudge = { parseQuick, S, nextOccurrence, matchesQuery, streakOf, AI };
+  window.__nudge = { parseQuick, S, nextOccurrence, matchesQuery, streakOf, AI, openSettings: settingsModal, exportJSON, exportICS, reviewOverdue, templates: templatesModal, importBackup: () => $('#importFile').click(), openShortcuts: shortcutsModal };
 }
 boot();
 })();
