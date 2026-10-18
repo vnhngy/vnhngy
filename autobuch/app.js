@@ -3,7 +3,7 @@
 /* ---------- Daten ---------- */
 
 const STORE_KEY = 'autobuch-v1';
-const APP_VERSION = '12'; // bei jedem Update zusammen mit VERSION in sw.js erhöhen
+const APP_VERSION = '13'; // bei jedem Update zusammen mit VERSION in sw.js erhöhen
 const COST_CATS = ['Werkstatt', 'Versicherung', 'Kfz-Steuer', 'Reifen', 'Pflege', 'Parken', 'Sonstiges'];
 
 // Richtwerte für eine Mercedes A-Klasse W176 (Baujahr 2015). Im Serviceheft prüfen.
@@ -2044,7 +2044,16 @@ handleUrlAction();
 
 // Zoomen mit zwei Fingern verhindern (Safari ignoriert user-scalable=no teilweise)
 for (const ev of ['gesturestart', 'gesturechange', 'gestureend']) document.addEventListener(ev, (e) => e.preventDefault(), { passive: false });
+// Zwei Finger schon beim Aufsetzen abfangen, nicht erst beim Bewegen
+document.addEventListener('touchstart', (e) => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
 document.addEventListener('touchmove', (e) => { if (e.touches.length > 1 || (e.scale && e.scale !== 1)) e.preventDefault(); }, { passive: false });
+// Notbremse: falls iOS doch hineinzoomt, sofort auf 100 % zurücksetzen
+if (window.visualViewport) {
+  const vp = document.querySelector('meta[name=viewport]'), base = vp.content;
+  visualViewport.addEventListener('resize', () => {
+    if (visualViewport.scale > 1.01) { vp.content = base + ', minimum-scale=1'; setTimeout(() => { vp.content = base; }, 300); }
+  });
+}
 $('#appVersion').textContent = `Autobuch · Version ${APP_VERSION}`;
 
 // Neue Version sofort übernehmen, sobald der Service Worker sie geladen hat
