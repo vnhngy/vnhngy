@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Autobuch</title>
 <meta name="description" content="Tankbuch, Wartungsplaner und Kostenübersicht für dein Auto">
-<meta name="theme-color" content="#e8edf6" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0a0d14" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#eceef1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d0f12" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -17,7 +17,7 @@
 <style>
   /* ---------- Liquid Glass: Farben & Material ---------- */
   :root {
-    --bg: #e8edf6;
+    --bg: #eceef1;
     --glass: rgba(255, 255, 255, .50);          /* Karten */
     --glass-strong: rgba(255, 255, 255, .72);   /* Formulare */
     --glass-bar: rgba(250, 251, 253, .84);      /* Tab-Leiste */
@@ -28,42 +28,42 @@
     --line: rgba(30, 40, 60, .10);
     --text: #10141b;
     --muted: #556070;
-    --accent: #007aff;
+    --accent: #3d6694;
     --accent-ink: #ffffff;
-    --bar: #007aff;
-    --good: #1a8a46;
-    --warn: #a86400;
-    --bad: #d93030;
+    --bar: #6f8db0;
+    --good: #3f7d5a;
+    --warn: #9a6a1f;
+    --bad: #b04a4a;
     --shadow: 0 10px 30px rgba(40, 60, 100, .14), 0 1px 3px rgba(40, 60, 100, .08);
     --blur: blur(24px) saturate(185%);
     --blur-strong: blur(40px) saturate(200%);
-    --amb-1: #8fc2ff; --amb-2: #d5b6ff; --amb-3: #9becd4; --amb-4: #ffd2ad;
+    --amb-1: #d6dde8; --amb-2: #e2dfe8; --amb-3: #dbe4e2; --amb-4: #e8e2dc;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg: #0a0d14;
+      --bg: #0d0f12;
       --glass: rgba(40, 46, 60, .45); --glass-strong: rgba(34, 39, 52, .70); --glass-bar: rgba(30, 35, 47, .84);
       --surface: rgba(40, 46, 60, .50); --surface-2: rgba(255, 255, 255, .07);
       --rim: rgba(255, 255, 255, .22); --edge: rgba(255, 255, 255, .12); --line: rgba(255, 255, 255, .09);
       --text: #f1f4f8; --muted: #a0a9b8;
-      --accent: #0a84ff; --accent-ink: #ffffff; --bar: #4aa8ff;
-      --good: #4cd17f; --warn: #f5b13d; --bad: #ff6464;
+      --accent: #4f78a8; --accent-ink: #ffffff; --bar: #7d98b8;
+      --good: #7fb796; --warn: #d4ad6a; --bad: #d98080;
       --shadow: 0 10px 30px rgba(0, 0, 0, .40), 0 1px 3px rgba(0, 0, 0, .30);
-      --amb-1: rgba(40, 100, 255, .55); --amb-2: rgba(130, 60, 240, .45); --amb-3: rgba(0, 170, 150, .38); --amb-4: rgba(230, 100, 60, .30);
+      --amb-1: rgba(90, 110, 140, .22); --amb-2: rgba(110, 100, 130, .16); --amb-3: rgba(90, 120, 115, .14); --amb-4: rgba(120, 105, 90, .12);
       color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
-    --bg: #0a0d14;
+    --bg: #0d0f12;
     --glass: rgba(40, 46, 60, .45); --glass-strong: rgba(34, 39, 52, .70); --glass-bar: rgba(30, 35, 47, .84);
     --surface: rgba(40, 46, 60, .50); --surface-2: rgba(255, 255, 255, .07);
     --rim: rgba(255, 255, 255, .22); --edge: rgba(255, 255, 255, .12); --line: rgba(255, 255, 255, .09);
     --text: #f1f4f8; --muted: #a0a9b8;
-    --accent: #0a84ff; --accent-ink: #ffffff; --bar: #4aa8ff;
-    --good: #4cd17f; --warn: #f5b13d; --bad: #ff6464;
+    --accent: #4f78a8; --accent-ink: #ffffff; --bar: #7d98b8;
+    --good: #7fb796; --warn: #d4ad6a; --bad: #d98080;
     --shadow: 0 10px 30px rgba(0, 0, 0, .40), 0 1px 3px rgba(0, 0, 0, .30);
-    --amb-1: rgba(40, 100, 255, .55); --amb-2: rgba(130, 60, 240, .45); --amb-3: rgba(0, 170, 150, .38); --amb-4: rgba(230, 100, 60, .30);
+    --amb-1: rgba(90, 110, 140, .22); --amb-2: rgba(110, 100, 130, .16); --amb-3: rgba(90, 120, 115, .14); --amb-4: rgba(120, 105, 90, .12);
     color-scheme: dark;
   }
 
@@ -138,9 +138,9 @@
   button:active, a.btn:active, .btn-file:active { transform: scale(.95); transition-duration: .12s; }
   button.primary, a.btn.primary {
     color: var(--accent-ink); font-weight: 600;
-    background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 78%, #fff), var(--accent) 60%);
-    border-color: color-mix(in srgb, var(--accent) 55%, #fff);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .55), inset 0 -2px 6px color-mix(in srgb, var(--accent) 70%, #000 30%), 0 8px 22px color-mix(in srgb, var(--accent) 35%, transparent);
+    background: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 80%, #fff);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), 0 2px 6px rgba(0, 0, 0, .10);
   }
   button.small { padding: 8px 14px; font-size: 14px; }
   button.danger { color: var(--bad); }
@@ -165,9 +165,8 @@
   .pill {
     display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600;
     padding: 4px 10px; border-radius: 999px; white-space: nowrap;
-    background: color-mix(in srgb, currentColor 14%, transparent);
-    border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35);
+    background: color-mix(in srgb, currentColor 9%, transparent);
+    border: 1px solid color-mix(in srgb, currentColor 16%, transparent);
   }
   .pill.ok { color: var(--good); }
   .pill.soon { color: var(--warn); }
@@ -217,7 +216,7 @@
   nav.tabs button svg { width: 25px; height: 25px; }
   nav.tabs button[aria-selected="true"] {
     color: var(--accent); font-weight: 600;
-    background: color-mix(in srgb, var(--accent) 13%, var(--surface-2));
+    background: color-mix(in srgb, var(--accent) 8%, var(--surface-2));
     box-shadow: inset 0 1px 0 var(--rim), inset 0 0 0 1px var(--edge);
   }
 
@@ -281,9 +280,9 @@
   .drive-speed span { color: var(--muted); font-size: 18px; }
   button.stop {
     color: #fff; font-weight: 600; width: 100%; padding: 17px; font-size: 18px;
-    background: linear-gradient(180deg, color-mix(in srgb, var(--bad) 78%, #fff), var(--bad) 60%);
-    border-color: color-mix(in srgb, var(--bad) 55%, #fff);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5), 0 8px 22px color-mix(in srgb, var(--bad) 35%, transparent);
+    background: var(--bad);
+    border-color: color-mix(in srgb, var(--bad) 80%, #fff);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), 0 2px 6px rgba(0, 0, 0, .10);
   }
   #recBar {
     position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(max(10px, env(safe-area-inset-bottom)) + 80px); z-index: 11;
@@ -299,14 +298,14 @@
   /* Notfall */
   .sos-entry {
     width: 100%; margin-bottom: 14px; padding: 13px 18px; font-weight: 600; color: var(--bad);
-    background: color-mix(in srgb, var(--bad) 14%, var(--glass));
+    background: var(--glass);
   }
   .sos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
   .sos a { display: block; text-align: center; text-decoration: none; border-radius: 26px; padding: 16px; font-size: 15px; background: var(--glass); color: var(--text); }
   .sos a b { display: block; font-size: 30px; letter-spacing: -.02em; }
   .sos a.red {
     color: #fff; border-color: color-mix(in srgb, var(--bad) 55%, #fff);
-    background: linear-gradient(180deg, color-mix(in srgb, var(--bad) 75%, #fff), var(--bad) 65%);
+    background: var(--bad);
   }
   .steps { margin: 0 0 14px; padding-left: 22px; }
   .steps li { margin-bottom: 6px; }
@@ -324,7 +323,7 @@
   .light { border-top: 1px solid var(--line); }
   .light p { margin: 0 0 10px 22px; font-size: 14px; color: var(--muted); }
   .light p b { color: var(--text); }
-  .dot { width: 12px; height: 12px; border-radius: 50%; flex: none; box-shadow: 0 0 10px currentColor; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
   .dot.red { background: var(--bad); color: var(--bad); }
   .dot.yellow { background: var(--warn); color: var(--warn); }
   .kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 15px; margin-bottom: 12px; }
