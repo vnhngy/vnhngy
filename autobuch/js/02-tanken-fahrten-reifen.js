@@ -193,6 +193,7 @@ function tripForm(entry, prefill = {}) {
     </div>
     ${field('Zweck', 'purpose', e.purpose, 'placeholder="bei Geschäftsfahrten Pflicht, z. B. Kundentermin"')}
     ${field('Geschäftspartner (optional)', 'partner', e.partner, 'placeholder="z. B. Firma Müller GmbH"')}
+    ${entry ? `<button type="button" data-return-trip="${entry.id}" style="width:100%">${tr('🔁 Rückfahrt eintragen')}</button>` : ''}
   `, (d) => {
     const startKm = num(d.startKm), endKm = num(d.endKm);
     if (startKm == null || endKm == null) return tr('Bitte km-Stand Start und Ende eingeben.');
@@ -204,6 +205,13 @@ function tripForm(entry, prefill = {}) {
     const drive = !entry && prefill.driveId && state.drives.find((x) => x.id === prefill.driveId);
     if (drive) drive.tripId = rec.id;
   }, { deleteFn: entry && (() => { state.trips = state.trips.filter((x) => x !== entry); }) });
+}
+
+// Rückfahrt: Orte getauscht, gleiche Strecke ab dem letzten km-Stand
+function returnTrip(t) {
+  const last = Math.max(t.endKm, ...state.trips.map((x) => x.endKm));
+  sheet.close();
+  setTimeout(() => tripForm(null, { date: t.date, type: t.type, from: t.to, to: t.from, startKm: last, endKm: last + (t.endKm - t.startKm), purpose: t.purpose, partner: t.partner }), 50);
 }
 
 function tripsCsv() {

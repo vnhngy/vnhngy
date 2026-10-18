@@ -116,6 +116,7 @@ function searchIndex() {
   state.recurring.forEach((r) => add('🔁', 'costs', r.name, `${fmtEUR(r.amount)} · ${tr(INTERVAL_LABEL[r.interval])}`, [r.cat], () => recurringForm(r)));
   state.garages.forEach((g) => add('🔧', 'garages', g.name, g.address, [g.phone, g.contact, g.note, g.hours], () => garageForm(g)));
   state.values.forEach((v) => add('📉', 'value', tr('Wert') + ': ' + fmtEUR(v.value, 0), fmtDate(v.date), [v.note], () => valueForm(v)));
+  state.notes.forEach((n) => add('📒', 'notes', n.title || tr('Notiz'), fmtDate(n.date), [n.text], () => noteForm(n)));
   state.logs.forEach((l) => add(l.kind === 'oil' ? '🛢' : '🛞', 'logs', tr(l.kind === 'oil' ? 'Öl nachgefüllt' : 'Reifendruck geprüft'), fmtDate(l.date), [l.note], () => logForm(l, l.kind)));
   return out;
 }

@@ -17,6 +17,12 @@ Alle Daten bleiben auf dem iPhone (localStorage).
 - **Wertverlauf:** Marktwert, Wertverlust pro Jahr, echte Kosten pro km inkl. Wertverlust
 - **Öl & Reifendruck:** Nachfüllen und Kontrollen protokollieren, Ölverbrauch pro 1.000 km
 - **Erfolge:** 14 Abzeichen zum Freischalten
+- **Monatsbudget:** Fortschrittsbalken bei den Kosten, Warnung auf der Übersicht ab 90 %
+- **Notizbuch:** Notizen mit Fotos je Fahrzeug (Ölsorte, Radiocode, Zweitschlüssel …)
+- **Termine:** alle Fristen der nächsten 12 Monate in einer Liste, auch als Kalenderdatei
+- **Jahresbericht:** druckbarer PDF-Bericht pro Jahr (Kosten, Monate, Fahrtenbuch, Tankfüllungen)
+- **Tank-Rechenhilfe & Tankbeleg:** zwei von Menge/Preis/Betrag reichen; Foto vom Beleg
+- **Rückfahrt:** im Fahrtenbuch mit einem Tipp die Gegenrichtung eintragen
 - **Einrichtungs-Assistent:** erscheint beim ersten Start (Sprache, Auto, Wartung, Reifen, Notfall);
   jederzeit erneut unter **Mehr → Einrichtungs-Assistent**
 - **Tanken:** Verbrauch (l/100 km) zwischen vollen Tankfüllungen, Ø-Literpreis
@@ -54,7 +60,7 @@ wird die Sprache des iPhones übernommen. Zahlen- und Datumsformate folgen der S
 
 Dateien:
 - `index.html`: Aufbau, Design und Symbole
-- `js/01-…` bis `js/09-…`: Programmlogik, nach Bereichen aufgeteilt und in dieser Reihenfolge geladen;
+- `js/01-…` bis `js/10-…`: Programmlogik, nach Bereichen aufgeteilt und in dieser Reihenfolge geladen;
   alle sichtbaren Texte laufen über `tr('deutscher Text')`
 - `i18n.js`: Sprachumschaltung und Übersetzungen (`T`: `'Deutsch': ['English', 'Tiếng Việt']`)
 - `tests/run.js`: automatische Tests (siehe unten)

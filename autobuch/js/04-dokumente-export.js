@@ -165,6 +165,7 @@ async function buildReport(opt) {
   html += `<p class="fine">${tr('Die Angaben wurden vom Halter selbst erfasst (Autobuch).')}</p></div>`;
 
   $('#reportBody').innerHTML = html;
+  $('#reportBack').dataset.view = 'more';
   showView('report');
   await Promise.all([...document.querySelectorAll('#reportBody img')].map((img) => img.decode().catch(() => {})));
 }
@@ -202,6 +203,12 @@ function calendarFile() {
     lines.push('BEGIN:VEVENT', `UID:fine-${f.id}@autobuch`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${ymd(f.due)}`, `DTEND;VALUE=DATE:${ymd(addDays(1, f.due))}`,
       `SUMMARY:${icsText(title)}`, `DESCRIPTION:${icsText([f.authority, f.ref].filter(Boolean).join(' · ') + ' (Autobuch)')}`,
       'BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${icsText(title)}`, 'TRIGGER:-P3D', 'END:VALARM', 'END:VEVENT');
+    count++;
+  });
+  state.documents.filter((d) => d.expires && d.expires >= today()).forEach((d) => {
+    const title = tr('{doc} läuft ab', { doc: d.title || tr(d.type) });
+    lines.push('BEGIN:VEVENT', `UID:doc-${d.id}-${ymd(d.expires)}@autobuch`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${ymd(d.expires)}`, `DTEND;VALUE=DATE:${ymd(addDays(1, d.expires))}`,
+      `SUMMARY:${icsText(title)}`, 'DESCRIPTION:Autobuch', 'BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${icsText(title)}`, 'TRIGGER:-P30D', 'END:VALARM', 'END:VEVENT');
     count++;
   });
   lines.push('END:VCALENDAR');

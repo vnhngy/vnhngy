@@ -5,7 +5,7 @@
 /* ---------- Daten ---------- */
 
 const STORE_KEY = 'autobuch-v1';
-const APP_VERSION = '21'; // bei jedem Update zusammen mit VERSION in sw.js erhöhen
+const APP_VERSION = '22'; // bei jedem Update zusammen mit VERSION in sw.js erhöhen
 const COST_CATS = ['Werkstatt', 'Versicherung', 'Kfz-Steuer', 'Reifen', 'Pflege', 'Parken', 'Leasing/Finanzierung', 'Bußgeld', 'Sonstiges'];
 // Antriebsarten des Fahrzeugs und Spritsorten beim Tanken (Erdgas wird in kg getankt)
 const CAR_FUELS = ['Benzin', 'Super E10', 'Super Plus', 'Diesel', 'Autogas (LPG)', 'Erdgas (CNG)', 'Hybrid', 'Plug-in-Hybrid'];
@@ -24,7 +24,7 @@ const unitOf = (grade) => gradeOf(grade).unit || 'l';
 const consUnit = () => unitOf(defaultGrade()) + '/100';
 
 // Daten, die zu einem Fahrzeug gehören. Beim Wechsel des Autos werden genau diese Felder getauscht.
-const CAR_KEYS = ['car', 'fuel', 'costs', 'maint', 'trips', 'tires', 'mounted', 'drives', 'accidents', 'parking', 'docs', 'recurring', 'fines', 'values', 'logs'];
+const CAR_KEYS = ['car', 'fuel', 'costs', 'maint', 'trips', 'tires', 'mounted', 'drives', 'accidents', 'parking', 'docs', 'recurring', 'fines', 'values', 'logs', 'notes', 'budget'];
 
 // Richtwerte für eine Mercedes A-Klasse W176 (Baujahr 2015). Im Serviceheft prüfen.
 function defaultMaint(fuel) {
@@ -51,7 +51,7 @@ function freshState() {
     drives: [], documents: [],
     docs: { plate: '', vin: '', insurer: '', policy: '', claimPhone: '', breakdown: '' }, accidents: [],
     lang: null, onboarded: false, checks: {}, garages: [],
-    recurring: [], fines: [], values: [], logs: [],
+    recurring: [], fines: [], values: [], logs: [], notes: [], budget: { monthly: null },
     carId: null, otherCars: {}, lastBackup: null, backupSnooze: null,
     home: null, // { order, hidden, tiles } – Aufbau der Übersicht
   };
@@ -252,6 +252,9 @@ function render() {
   renderValue();
   renderLogs();
   renderAwards();
+  renderBudget();
+  renderNotes();
+  renderAgenda();
   const lb = $('#lastBackup');
   lb.textContent = state.lastBackup ? tr('Letzte Sicherung: {date}', { date: fmtDate(state.lastBackup) }) : tr('Noch keine Sicherung angelegt.');
 
@@ -265,7 +268,7 @@ function render() {
     <li data-edit-fuel="${f.id}">
       <div class="grow">
         <div class="title">${fmtDate(f.date)}${f.full ? '' : ` <span class="pill unknown">${tr('Teil')}</span>`}</div>
-        <div class="meta">${tr(fillGrade(f))} · ${fmtNum(f.km)} km · ${fmtNum(f.liters, 2)} ${unitOf(fillGrade(f))} · ${fmtEUR(f.total / f.liters, 3)}/${unitOf(fillGrade(f))}${f.station ? ' · ' + esc(f.station) : ''}</div>
+        <div class="meta">${tr(fillGrade(f))} · ${fmtNum(f.km)} km · ${fmtNum(f.liters, 2)} ${unitOf(fillGrade(f))} · ${fmtEUR(f.total / f.liters, 3)}/${unitOf(fillGrade(f))}${f.station ? ' · ' + esc(f.station) : ''}${f.photos?.length ? ' · 📎' : ''}</div>
       </div>
       <div class="amount">${fmtEUR(f.total)}<div class="meta">${cons.per[f.id] != null ? fmtNum(cons.per[f.id], 1) + ' ' + consUnit() : ''}</div></div>
     </li>`).join('') || `<li class="empty">${tr('Noch keine Tankfüllung. Tipp oben auf „Tankfüllung eintragen“.')}</li>`;

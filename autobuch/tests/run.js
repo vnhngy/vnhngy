@@ -198,7 +198,7 @@ test('Tank-Prognose wird berechnet', async ({ page }) => {
 
 test('Übersetzungen vollständig (Englisch, Vietnamesisch)', async ({ page }) => {
   await seed(page);
-  const views = ['start', 'fuel', 'trips', 'maint', 'costs', 'more', 'help', 'stats', 'checks', 'plan', 'garages', 'fines', 'value', 'logs', 'awards'];
+  const views = ['start', 'fuel', 'trips', 'maint', 'costs', 'more', 'help', 'stats', 'checks', 'plan', 'garages', 'fines', 'value', 'logs', 'awards', 'notes', 'agenda'];
   for (const lang of ['en', 'vi']) {
     const missing = await page.evaluate(([l, vs]) => {
       MISSING.clear(); setLang(l);
@@ -209,6 +209,103 @@ test('Übersetzungen vollständig (Englisch, Vietnamesisch)', async ({ page }) =
     const real = missing.filter((k) => /[äöüß]/i.test(k) && !/Büro|München|Aral|Shell|Bremsen vorne|Kraftstoff$/.test(k));
     assert.deepEqual(real, [], `${lang}: fehlende Übersetzungen`);
   }
+});
+
+test('Tanken: Rechenhilfe für Preis, Menge und Betrag', async ({ page }) => {
+  await seed(page);
+  await page.click('#view-start button[data-open="fuel"]');
+  await page.fill('#sheetForm [name=liters]', '40');
+  await page.fill('#sheetForm [name=price]', '1,75');
+  assert.equal(await page.inputValue('#sheetForm [name=total]'), '70,00');
+  await page.fill('#sheetForm [name=price]', '1,80'); // automatisch berechneter Betrag wird nachgezogen
+  assert.equal(await page.inputValue('#sheetForm [name=total]'), '72,00');
+  await page.fill('#sheetForm [name=liters]', '');
+  await page.fill('#sheetForm [name=price]', '');
+  await page.fill('#sheetForm [name=total]', '50');
+  await page.fill('#sheetForm [name=price]', '2');
+  assert.equal(await page.inputValue('#sheetForm [name=liters]'), '25,00');
+  assert.ok(await page.$('#sheetForm #photoInput'), 'Belegfoto fehlt');
+});
+
+test('Monatsbudget: Fortschritt und Warnung auf der Übersicht', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => { state.costs.push({ id: 'cb', date: today(), cat: 'Pflege', amount: 95, note: '', km: null, photos: [] }); save(); showView('costs'); });
+  await page.click('#budgetCard button[data-open="budget"]');
+  await page.fill('#sheetForm [name=monthly]', '100');
+  await page.click('#sheetForm button.primary');
+  const b = await page.evaluate(() => ({ limit: state.budget.monthly, share: budgetState().share }));
+  assert.equal(b.limit, 100);
+  assert.ok(b.share >= 0.95, JSON.stringify(b));
+  assert.match(await page.innerText('#notices'), /Monatsbudget/);
+});
+
+test('Fahrtenbuch: Rückfahrt mit einem Tipp', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => { state.trips.push({ id: 't1', date: today(), type: 'Geschäftlich', from: 'Zuhause', to: 'Stuttgart', startKm: 98000, endKm: 98120, purpose: 'Kunde', partner: '' }); save(); showView('trips'); });
+  await page.click('#tripList li[data-edit-trip="t1"]');
+  await page.click('#sheetForm button[data-return-trip]');
+  await page.waitForFunction(() => document.querySelector('#sheetForm [name=from]')?.value === 'Stuttgart');
+  assert.equal(await page.inputValue('#sheetForm [name=to]'), 'Zuhause');
+  assert.equal(await page.inputValue('#sheetForm [name=startKm]'), '98120');
+  assert.equal(await page.inputValue('#sheetForm [name=endKm]'), '98240');
+  await page.click('#sheetForm button.primary');
+  assert.equal(await page.evaluate(() => state.trips.length), 2);
+});
+
+test('Notizbuch, Termine und Jahresbericht', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => {
+    state.fines.push({ id: 'b1', type: 'Parkverstoß', date: today(), due: addDays(5), amount: 25, paid: false, photos: [] });
+    save(); showView('notes');
+  });
+  await page.click('#view-notes button[data-open="note"]');
+  await page.fill('#sheetForm [name=title]', 'Ölsorte');
+  await page.fill('#sheetForm [name=text]', '5W-30, MB 229.5');
+  await page.click('#sheetForm button.primary');
+  assert.match(await page.innerText('#noteList'), /Ölsorte/);
+  assert.ok(await page.evaluate(() => searchIndex().some((x) => x.view === 'notes' && x.hay.includes('229.5'))));
+
+  await page.evaluate(() => showView('agenda'));
+  const agenda = await page.innerText('#agendaList');
+  assert.match(agenda, /Strafzettel zahlen/);
+  assert.match(agenda, /Service/);
+
+  await page.evaluate(() => showView('stats'));
+  await page.click('#view-stats button[data-open="yearReport"]');
+  await page.waitForSelector('#view-report.active');
+  const rep = await page.innerText('#reportBody');
+  assert.match(rep, new RegExp('Jahresbericht ' + new Date().getFullYear()));
+  assert.match(rep, /Bremsen vorne/);
+  assert.equal(await page.getAttribute('#reportBack', 'data-view'), 'stats');
+});
+
+test('Fahrzeugwechsel: neue Felder rutschen nicht ins ältere Auto', async ({ page }) => {
+  await seed(page);
+  const r = await page.evaluate(() => {
+    state.notes.push({ id: 'n1', date: today(), title: 'Nur Auto 1', text: '', photos: [] });
+    state.budget = { monthly: 200 };
+    const old = freshCar({ name: 'Altes Auto' });
+    delete old.notes; delete old.budget; // wie eine Sicherung aus Version 21
+    state.otherCars.x = old;
+    switchCar('x');
+    const r1 = { notes: state.notes.length, budget: state.budget.monthly };
+    switchCar(Object.keys(state.otherCars)[0]);
+    return { r1, back: state.notes.length, budget: state.budget.monthly };
+  });
+  assert.deepEqual(r, { r1: { notes: 0, budget: null }, back: 1, budget: 200 });
+});
+
+test('Neue Formulare sind übersetzt', async ({ page }) => {
+  await seed(page);
+  const missing = await page.evaluate(async () => {
+    setLang('en'); MISSING.clear();
+    state.trips.push({ id: 't1', date: today(), type: 'Privat', from: 'A', to: 'B', startKm: 1, endKm: 2, purpose: '', partner: '' });
+    fuelForm(); sheet.close(); budgetForm(); sheet.close(); noteForm(); sheet.close(); tripForm(state.trips[0]); sheet.close();
+    state.budget = { monthly: 10 }; save();
+    await buildYearReport(String(new Date().getFullYear()));
+    return [...MISSING];
+  });
+  assert.deepEqual(missing.filter((k) => /[äöüß]/i.test(k) && !/Bremsen vorne|Aral|Shell/.test(k)), []);
 });
 
 test('Keine bunten Emojis auf dem Bildschirm', async ({ page }) => {

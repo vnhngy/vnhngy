@@ -371,6 +371,9 @@
   .notice { display: flex; gap: 12px; align-items: flex-start; }
   .notice .ico { font-size: 26px; line-height: 1; }
   .notice .grow { flex: 1; }
+  .agenda-month { font-size: 13px; font-weight: 600; color: var(--muted, inherit); text-transform: capitalize; padding-top: 14px !important; border-bottom: 0 !important; }
+  .agenda-date { min-width: 34px; font-size: 18px; text-align: center; }
+  .note-text { white-space: pre-wrap; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin-top: 2px; }
   .notice .maint-btns { margin-top: 8px; }
   .car-row { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; margin-bottom: 8px; padding: 12px 16px; border-radius: 18px; }
   .car-row .grow { flex: 1; min-width: 0; }
@@ -530,6 +533,7 @@
   <symbol id="i-road" viewBox="0 0 24 24"><path d="M5 21 9 3"/><path d="M19 21 15 3"/><path d="M12 5v2"/><path d="M12 11v2"/><path d="M12 17v2"/></symbol>
   <symbol id="i-book" viewBox="0 0 24 24"><path d="M5 4a1 1 0 0 1 1-1h12v16H7a2 2 0 0 0-2 2z"/><path d="M5 21a2 2 0 0 1 2-2h11v2H7"/></symbol>
   <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4"/><path d="M5 4h12l-2.5 4L17 12H5"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/></symbol>
   <symbol id="i-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 14a4.5 4.5 0 0 0 7 0"/><path d="M9 9.5v.01"/><path d="M15 9.5v.01"/></symbol>
 </defs></svg>
 <header>
@@ -553,6 +557,8 @@
       <button data-view="value"><span aria-hidden="true">📉</span>Wert</button>
       <button data-view="logs"><span aria-hidden="true">🛢️</span>Öl &amp; Druck</button>
       <button data-view="awards"><span aria-hidden="true">🏆</span>Erfolge</button>
+      <button data-view="agenda"><span aria-hidden="true">📅</span>Termine</button>
+      <button data-view="notes"><span aria-hidden="true">📒</span>Notizbuch</button>
     </div>
     <div class="stats" data-sec="stats">
       <div class="stat"><div class="label">Kilometerstand</div><div class="value" id="sKm">–</div></div>
@@ -673,6 +679,22 @@
       <h2>Prognose</h2>
       <div id="statForecast"></div>
     </div>
+    <button class="primary" data-open="yearReport" style="width:100%">🖨 Jahresbericht als PDF</button>
+  </section>
+
+  <!-- Termine -->
+  <section class="view" id="view-agenda">
+    <button class="back" data-view="start">‹ Zurück</button>
+    <p class="note" style="margin-top:0">Alle Fristen der nächsten 12 Monate: Wartung, TÜV, Strafzettel, Dokumente und feste Zahlungen.</p>
+    <div class="card"><ul class="list" id="agendaList"></ul></div>
+    <button data-open="ics" style="width:100%">📅 In den iPhone-Kalender übernehmen</button>
+  </section>
+
+  <!-- Notizbuch -->
+  <section class="view" id="view-notes">
+    <button class="back" data-view="start">‹ Zurück</button>
+    <button class="primary" data-open="note" style="width:100%">＋ Neue Notiz</button>
+    <div class="card"><ul class="list" id="noteList"></ul></div>
   </section>
 
   <!-- Checklisten -->
@@ -812,7 +834,7 @@
   <!-- Verkaufs-Mappe -->
   <section class="view" id="view-report">
     <div class="actions no-print">
-      <button data-view="more">‹ Zurück</button>
+      <button data-view="more" id="reportBack">‹ Zurück</button>
       <button class="primary" id="printBtn">🖨 Drucken / PDF</button>
     </div>
     <p class="note no-print" style="margin-top:0">Als PDF sichern: Im Druckmenü oben auf <b>Teilen</b> tippen und <b>„In Dateien sichern“</b> wählen.</p>
@@ -874,6 +896,7 @@
       <button class="primary" data-open="cost">€ Ausgabe eintragen</button>
       <button id="costCsv">⬇︎ Export (Excel)</button>
     </div>
+    <div class="card" id="budgetCard"></div>
     <div class="card">
       <h2>Wiederkehrende Kosten</h2>
       <ul class="list" id="recList"></ul>
@@ -1031,6 +1054,7 @@
 <script src="js/06-werkzeuge.js"></script>
 <script src="js/07-fahrzeuge-kosten.js"></script>
 <script src="js/08-uebersicht-suche.js"></script>
-<script src="js/09-assistent-start.js"></script>
+<script src="js/09-notizen-termine-budget.js"></script>
+<script src="js/10-assistent-start.js"></script>
 </body>
 </html>

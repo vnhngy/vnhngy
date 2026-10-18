@@ -43,23 +43,57 @@ function fuelForm(entry, prefill = {}) {
     <label class="field"><span>${tr('Spritsorte')}</span><select name="grade">${GRADES.map((g) => `<option value="${g.id}" ${g.id === grade ? 'selected' : ''}>${tr(g.id)}</option>`).join('')}</select></label>
     <div class="row2">
       ${field(unitOf(grade) === 'kg' ? 'Kilogramm' : 'Liter', 'liters', fmtIn(e.liters, 2), 'inputmode="decimal" required placeholder="z. B. 42,5"')}
-      ${field('Betrag (€)', 'total', fmtIn(e.total, 2), 'inputmode="decimal" required placeholder="z. B. 74,30"')}
+      ${field(unitOf(grade) === 'kg' ? 'Preis pro kg (€)' : 'Preis pro Liter (€)', 'price', e.liters && e.total ? fmtIn(e.total / e.liters, 3) : '', 'inputmode="decimal" placeholder="z. B. 1,749"')}
     </div>
+    ${field('Betrag (€)', 'total', fmtIn(e.total, 2), 'inputmode="decimal" required placeholder="z. B. 74,30"')}
+    <p class="hint">${tr('Zwei der drei Felder reichen, das dritte rechnet die App aus.')}</p>
     <label class="check"><input type="checkbox" name="full" ${e.full ? 'checked' : ''}> ${tr('Vollgetankt')}</label>
     ${field('Tankstelle (optional)', 'station', e.station)}
+    ${photoField(e.photos, 'Tankbeleg (optional)')}
   `, (d) => {
     const km = num(d.km), liters = num(d.liters), total = num(d.total);
     if (km == null || liters == null || total == null || liters <= 0) return tr('Bitte Kilometerstand, Liter und Betrag ausfüllen.');
     // Tankgröße nur bei Benzin/Diesel prüfen (Gastanks sind anders bemessen)
     const fam = gradeOf(d.grade).fam;
     if (state.car.tank && fam === mainFam() && (fam === 'benzin' || fam === 'diesel') && liters > state.car.tank * 1.15) return tr('{l} Liter passen nicht in einen {tank}-Liter-Tank. Bitte prüfen.', { l: fmtNum(liters, 1), tank: state.car.tank });
-    const rec = { id: entry?.id || uid(), date: d.date, km, liters, total, full: d.full === 'on', station: d.station.trim(), grade: d.grade };
+    const rec = { id: entry?.id || uid(), date: d.date, km, liters, total, full: d.full === 'on', station: d.station.trim(), grade: d.grade, photos: commitPhotos() };
     if (entry) Object.assign(entry, rec); else state.fuel.push(rec);
-  }, { deleteFn: entry && (() => { state.fuel = state.fuel.filter((x) => x !== entry); }) });
+  }, { deleteFn: entry && (() => { (entry.photos || []).forEach(photoDel); state.fuel = state.fuel.filter((x) => x !== entry); }) });
+  wirePhotos();
   // Erdgas wird in Kilogramm getankt
+  const label = (name) => sheetForm[name].closest('.field').querySelector('span');
   sheetForm.grade.addEventListener('change', () => {
-    sheetForm.liters.closest('.field').querySelector('span').textContent = tr(unitOf(sheetForm.grade.value) === 'kg' ? 'Kilogramm' : 'Liter');
+    const kg = unitOf(sheetForm.grade.value) === 'kg';
+    label('liters').textContent = tr(kg ? 'Kilogramm' : 'Liter');
+    label('price').textContent = tr(kg ? 'Preis pro kg (€)' : 'Preis pro Liter (€)');
   });
+  wireFuelCalc();
+}
+
+// Rechenhilfe: aus zwei der Felder Menge, Preis und Betrag wird das dritte berechnet.
+// Berechnet wird das zuletzt automatisch gefüllte oder ein leeres Feld, nie das gerade getippte.
+function wireFuelCalc() {
+  const names = ['liters', 'price', 'total'];
+  let auto = null;
+  const calc = {
+    liters: (v) => v.total / v.price,
+    price: (v) => v.total / v.liters,
+    total: (v) => v.liters * v.price,
+  };
+  const digits = { liters: 2, price: 3, total: 2 };
+  names.forEach((name) => sheetForm[name].addEventListener('input', () => {
+    if (name === auto) auto = null;
+    const v = Object.fromEntries(names.map((n) => [n, num(sheetForm[n].value)]));
+    const others = names.filter((n) => n !== name);
+    const target = others.includes(auto) ? auto : others.find((n) => v[n] == null);
+    if (!target || v[name] == null) return;
+    const rest = names.filter((n) => n !== target);
+    if (rest.some((n) => v[n] == null || v[n] <= 0)) return;
+    const r = calc[target](v);
+    if (!isFinite(r)) return;
+    sheetForm[target].value = fmtIn(r, digits[target]);
+    auto = target;
+  }));
 }
 
 function costForm(entry) {
@@ -128,7 +162,7 @@ function maintForm(m) {
 
 /* ---------- Ereignisse ---------- */
 
-const TITLES = { search: 'Suchen', fines: 'Strafzettel & Fristen', value: 'Wertverlauf', logs: 'Öl & Reifendruck', awards: 'Erfolge', stats: 'Statistik', checks: 'Checklisten', plan: 'Reiseplaner', garages: 'Werkstätten', report: 'Verkaufs-Mappe', drive: 'Fahrt läuft', help: 'Notfall & Hilfe', start: 'Übersicht', fuel: 'Tanken', trips: 'Fahrtenbuch', maint: 'Wartung', costs: 'Kosten', more: 'Mehr' };
+const TITLES = { search: 'Suchen', notes: 'Notizbuch', agenda: 'Termine', yearReport: 'Jahresbericht', fines: 'Strafzettel & Fristen', value: 'Wertverlauf', logs: 'Öl & Reifendruck', awards: 'Erfolge', stats: 'Statistik', checks: 'Checklisten', plan: 'Reiseplaner', garages: 'Werkstätten', report: 'Verkaufs-Mappe', drive: 'Fahrt läuft', help: 'Notfall & Hilfe', start: 'Übersicht', fuel: 'Tanken', trips: 'Fahrtenbuch', maint: 'Wartung', costs: 'Kosten', more: 'Mehr' };
 
 function showSub(sub) {
   $('#sub-termine').hidden = sub !== 'termine';
@@ -146,11 +180,17 @@ function showView(v) {
 }
 
 document.addEventListener('click', (e) => {
-  const t = e.target.closest('button, li[data-edit-fuel], li[data-edit-cost], li[data-edit-trip], [data-edit-acc], li[data-drive], li[data-edit-doc], li[data-edit-rec], li[data-edit-value], li[data-edit-log]');
+  const t = e.target.closest('button, li[data-edit-fuel], li[data-edit-cost], li[data-edit-trip], [data-edit-acc], li[data-drive], li[data-edit-doc], li[data-edit-rec], li[data-edit-value], li[data-edit-log], li[data-edit-note], li[data-agenda]');
   if (!t) return;
   if (t.dataset.view) return showView(t.dataset.view);
   if (t.dataset.open === 'fuel') return fuelForm();
   if (t.dataset.open === 'cost') return costForm();
+  if (t.dataset.open === 'budget') return budgetForm();
+  if (t.dataset.open === 'note') return noteForm();
+  if (t.dataset.editNote) return noteForm(state.notes.find((x) => x.id === t.dataset.editNote));
+  if (t.dataset.open === 'ics') return $('#calBtn').click();
+  if (t.dataset.open === 'yearReport') return buildYearReport(statYear).then(() => { $('#viewTitle').textContent = tr(TITLES.yearReport); });
+  if (t.dataset.agenda) { const x = renderAgenda.items[t.dataset.agenda]; return x.open ? x.open() : showView(x.view); }
   if (t.dataset.open === 'maintNew') return maintForm();
   if (t.dataset.done) return doneForm(state.maint.find((m) => m.id === t.dataset.done));
   if (t.dataset.editMaint) return maintForm(state.maint.find((m) => m.id === t.dataset.editMaint));
@@ -164,6 +204,7 @@ document.addEventListener('click', (e) => {
   if (t.dataset.prices === 'load') loadPrices();
   if (t.dataset.open === 'trip') return tripForm();
   if (t.dataset.editTrip) return tripForm(state.trips.find((x) => x.id === t.dataset.editTrip));
+  if (t.dataset.returnTrip) return returnTrip(state.trips.find((x) => x.id === t.dataset.returnTrip));
   if (t.dataset.open === 'tireNew') return tireForm();
   if (t.dataset.open === 'tireSwap') return swapForm();
   if (t.dataset.editTire) return tireForm(state.tires.find((x) => x.id === t.dataset.editTire));
