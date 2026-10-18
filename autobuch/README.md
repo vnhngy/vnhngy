@@ -30,6 +30,17 @@ Alle Daten bleiben auf dem iPhone (localStorage).
 - **Kalender:** Fälligkeiten als .ics-Datei mit Erinnerung 7 Tage vorher in den iPhone-Kalender
 - **Sicherung:** Export/Import als JSON-Datei (z. B. in iCloud Drive)
 
+## Sprachen
+Deutsch, English und Tiếng Việt (umschaltbar unter **Mehr → Sprache**). Beim ersten Start
+wird die Sprache des iPhones übernommen. Zahlen- und Datumsformate folgen der Sprache.
+
+Dateien:
+- `index.html`: Aufbau und Design
+- `app.js`: Programmlogik; alle sichtbaren Texte laufen über `tr('deutscher Text')`
+- `i18n.js`: Sprachumschaltung und Übersetzungen (`T`: `'Deutsch': ['English', 'Tiếng Việt']`)
+
+Neuer Text? Im Code mit `tr('…')` schreiben und in `T` die Übersetzung ergänzen.
+
 ## Online stellen (GitHub Pages)
 1. Auf github.com im Repo: **Settings → Pages**
 2. Unter „Branch“ den Branch mit diesem Ordner wählen, Ordner **/ (root)**, **Save**
