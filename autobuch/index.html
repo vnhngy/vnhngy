@@ -196,6 +196,34 @@
   .seg { display: flex; background: var(--surface-2); border-radius: 10px; padding: 3px; gap: 3px; }
   .seg button { flex: 1; padding: 8px; font-size: 14px; background: none; border-radius: 8px; }
   .seg-wrap { margin-bottom: 12px; }
+  .sos-entry { width: 100%; margin-bottom: 12px; background: color-mix(in srgb, var(--bad) 14%, var(--surface)); color: var(--bad); font-weight: 600; }
+  .sos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .sos a { display: block; text-align: center; text-decoration: none; border-radius: 16px; padding: 14px; font-size: 15px; background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+  .sos a b { display: block; font-size: 28px; }
+  .sos a.red { background: var(--bad); color: #fff; }
+  .steps { margin: 0 0 14px; padding-left: 22px; }
+  .steps li { margin-bottom: 6px; }
+  .field textarea { width: 100%; font: inherit; font-size: 17px; color: var(--text); background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; min-height: 80px; }
+  fieldset { border: 0; padding: 0; margin: 0 0 4px; }
+  legend { font-weight: 600; margin: 6px 0 8px; padding: 0; }
+  .thumbs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+  .thumb { position: relative; width: 72px; height: 72px; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; display: block; }
+  .thumb button { position: absolute; top: -6px; right: -6px; width: 24px; height: 24px; padding: 0; border-radius: 50%; background: var(--text); color: var(--bg); font-size: 14px; line-height: 24px; }
+  .btn-file { display: inline-block; border-radius: 10px; padding: 9px 14px; background: var(--surface-2); color: var(--text); cursor: pointer; }
+  dialog.viewer { margin: 0; width: 100vw; max-width: 100vw; height: 100vh; max-height: 100vh; border-radius: 0; background: #000; }
+  dialog.viewer img { width: 100%; height: 100%; object-fit: contain; }
+  .light summary { display: flex; align-items: center; gap: 10px; padding: 10px 0; cursor: pointer; list-style: none; font-weight: 600; }
+  .light summary::-webkit-details-marker { display: none; }
+  .light { border-top: 1px solid var(--line); }
+  .light p { margin: 0 0 10px 22px; font-size: 14px; color: var(--muted); }
+  .light p b { color: var(--text); }
+  .dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+  .dot.red { background: var(--bad); }
+  .dot.yellow { background: var(--warn); }
+  .kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 15px; margin-bottom: 12px; }
+  .kv dt { color: var(--muted); }
+  .kv dd { margin: 0; font-weight: 600; word-break: break-all; }
   .warn-text { color: var(--warn); }
   .bad-text { color: var(--bad); }
   .tread { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; text-align: center; }
@@ -215,6 +243,7 @@
 <main>
   <!-- Übersicht -->
   <section class="view active" id="view-start">
+    <button class="sos-entry" data-view="help">🚨 Notfall, Unfall &amp; Warnleuchten</button>
     <div class="stats">
       <div class="stat"><div class="label">Kilometerstand</div><div class="value" id="sKm">–</div></div>
       <div class="stat"><div class="label">Ø Verbrauch</div><div class="value" id="sCons">–</div></div>
@@ -292,6 +321,42 @@
         <button data-open="tireNew">＋ Reifensatz hinzufügen</button>
       </div>
       <p class="note">Gesetzlich vorgeschrieben sind mindestens 1,6 mm Profil. Empfohlen werden 3 mm bei Sommer- und 4 mm bei Winterreifen. Winterreifen brauchen seit 1.10.2024 das Schneeflocken-Symbol (Alpine-Symbol); „M+S“ allein reicht nicht mehr.</p>
+    </div>
+  </section>
+
+  <!-- Notfall & Hilfe -->
+  <section class="view" id="view-help">
+    <div class="sos">
+      <a class="red" href="tel:112">🚑 Notruf<b>112</b></a>
+      <a href="tel:110">🚓 Polizei<b>110</b></a>
+    </div>
+    <div class="card">
+      <h2>Meine Daten &amp; Nummern</h2>
+      <div id="docsBody"></div>
+    </div>
+    <div class="card">
+      <h2>Unfall: was tun?</h2>
+      <ol class="steps">
+        <li><b>Warnblinker</b> an, <b>Warnweste</b> anziehen, bevor du aussteigst.</li>
+        <li><b>Warndreieck</b> aufstellen: innerorts ca. 50 m, Landstraße ca. 100 m, Autobahn 150–400 m vor der Unfallstelle.</li>
+        <li><b>Verletzte?</b> Sofort 112 anrufen und Erste Hilfe leisten.</li>
+        <li><b>Polizei rufen</b> bei Verletzten, Streit, Verdacht auf Alkohol, Fahrerflucht oder ausländischem Kennzeichen.</li>
+        <li><b>Fotos machen:</b> Unfallstelle, Fahrzeugpositionen, alle Schäden, Kennzeichen.</li>
+        <li><b>Daten austauschen:</b> Name, Anschrift, Kennzeichen, Versicherung, Zeugen.</li>
+        <li><b>Keine Schuld anerkennen</b> und nichts unterschreiben (außer dem Europäischen Unfallbericht).</li>
+        <li>Deiner <b>Versicherung</b> den Unfall innerhalb einer Woche melden.</li>
+      </ol>
+      <button class="primary" data-open="accident" style="width:100%">📝 Unfall dokumentieren</button>
+    </div>
+    <div class="card">
+      <h2>Dokumentierte Unfälle</h2>
+      <ul class="list" id="accList"></ul>
+    </div>
+    <div class="card">
+      <h2>Warnleuchten</h2>
+      <p class="note" style="margin-top:0">Deine A-Klasse zeigt meist zusätzlich eine Textmeldung im Kombiinstrument. Die hat Vorrang. Im Zweifel: Betriebsanleitung im Handschuhfach.</p>
+      <label class="field"><input id="lightSearch" type="search" placeholder="Suchen, z. B. Öl, Batterie …"></label>
+      <div id="lightList"></div>
     </div>
   </section>
 
@@ -413,6 +478,7 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Mehr</button>
 </nav>
 
+<dialog id="viewer" class="viewer"><img alt="Foto"></dialog>
 <dialog id="sheet"><form method="dialog" id="sheetForm"></form></dialog>
 
 <script>
@@ -445,6 +511,7 @@ function freshState() {
     fuel: [], costs: [], maint: defaultMaint('Benzin'), theme: 'auto',
     prices: { key: '', type: 'e5', rad: 5 }, parking: null,
     trips: [], tires: [], mounted: null,
+    docs: { plate: '', vin: '', insurer: '', policy: '', claimPhone: '', breakdown: '' }, accidents: [],
   };
 }
 
@@ -612,6 +679,7 @@ function render() {
   renderPrices();
   renderTrips();
   renderTires();
+  renderHelp();
 
   // Tanken
   $('#fCons').innerHTML = $('#sCons').innerHTML;
@@ -653,7 +721,7 @@ function render() {
   $('#costList').innerHTML = costSorted.map((cst) => `
     <li data-edit-cost="${cst.id}">
       <div class="grow"><div class="title">${esc(cst.cat)}</div>
-      <div class="meta">${fmtDate(cst.date)}${cst.note ? ' · ' + esc(cst.note) : ''}${cst.km != null ? ' · ' + fmtNum(cst.km) + ' km' : ''}</div></div>
+      <div class="meta">${fmtDate(cst.date)}${cst.note ? ' · ' + esc(cst.note) : ''}${cst.km != null ? ' · ' + fmtNum(cst.km) + ' km' : ''}${cst.photos?.length ? ' · 📎 ' + cst.photos.length : ''}</div></div>
       <div class="amount">${fmtEUR(cst.amount)}</div>
     </li>`).join('') || '<li class="empty">Noch keine Ausgaben (Tankfüllungen werden automatisch mitgezählt).</li>';
 
@@ -1131,6 +1199,258 @@ function swapForm() {
   }, { submitLabel: cur ? 'Wechseln' : 'Speichern' });
 }
 
+/* ---------- Fotos (IndexedDB, damit der normale Speicher nicht vollläuft) ---------- */
+
+let dbPromise = null;
+function idb(mode, fn) {
+  dbPromise = dbPromise || new Promise((res, rej) => {
+    const r = indexedDB.open('autobuch', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('photos');
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+  return dbPromise.then((d) => new Promise((res, rej) => {
+    const tx = d.transaction('photos', mode);
+    const req = fn(tx.objectStore('photos'));
+    tx.oncomplete = () => res(req.result);
+    tx.onerror = () => rej(tx.error);
+  }));
+}
+const photoPut = (id, blob) => idb('readwrite', (st) => st.put(blob, id));
+const photoGet = (id) => idb('readonly', (st) => st.get(id));
+const photoDel = (id) => idb('readwrite', (st) => st.delete(id)).catch(() => {});
+const allPhotoIds = () => [...state.costs, ...state.accidents].flatMap((x) => x.photos || []);
+
+// Fotos verkleinern (iPhone-Fotos haben oft 3–5 MB)
+function compressImage(file, max = 1600) {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const k = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      c.toBlob((b) => (b ? res(b) : rej(new Error('Bild konnte nicht umgewandelt werden'))), 'image/jpeg', 0.8);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('Bild konnte nicht gelesen werden')); };
+    img.src = url;
+  });
+}
+
+// Entwurf der Fotos im offenen Formular: erst beim Speichern übernommen
+let photoDraft = null;
+function photoField(ids = [], label = 'Fotos') {
+  photoDraft = { ids: [...(ids || [])], added: [], removed: [], saved: false };
+  return `<div class="field"><span>${label}</span><div class="thumbs" id="thumbs"></div>
+    <label class="btn-file">📷 Foto hinzufügen<input type="file" accept="image/*" multiple hidden id="photoInput"></label></div>`;
+}
+
+function wirePhotos() {
+  const box = $('#thumbs');
+  let token = 0;
+  const draw = async () => {
+    const my = ++token;
+    const parts = [];
+    for (const id of photoDraft.ids) {
+      const blob = await photoGet(id).catch(() => null);
+      if (blob) parts.push({ id, url: URL.createObjectURL(blob) });
+    }
+    if (my !== token) return;
+    box.innerHTML = parts.map((x) => `<div class="thumb"><img src="${x.url}" data-full="${x.url}" alt="Foto"><button type="button" data-rm="${x.id}" aria-label="Foto entfernen">×</button></div>`).join('');
+  };
+  box.addEventListener('click', (e) => {
+    const rm = e.target.closest('[data-rm]');
+    if (rm) {
+      const id = rm.dataset.rm;
+      photoDraft.ids = photoDraft.ids.filter((x) => x !== id);
+      if (photoDraft.added.includes(id)) { photoDraft.added = photoDraft.added.filter((x) => x !== id); photoDel(id); } else photoDraft.removed.push(id);
+      return draw();
+    }
+    const img = e.target.closest('img[data-full]');
+    if (img) { $('#viewer img').src = img.dataset.full; $('#viewer').showModal(); }
+  });
+  $('#photoInput').addEventListener('change', async (e) => {
+    for (const f of e.target.files) {
+      try {
+        const id = 'p' + uid();
+        await photoPut(id, await compressImage(f));
+        photoDraft.ids.push(id); photoDraft.added.push(id);
+      } catch (err) { alert('Foto konnte nicht gespeichert werden.'); }
+    }
+    e.target.value = '';
+    draw();
+  });
+  draw();
+}
+
+function commitPhotos() {
+  photoDraft.saved = true;
+  photoDraft.removed.forEach(photoDel);
+  return [...photoDraft.ids];
+}
+
+// Formular ohne Speichern geschlossen: neu aufgenommene Fotos wieder löschen
+$('#sheet').addEventListener('close', () => {
+  if (photoDraft && !photoDraft.saved) photoDraft.added.forEach(photoDel);
+  photoDraft = null;
+});
+$('#viewer').addEventListener('click', () => $('#viewer').close());
+
+/* ---------- Notfall & Unfall ---------- */
+
+const tel = (n) => 'tel:' + String(n).replace(/[^\d+]/g, '');
+
+function renderHelp() {
+  const d = state.docs;
+  const rows = [['Kennzeichen', d.plate], ['FIN', d.vin], ['Versicherung', d.insurer], ['Vers.-Nr.', d.policy]].filter(([, v]) => v);
+  $('#docsBody').innerHTML = `
+    ${rows.length ? `<dl class="kv">${rows.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')}</dl>`
+      : '<p class="note" style="margin-top:0">Trag Kennzeichen, Versicherung und wichtige Nummern ein. Im Ernstfall hast du dann alles griffbereit.</p>'}
+    <div class="actions" style="margin-bottom:0">
+      ${d.claimPhone ? `<a class="btn primary" style="text-align:center;padding:12px" href="${tel(d.claimPhone)}">📞 Schadenhotline</a>` : ''}
+      ${d.breakdown ? `<a class="btn primary" style="text-align:center;padding:12px" href="${tel(d.breakdown)}">🛠 Pannenhilfe</a>` : ''}
+      <button data-open="docs" style="grid-column:1/-1">Bearbeiten</button>
+    </div>`;
+
+  const acc = [...state.accidents].sort((a, b) => b.date.localeCompare(a.date));
+  $('#accList').innerHTML = acc.map((a) => `
+    <li>
+      <div class="grow" data-edit-acc="${a.id}" style="cursor:pointer">
+        <div class="title">${fmtDate(a.date.slice(0, 10))}, ${a.date.slice(11, 16)} Uhr</div>
+        <div class="meta">${[a.place, a.otherPlate && 'Gegner: ' + a.otherPlate, a.photos?.length && '📎 ' + a.photos.length + ' Fotos'].filter(Boolean).map(esc).join(' · ') || 'Ohne Details'}</div>
+      </div>
+      <button class="small" data-share-acc="${a.id}">Teilen</button>
+    </li>`).join('') || '<li class="empty">Zum Glück noch keine.</li>';
+
+  const q = ($('#lightSearch').value || '').toLowerCase();
+  $('#lightList').innerHTML = LIGHTS.filter((l) => !q || (l.name + ' ' + l.what).toLowerCase().includes(q)).map((l) => `
+    <details class="light">
+      <summary><span class="dot ${l.color}" aria-hidden="true"></span>${esc(l.name)} <span class="meta" style="font-weight:400">· ${l.color === 'red' ? 'rot' : 'gelb'}</span></summary>
+      <p><b>Bedeutung:</b> ${esc(l.what)}</p>
+      <p><b>Was tun:</b> ${esc(l.todo)}</p>
+    </details>`).join('') || '<p class="empty">Nichts gefunden</p>';
+}
+
+const LIGHTS = [
+  { color: 'red', name: 'Öldruck (Ölkanne)', what: 'Der Motoröldruck ist zu niedrig.', todo: 'Sofort sicher anhalten und Motor abstellen. Nicht weiterfahren, sonst droht ein Motorschaden. Ölstand prüfen, Pannenhilfe rufen.' },
+  { color: 'red', name: 'Kühlmitteltemperatur (Thermometer)', what: 'Der Motor ist zu heiß oder es fehlt Kühlmittel.', todo: 'Anhalten, Motor abstellen und abkühlen lassen. Den Kühlmittelbehälter nicht im heißen Zustand öffnen (Verbrühungsgefahr).' },
+  { color: 'red', name: 'Bremse (Kreis mit „!“ oder BRAKE)', what: 'Bremsflüssigkeit zu niedrig oder Störung im Bremssystem (oder nur: Feststellbremse angezogen).', todo: 'Feststellbremse lösen. Leuchtet es weiter: vorsichtig anhalten und nicht weiterfahren.' },
+  { color: 'red', name: 'Batterie / Ladekontrolle', what: 'Die Batterie wird nicht mehr geladen (z. B. Lichtmaschine oder Keilrippenriemen).', todo: 'Unnötige Verbraucher (Sitzheizung, Radio) ausschalten und direkt zur Werkstatt. Motor möglichst nicht abstellen.' },
+  { color: 'red', name: 'Airbag / Rückhaltesystem (SRS)', what: 'Störung im Airbag- oder Gurtstraffersystem. Airbags lösen bei einem Unfall eventuell nicht aus.', todo: 'Vorsichtig und zeitnah zur Werkstatt fahren.' },
+  { color: 'red', name: 'Lenkung (Lenkrad)', what: 'Die Lenkunterstützung ist ausgefallen. Lenken geht deutlich schwerer.', todo: 'Mit mehr Kraft lenken, vorsichtig anhalten und Werkstatt kontaktieren.' },
+  { color: 'red', name: 'Sicherheitsgurt', what: 'Jemand ist nicht angeschnallt.', todo: 'Anschnallen. Bei leerem Sitz: schwere Gegenstände vom Beifahrersitz nehmen.' },
+  { color: 'yellow', name: 'Motorkontrollleuchte (Motor-Symbol)', what: 'Störung in Motorsteuerung oder Abgasreinigung.', todo: 'Leuchtet sie: bald in die Werkstatt. Blinkt sie: Zündaussetzer. Gas weg, gemäßigt weiterfahren und sofort in die Werkstatt, sonst kann der Katalysator kaputtgehen.' },
+  { color: 'yellow', name: 'ABS', what: 'Das Antiblockiersystem ist gestört. Die normale Bremse funktioniert weiter.', todo: 'Vorsichtig fahren, Räder können bei Vollbremsung blockieren. Zur Werkstatt.' },
+  { color: 'yellow', name: 'ESP (Auto mit Schleuderspuren)', what: 'Blinkt: ESP greift gerade ein (glatte Straße). Leuchtet dauerhaft: ESP gestört oder ausgeschaltet.', todo: 'Beim Blinken langsamer fahren. Dauerhaft an: ESP einschalten bzw. Werkstatt.' },
+  { color: 'yellow', name: 'Reifendruck (Hufeisen mit „!“)', what: 'Ein Reifen verliert Luft.', todo: 'Langsamer fahren, an der nächsten Tankstelle Reifen prüfen und Druck korrigieren (Werte stehen innen in der Tankklappe). Danach Reifendruckwarnung im Bordcomputer neu starten.' },
+  { color: 'yellow', name: 'Tankreserve (Zapfsäule)', what: 'Der Tank ist fast leer.', todo: 'Bald tanken, im Tab „Tanken“ siehst du die günstigste Tankstelle in der Nähe.' },
+  { color: 'yellow', name: 'Kühlmittelstand / Waschwasser', what: 'Kühlmittel bzw. Scheibenwaschwasser ist zu niedrig.', todo: 'Bei kaltem Motor nachfüllen. Verliert das Auto ständig Kühlmittel: Werkstatt.' },
+  { color: 'yellow', name: 'Vorglühen (Spirale)', what: 'Nur beim Diesel: Die Glühkerzen heizen vor bzw. sind gestört (blinkt während der Fahrt).', todo: 'Warten, bis die Leuchte ausgeht, dann starten. Blinkt sie beim Fahren: Werkstatt.' },
+  { color: 'yellow', name: 'Lampendefekt (Glühbirne)', what: 'Eine Leuchte am Fahrzeug ist ausgefallen.', todo: 'Rundgang ums Auto machen und das Leuchtmittel tauschen lassen.' },
+];
+
+function docsForm() {
+  const d = state.docs;
+  openSheet('Meine Daten & Nummern', `
+    <div class="row2">
+      ${field('Kennzeichen', 'plate', d.plate, 'autocapitalize="characters" placeholder="z. B. S-AB 1234"')}
+      ${field('FIN', 'vin', d.vin, 'autocapitalize="characters" placeholder="17 Zeichen"')}
+    </div>
+    <p class="hint">Die FIN steht im Fahrzeugschein unter Feld E.</p>
+    <div class="row2">
+      ${field('Versicherung', 'insurer', d.insurer, 'placeholder="z. B. HUK-COBURG"')}
+      ${field('Versicherungsnr.', 'policy', d.policy)}
+    </div>
+    ${field('Schadenhotline', 'claimPhone', d.claimPhone, 'type="tel" placeholder="steht auf deiner Versicherungskarte"')}
+    ${field('Pannenhilfe', 'breakdown', d.breakdown, 'type="tel" placeholder="z. B. ADAC: 089 20 20 4000"')}
+  `, (f) => {
+    state.docs = { plate: f.plate.trim().toUpperCase(), vin: f.vin.trim().toUpperCase(), insurer: f.insurer.trim(), policy: f.policy.trim(), claimPhone: f.claimPhone.trim(), breakdown: f.breakdown.trim() };
+  });
+}
+
+function accidentForm(entry) {
+  const now = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+  const e = entry || { date: now, place: '', lat: null, lng: null, police: false, policeRef: '', otherName: '', otherPhone: '', otherPlate: '', otherInsurer: '', otherPolicy: '', witnesses: '', notes: '', photos: [] };
+  openSheet(entry ? 'Unfall bearbeiten' : 'Unfall dokumentieren', `
+    ${field('Datum & Uhrzeit', 'date', e.date, 'type="datetime-local" required')}
+    ${field('Ort', 'place', e.place, 'placeholder="z. B. Kreuzung Hauptstr./Bahnhofstr."')}
+    <input type="hidden" name="lat" value="${e.lat ?? ''}"><input type="hidden" name="lng" value="${e.lng ?? ''}">
+    <p class="hint" id="geoInfo">${e.lat != null ? `📍 Standort gespeichert (${e.lat}, ${e.lng})` : ''}</p>
+    <button type="button" id="geoBtn" style="width:100%;margin-bottom:12px">📍 Aktuellen Standort übernehmen</button>
+    ${photoField(e.photos, 'Fotos (Schäden, Kennzeichen, Unfallstelle)')}
+    <fieldset><legend>Unfallgegner</legend>
+      ${field('Name & Anschrift', 'otherName', e.otherName)}
+      <div class="row2">
+        ${field('Kennzeichen', 'otherPlate', e.otherPlate, 'autocapitalize="characters"')}
+        ${field('Telefon', 'otherPhone', e.otherPhone, 'type="tel"')}
+      </div>
+      <div class="row2">
+        ${field('Versicherung', 'otherInsurer', e.otherInsurer)}
+        ${field('Versicherungsnr.', 'otherPolicy', e.otherPolicy)}
+      </div>
+    </fieldset>
+    ${field('Zeugen (Name, Telefon)', 'witnesses', e.witnesses)}
+    <label class="check"><input type="checkbox" name="police" ${e.police ? 'checked' : ''}> Polizei war vor Ort</label>
+    ${field('Aktenzeichen Polizei', 'policeRef', e.policeRef)}
+    <label class="field"><span>Was ist passiert?</span><textarea name="notes" placeholder="Kurz in eigenen Worten, solange du dich gut erinnerst">${esc(e.notes)}</textarea></label>
+  `, (d) => {
+    const rec = {
+      id: entry?.id || uid(), date: d.date, place: d.place.trim(), lat: num(d.lat), lng: num(d.lng), police: d.police === 'on', policeRef: d.policeRef.trim(),
+      otherName: d.otherName.trim(), otherPhone: d.otherPhone.trim(), otherPlate: d.otherPlate.trim().toUpperCase(), otherInsurer: d.otherInsurer.trim(),
+      otherPolicy: d.otherPolicy.trim(), witnesses: d.witnesses.trim(), notes: d.notes.trim(), photos: commitPhotos(),
+    };
+    if (entry) Object.assign(entry, rec); else state.accidents.push(rec);
+  }, { deleteFn: entry && (() => { (entry.photos || []).forEach(photoDel); state.accidents = state.accidents.filter((x) => x !== entry); }) });
+  wirePhotos();
+  $('#geoBtn').addEventListener('click', () => {
+    if (!navigator.geolocation) return alert('Standort ist auf diesem Gerät nicht verfügbar.');
+    $('#geoInfo').textContent = 'Standort wird bestimmt …';
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const lat = pos.coords.latitude.toFixed(6), lng = pos.coords.longitude.toFixed(6);
+      sheetForm.lat.value = lat; sheetForm.lng.value = lng;
+      $('#geoInfo').textContent = `📍 Standort gespeichert (${lat}, ${lng})`;
+    }, () => { $('#geoInfo').textContent = 'Standort nicht verfügbar. Erlaube Safari-Websites den Zugriff auf Ortungsdienste.'; },
+    { enableHighAccuracy: true, timeout: 15000 });
+  });
+}
+
+// Unfallbericht als Text (+ Fotos) z. B. per Mail an die Versicherung schicken
+async function shareAccident(a) {
+  const c = state.car, d = state.docs;
+  const lines = [
+    `Unfallbericht vom ${fmtDate(a.date.slice(0, 10))}, ${a.date.slice(11, 16)} Uhr`,
+    a.place && `Ort: ${a.place}`,
+    a.lat != null && `Standort: https://maps.apple.com/?q=${a.lat},${a.lng}`,
+    '',
+    `Mein Fahrzeug: ${[c.name, d.plate].filter(Boolean).join(', ')}`,
+    d.insurer && `Meine Versicherung: ${d.insurer}${d.policy ? ', Nr. ' + d.policy : ''}`,
+    '',
+    'Unfallgegner:',
+    a.otherName && `Name: ${a.otherName}`,
+    a.otherPlate && `Kennzeichen: ${a.otherPlate}`,
+    a.otherPhone && `Telefon: ${a.otherPhone}`,
+    a.otherInsurer && `Versicherung: ${a.otherInsurer}${a.otherPolicy ? ', Nr. ' + a.otherPolicy : ''}`,
+    a.witnesses && `\nZeugen: ${a.witnesses}`,
+    a.police && `Polizei vor Ort${a.policeRef ? ', Aktenzeichen ' + a.policeRef : ''}`,
+    a.notes && `\nHergang:\n${a.notes}`,
+  ].filter((x) => x !== false && x !== null && x !== undefined && x !== 0).join('\n').replace(/\n{3,}/g, '\n\n');
+  const files = [];
+  for (const [i, id] of (a.photos || []).entries()) {
+    const blob = await photoGet(id).catch(() => null);
+    if (blob) files.push(new File([blob], `unfall-foto-${i + 1}.jpg`, { type: 'image/jpeg' }));
+  }
+  try {
+    if (files.length && navigator.canShare?.({ files })) return await navigator.share({ title: 'Unfallbericht', text: lines, files });
+    if (navigator.share) return await navigator.share({ title: 'Unfallbericht', text: lines });
+  } catch (e) { if (e.name === 'AbortError') return; }
+  try { await navigator.clipboard.writeText(lines); alert('Bericht in die Zwischenablage kopiert.'); }
+  catch (e) { alert(lines); }
+}
+
+const blobToDataUrl = (blob) => new Promise((res) => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(blob); });
+
 /* ---------- Kalender ---------- */
 
 function calendarFile() {
@@ -1232,12 +1552,14 @@ function costForm(entry) {
     ${field('Betrag (€)', 'amount', e.amount !== '' ? fmtNum(e.amount, 2) : '', 'inputmode="decimal" required placeholder="z. B. 389,00"')}
     ${field('Notiz (optional)', 'note', e.note, 'placeholder="z. B. Service B, Bremsbeläge vorne"')}
     ${field('Kilometerstand (optional)', 'km', e.km ?? '', 'inputmode="numeric"')}
+    ${photoField(e.photos, 'Belege / Rechnungen')}
   `, (d) => {
     const amount = num(d.amount);
     if (amount == null) return 'Bitte einen Betrag eingeben.';
-    const rec = { id: entry?.id || uid(), date: d.date, cat: d.cat, amount, note: d.note.trim(), km: num(d.km) };
+    const rec = { id: entry?.id || uid(), date: d.date, cat: d.cat, amount, note: d.note.trim(), km: num(d.km), photos: commitPhotos() };
     if (entry) Object.assign(entry, rec); else state.costs.push(rec);
-  }, { deleteFn: entry && (() => { state.costs = state.costs.filter((x) => x !== entry); }) });
+  }, { deleteFn: entry && (() => { (entry.photos || []).forEach(photoDel); state.costs = state.costs.filter((x) => x !== entry); }) });
+  wirePhotos();
 }
 
 function altField(m, selected) {
@@ -1288,7 +1610,7 @@ function maintForm(m) {
 
 /* ---------- Ereignisse ---------- */
 
-const TITLES = { start: 'Übersicht', fuel: 'Tanken', trips: 'Fahrtenbuch', maint: 'Wartung', costs: 'Kosten', more: 'Mehr' };
+const TITLES = { help: 'Notfall & Hilfe', start: 'Übersicht', fuel: 'Tanken', trips: 'Fahrtenbuch', maint: 'Wartung', costs: 'Kosten', more: 'Mehr' };
 
 function showSub(sub) {
   $('#sub-termine').hidden = sub !== 'termine';
@@ -1304,7 +1626,7 @@ function showView(v) {
 }
 
 document.addEventListener('click', (e) => {
-  const t = e.target.closest('button, li[data-edit-fuel], li[data-edit-cost], li[data-edit-trip]');
+  const t = e.target.closest('button, li[data-edit-fuel], li[data-edit-cost], li[data-edit-trip], [data-edit-acc]');
   if (!t) return;
   if (t.dataset.view) return showView(t.dataset.view);
   if (t.dataset.open === 'fuel') return fuelForm();
@@ -1326,6 +1648,10 @@ document.addEventListener('click', (e) => {
   if (t.dataset.editTire) return tireForm(state.tires.find((x) => x.id === t.dataset.editTire));
   if (t.dataset.tread) return treadForm(state.tires.find((x) => x.id === t.dataset.tread));
   if (t.dataset.sub) showSub(t.dataset.sub);
+  if (t.dataset.open === 'docs') return docsForm();
+  if (t.dataset.open === 'accident') return accidentForm();
+  if (t.dataset.editAcc) return accidentForm(state.accidents.find((x) => x.id === t.dataset.editAcc));
+  if (t.dataset.shareAcc) return shareAccident(state.accidents.find((x) => x.id === t.dataset.shareAcc));
 });
 
 $('#carForm').addEventListener('submit', (e) => {
@@ -1354,6 +1680,7 @@ $('#priceForm').addEventListener('submit', (e) => {
   alert('Gespeichert');
 });
 
+$('#lightSearch').addEventListener('input', renderHelp);
 $('#tripYear').addEventListener('change', (e) => { tripYear = e.target.value; render(); });
 $('#tripCsv').addEventListener('click', () => {
   if (!state.trips.some((t) => t.date.startsWith(tripYear))) return alert(`Für ${tripYear} gibt es noch keine Fahrten.`);
@@ -1368,7 +1695,12 @@ $('#calBtn').addEventListener('click', () => {
 
 $('#exportBtn').addEventListener('click', async () => {
   const name = `autobuch-${today()}.json`;
-  const file = new File([JSON.stringify(state, null, 2)], name, { type: 'application/json' });
+  const photos = {};
+  for (const id of allPhotoIds()) {
+    const blob = await photoGet(id).catch(() => null);
+    if (blob) photos[id] = await blobToDataUrl(blob);
+  }
+  const file = new File([JSON.stringify({ ...state, photos }, null, 2)], name, { type: 'application/json' });
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
     try { await navigator.share({ files: [file], title: 'Autobuch-Sicherung' }); return; } catch (e) { if (e.name === 'AbortError') return; }
   }
@@ -1382,6 +1714,8 @@ $('#importFile').addEventListener('change', async (e) => {
     const data = JSON.parse(await file.text());
     if (!data.car || !Array.isArray(data.fuel)) throw new Error();
     if (!confirm('Aktuelle Daten durch die Sicherung ersetzen?')) return;
+    for (const [id, url] of Object.entries(data.photos || {})) await photoPut(id, await (await fetch(url)).blob());
+    delete data.photos;
     state = { ...freshState(), ...data };
     save();
     alert('Sicherung wiederhergestellt');
@@ -1390,7 +1724,7 @@ $('#importFile').addEventListener('change', async (e) => {
   } finally { e.target.value = ''; }
 });
 $('#resetBtn').addEventListener('click', () => {
-  if (confirm('Wirklich ALLE Daten löschen? Das kann nicht rückgängig gemacht werden.')) { state = freshState(); save(); showView('start'); }
+  if (confirm('Wirklich ALLE Daten löschen? Das kann nicht rückgängig gemacht werden.')) { idb('readwrite', (st) => st.clear()).catch(() => {}); state = freshState(); save(); showView('start'); }
 });
 
 let startView = 'start';

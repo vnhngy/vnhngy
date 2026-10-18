@@ -12,7 +12,11 @@ Alle Daten bleiben auf dem iPhone (localStorage).
   Jahresauswertung, Hinweis auf Lücken, Export als CSV für Excel
 - **Reifen:** Reifensätze mit Größe, DOT/Alter, Profiltiefe je Rad, Lagerort und gefahrenen km;
   Warnungen bei wenig Profil, alten Reifen oder fehlendem Schneeflocken-Symbol
-- **Kosten:** Ausgaben nach Kategorie, Kosten pro km, Verlauf der letzten 12 Monate
+- **Notfall & Hilfe:** Notruf/Polizei mit einem Tipp, eigene Versicherungs- und Pannennummern,
+  Unfall-Checkliste, Unfall dokumentieren (Fotos, Standort, Gegner, Zeugen) und als Bericht teilen,
+  Warnleuchten-Lexikon mit Suche
+- **Kosten:** inkl. Fotos von Belegen und Rechnungen (in IndexedDB, verkleinert)
+- **Kosten (Übersicht):** Ausgaben nach Kategorie, Kosten pro km, Verlauf der letzten 12 Monate
 - **Spritpreise:** günstigste geöffnete Tankstellen im Umkreis, mit Route in Apple Karten
   (kostenloser API-Schlüssel von [Tankerkönig](https://creativecommons.tankerkoenig.de/) nötig)
 - **Parkplatz:** Standort merken, Notiz, Parkuhr-Countdown, Fußweg zurück zum Auto
