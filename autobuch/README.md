@@ -5,6 +5,10 @@ Wartungsplaner und Kostenübersicht. Kein Mac, kein App Store, kein Server nöti
 Alle Daten bleiben auf dem iPhone (localStorage).
 
 ## Funktionen
+- **Suche** (Lupe oben rechts): durchsucht Tankbuch, Kosten, Fahrten, Wartung, Reifen, Dokumente, Unfälle, Strafzettel, Werkstätten
+- **Übersicht anpassen:** Bereiche und Kacheln ein-/ausblenden und umsortieren
+- **Tank-Prognose:** schätzt Tankinhalt und den nächsten Tank-Termin
+- **Große Schrift:** übernimmt die iOS-Textgröße
 - **Mehrere Fahrzeuge:** über den Fahrzeugnamen oben umschalten; jedes Auto hat eigene Daten
 - **Wiederkehrende Kosten:** Versicherung, Steuer, Leasing … werden automatisch gebucht
 - **Sicherungs-Erinnerung:** Hinweis auf der Übersicht, wenn die letzte Sicherung > 30 Tage her ist
@@ -49,9 +53,11 @@ Deutsch, English und Tiếng Việt (umschaltbar unter **Mehr → Sprache**). Be
 wird die Sprache des iPhones übernommen. Zahlen- und Datumsformate folgen der Sprache.
 
 Dateien:
-- `index.html`: Aufbau und Design
-- `app.js`: Programmlogik; alle sichtbaren Texte laufen über `tr('deutscher Text')`
+- `index.html`: Aufbau, Design und Symbole
+- `js/01-…` bis `js/09-…`: Programmlogik, nach Bereichen aufgeteilt und in dieser Reihenfolge geladen;
+  alle sichtbaren Texte laufen über `tr('deutscher Text')`
 - `i18n.js`: Sprachumschaltung und Übersetzungen (`T`: `'Deutsch': ['English', 'Tiếng Việt']`)
+- `tests/run.js`: automatische Tests (siehe unten)
 
 Neuer Text? Im Code mit `tr('…')` schreiben und in `T` die Übersetzung ergänzen.
 
@@ -69,3 +75,15 @@ Link in **Safari** öffnen → **Teilen** → **„Zum Home-Bildschirm“**.
 cd autobuch && python3 -m http.server 8000
 ```
 Dann http://localhost:8000 öffnen.
+
+## Tests
+```
+cd autobuch
+npm install
+npx playwright install chromium
+npm test
+```
+Die Tests laufen außerdem automatisch bei jeder Änderung über GitHub Actions (`.github/workflows/autobuch-tests.yml`).
+
+## Neue Version veröffentlichen
+`APP_VERSION` in `js/01-grundlagen.js` und `VERSION` in `sw.js` erhöhen, damit die iPhones das Update laden.
