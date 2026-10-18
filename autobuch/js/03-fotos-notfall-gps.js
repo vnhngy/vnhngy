@@ -39,7 +39,7 @@ async function photoUrl(id) {
 }
 
 // Fotos verkleinern (iPhone-Fotos haben oft 3–5 MB)
-function compressImage(file, max = 1600) {
+function compressImage(file, max = 1600, quality = 0.8) {
   return new Promise((res, rej) => {
     const img = new Image();
     const url = URL.createObjectURL(file);
@@ -47,9 +47,11 @@ function compressImage(file, max = 1600) {
       const k = Math.min(1, max / Math.max(img.width, img.height));
       const c = document.createElement('canvas');
       c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
-      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      const g = c.getContext('2d');
+      g.imageSmoothingQuality = 'high';
+      g.drawImage(img, 0, 0, c.width, c.height);
       URL.revokeObjectURL(url);
-      c.toBlob((b) => (b ? res(b) : rej(new Error('Bild konnte nicht umgewandelt werden'))), 'image/jpeg', 0.8);
+      c.toBlob((b) => (b ? res(b) : rej(new Error('Bild konnte nicht umgewandelt werden'))), 'image/jpeg', quality);
     };
     img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('Bild konnte nicht gelesen werden')); };
     img.src = url;
@@ -64,7 +66,8 @@ function photoField(ids = [], label = 'Fotos') {
     <label class="btn-file">${tr('📷 Foto hinzufügen')}<input type="file" accept="image/*" multiple hidden id="photoInput"></label></div>`;
 }
 
-function wirePhotos() {
+// opts: { max, quality } – z. B. höhere Qualität fürs Fahrzeugfoto
+function wirePhotos(opts = {}) {
   const box = $('#thumbs');
   let token = 0;
   const draw = async () => {
@@ -92,7 +95,7 @@ function wirePhotos() {
     for (const f of e.target.files) {
       try {
         const id = 'p' + uid();
-        await photoPut(id, await compressImage(f));
+        await photoPut(id, await compressImage(f, opts.max, opts.quality));
         photoDraft.ids.push(id); photoDraft.added.push(id);
       } catch (err) { alert(tr('Foto konnte nicht gespeichert werden.')); }
     }

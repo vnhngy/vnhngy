@@ -89,7 +89,7 @@ function carPhotoForm() {
     ids.slice(0, -1).forEach(photoDel);
     c.photo = ids[ids.length - 1] || null;
   });
-  wirePhotos();
+  wirePhotos({ max: 2400, quality: 0.92 }); // großes Titelbild: schärfer speichern
 }
 
 function deleteCar(id) {
