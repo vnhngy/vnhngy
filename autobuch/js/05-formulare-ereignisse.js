@@ -208,7 +208,7 @@ function fuelChanged(oldFuel) {
   if (oldFuel === state.car.fuel) return;
   if (state.car.fuel === 'Diesel') state.maint = state.maint.filter((m) => m.id !== 'plugs');
   else if (!state.maint.some((m) => m.id === 'plugs')) state.maint.push(defaultMaint('Benzin').find((m) => m.id === 'plugs'));
-  state.prices.type = state.car.fuel === 'Diesel' ? 'diesel' : 'e5'; // Tankerkönig kennt nur E5, E10 und Diesel
+  state.prices.type = { Diesel: 'diesel', 'Super E10': 'e10' }[state.car.fuel] || 'e5'; // Tankerkönig kennt nur E5, E10 und Diesel
 }
 
 $('#carForm').addEventListener('submit', (e) => {

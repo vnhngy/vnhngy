@@ -959,6 +959,9 @@ const T = {
   'Durchsucht Tankbuch, Kosten, Fahrten, Wartung, Reifen, Dokumente, Unfälle, Strafzettel und Werkstätten.': ['Searches fuel log, costs, trips, service, tyres, documents, accidents, fines and garages.', 'Tìm trong sổ đổ xăng, chi phí, chuyến đi, bảo dưỡng, lốp, giấy tờ, tai nạn, vé phạt và gara.'],
 
   // ---- Spritsorten ----
+  'Benzin (Super E5)': ['Petrol (Super E5)', 'Xăng (Super E5)'],
+  'Benzin (Super E10)': ['Petrol (Super E10)', 'Xăng (Super E10)'],
+  'Benzin (Super Plus)': ['Petrol (Super Plus 98)', 'Xăng (Super Plus 98)'],
   'Autogas (LPG)': ['LPG (autogas)', 'Khí hóa lỏng (LPG)'],
   'Erdgas (CNG)': ['CNG (natural gas)', 'Khí thiên nhiên nén (CNG)'],
   'Hybrid': ['Hybrid', 'Hybrid'],

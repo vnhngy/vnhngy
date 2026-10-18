@@ -79,6 +79,18 @@ test('Spritsorte wird gespeichert, Erdgas in Kilogramm', async ({ page }) => {
   assert.match(await page.innerText('#fuelList'), /Super E10/);
 });
 
+test('Auto mit Super E10: Sorte und Preissuche passen sich an', async ({ page }) => {
+  await page.evaluate(() => { closeWizard(); showView('more'); });
+  await page.selectOption('#carForm [name=fuel]', 'Super E10');
+  await page.click('#carForm button.primary');
+  const r = await page.evaluate(() => ({ grade: defaultGrade(), price: state.prices.type, plugs: state.maint.some((m) => m.id === 'plugs') }));
+  assert.deepEqual(r, { grade: 'Super E10', price: 'e10', plugs: true });
+  await page.click('#view-start button[data-open="fuel"]').catch(() => {});
+  await page.evaluate(() => { showView('fuel'); });
+  await page.click('#view-fuel button[data-open="fuel"]');
+  assert.equal(await page.inputValue('#sheetForm [name=grade]'), 'Super E10');
+});
+
 test('Autogas-Auto: Benzin wird nicht in den Verbrauch gerechnet', async ({ page }) => {
   await page.evaluate(() => {
     closeWizard();

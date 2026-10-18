@@ -1,5 +1,5 @@
 // Offline-Cache für die App-Dateien. Bei Änderungen an der App VERSION erhöhen.
-const VERSION = 'autobuch-v19';
+const VERSION = 'autobuch-v20';
 const FILES = ['./', './index.html', './i18n.js', './js/01-grundlagen.js', './js/02-tanken-fahrten-reifen.js', './js/03-fotos-notfall-gps.js', './js/04-dokumente-export.js', './js/05-formulare-ereignisse.js', './js/06-werkzeuge.js', './js/07-fahrzeuge-kosten.js', './js/08-uebersicht-suche.js', './js/09-assistent-start.js', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', (e) => {

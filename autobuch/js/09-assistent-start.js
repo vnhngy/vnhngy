@@ -30,7 +30,7 @@ const WIZ_STEPS = [
       const c = state.car;
       return `${wizField('Bezeichnung', 'name', c.name)}
         <div class="row2">${wizField('Ausstattung', 'variant', c.variant)}${wizField('Baujahr', 'year', c.year, 'inputmode="numeric"')}</div>
-        <div class="row2">${wizSelect('Kraftstoff', 'fuel', CAR_FUELS.map((f) => [f, f]), c.fuel)}
+        <div class="row2">${wizSelect('Kraftstoff', 'fuel', CAR_FUELS.map((f) => [f, fuelLabel(f)]), c.fuel)}
         ${wizField('Kilometerstand', 'km', c.km ?? currentKm(), 'inputmode="numeric" placeholder="z. B. 98500"')}</div>
         <p class="hint">${tr('Den Kilometerstand siehst du im Kombiinstrument.')}</p>`;
     },

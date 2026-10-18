@@ -5,17 +5,19 @@
 /* ---------- Daten ---------- */
 
 const STORE_KEY = 'autobuch-v1';
-const APP_VERSION = '19'; // bei jedem Update zusammen mit VERSION in sw.js erhöhen
+const APP_VERSION = '20'; // bei jedem Update zusammen mit VERSION in sw.js erhöhen
 const COST_CATS = ['Werkstatt', 'Versicherung', 'Kfz-Steuer', 'Reifen', 'Pflege', 'Parken', 'Leasing/Finanzierung', 'Bußgeld', 'Sonstiges'];
 // Antriebsarten des Fahrzeugs und Spritsorten beim Tanken (Erdgas wird in kg getankt)
-const CAR_FUELS = ['Benzin', 'Diesel', 'Autogas (LPG)', 'Erdgas (CNG)', 'Hybrid', 'Plug-in-Hybrid'];
+const CAR_FUELS = ['Benzin', 'Super E10', 'Super Plus', 'Diesel', 'Autogas (LPG)', 'Erdgas (CNG)', 'Hybrid', 'Plug-in-Hybrid'];
+// Anzeigename im Auswahlfeld (Benziner mit ihrer Sorte)
+const fuelLabel = (f) => ({ Benzin: 'Benzin (Super E5)', 'Super E10': 'Benzin (Super E10)', 'Super Plus': 'Benzin (Super Plus)' })[f] || f;
 const GRADES = [
   { id: 'Super E5', fam: 'benzin' }, { id: 'Super E10', fam: 'benzin' }, { id: 'Super Plus', fam: 'benzin' },
   { id: 'Diesel', fam: 'diesel' }, { id: 'Premium-Diesel', fam: 'diesel' },
   { id: 'Autogas (LPG)', fam: 'lpg' }, { id: 'Erdgas (CNG)', fam: 'cng', unit: 'kg' },
 ];
 const gradeOf = (id) => GRADES.find((g) => g.id === id) || GRADES[0];
-const defaultGrade = (carFuel = state.car.fuel) => ({ Diesel: 'Diesel', 'Autogas (LPG)': 'Autogas (LPG)', 'Erdgas (CNG)': 'Erdgas (CNG)' })[carFuel] || 'Super E5';
+const defaultGrade = (carFuel = state.car.fuel) => ({ Diesel: 'Diesel', 'Super E10': 'Super E10', 'Super Plus': 'Super Plus', 'Autogas (LPG)': 'Autogas (LPG)', 'Erdgas (CNG)': 'Erdgas (CNG)' })[carFuel] || 'Super E5';
 const fillGrade = (f) => f.grade || defaultGrade(); // ältere Einträge haben noch keine Sorte
 const mainFam = () => gradeOf(defaultGrade()).fam;
 const unitOf = (grade) => gradeOf(grade).unit || 'l';

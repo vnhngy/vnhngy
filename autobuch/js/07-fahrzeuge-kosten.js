@@ -44,7 +44,7 @@ function carsSheet() {
       ${field('Bezeichnung', 'name', '', 'placeholder="z. B. VW Golf"')}
       <div class="row2">
         ${field('Baujahr', 'year', '', 'inputmode="numeric"')}
-        <label class="field"><span>${tr('Kraftstoff')}</span><select name="fuel">${CAR_FUELS.map((f) => `<option value="${f}">${tr(f)}</option>`).join('')}</select></label>
+        <label class="field"><span>${tr('Kraftstoff')}</span><select name="fuel">${CAR_FUELS.map((f) => `<option value="${f}">${tr(fuelLabel(f))}</option>`).join('')}</select></label>
       </div>
     </fieldset>
   `, (d) => {
