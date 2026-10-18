@@ -2041,6 +2041,10 @@ renderLinks();
 if (!state.onboarded && hasNoData()) openWizard();
 handleUrlAction();
 
+// Zoomen mit zwei Fingern verhindern (Safari ignoriert user-scalable=no teilweise)
+document.addEventListener('gesturestart', (e) => e.preventDefault());
+document.addEventListener('touchmove', (e) => { if (e.touches.length > 1 || (e.scale && e.scale !== 1)) e.preventDefault(); }, { passive: false });
+
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }

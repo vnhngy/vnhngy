@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Autobuch</title>
 <meta name="description" content="Tankbuch, Wartungsplaner und Kostenübersicht für dein Auto">
 <meta name="theme-color" content="#e8edf6" media="(prefers-color-scheme: light)">
@@ -69,6 +69,8 @@
 
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; }
+  /* Kein Zoomen per Doppeltippen; Schriftgröße nicht automatisch anpassen */
+  html { touch-action: manipulation; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   body {
     background: var(--bg);
     color: var(--text);
