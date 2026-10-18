@@ -5,6 +5,8 @@ Wartungsplaner und Kostenübersicht. Kein Mac, kein App Store, kein Server nöti
 Alle Daten bleiben auf dem iPhone (localStorage).
 
 ## Funktionen
+- **Einrichtungs-Assistent:** erscheint beim ersten Start (Sprache, Auto, Wartung, Reifen, Notfall);
+  jederzeit erneut unter **Mehr → Einrichtungs-Assistent**
 - **Tanken:** Verbrauch (l/100 km) zwischen vollen Tankfüllungen, Ø-Literpreis
 - **Wartung:** Service A/B (ASSYST), HU, Bremsflüssigkeit, Reifenwechsel, Zündkerzen
   und eigene Termine. Die App zeigt, was überfällig oder bald fällig ist

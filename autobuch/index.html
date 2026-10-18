@@ -144,6 +144,8 @@
   button.danger { color: var(--bad); }
   button.link { background: none; border: 0; box-shadow: none; color: var(--accent); padding: 4px 0; }
   button:disabled { opacity: .6; }
+  button:focus { outline: none; }
+  button:focus-visible { outline: 2px solid color-mix(in srgb, var(--accent) 60%, transparent); outline-offset: 2px; }
   a { color: var(--accent); }
   a.btn { display: inline-block; text-decoration: none; padding: 8px 14px; font-size: 14px; margin-top: 4px; white-space: nowrap; }
 
@@ -331,6 +333,19 @@
   .tread { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; text-align: center; }
   .tread div { background: var(--surface-2); border: 1px solid var(--edge); border-radius: 14px; padding: 7px 2px; font-size: 12px; color: var(--muted); }
   .tread b { display: block; font-size: 16px; color: var(--text); font-variant-numeric: tabular-nums; }
+
+  /* Einrichtungs-Assistent */
+  dialog.wizard form { padding: 18px 20px 20px; }
+  dialog.wizard h3 { text-align: center; font-size: 24px; margin-bottom: 14px; }
+  dialog.wizard p { margin: 0 0 12px; }
+  .wiz-dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 14px; }
+  .wiz-dots span { width: 8px; height: 8px; border-radius: 999px; background: var(--line); transition: width .3s, background-color .3s; }
+  .wiz-dots span.done { background: color-mix(in srgb, var(--accent) 45%, transparent); }
+  .wiz-dots span.on { width: 24px; background: var(--accent); }
+  .wiz-icon {
+    width: 72px; height: 72px; margin: 0 auto 10px; display: grid; place-items: center; font-size: 38px; border-radius: 24px;
+    background: var(--surface-2); border: 1px solid var(--edge); box-shadow: inset 0 1px 0 var(--rim), var(--shadow);
+  }
 
   @media (min-width: 560px) { .stats { grid-template-columns: repeat(4, 1fr); } }
 
@@ -588,6 +603,11 @@
       </div>
     </div>
     <div class="card">
+      <h2>Einrichtungs-Assistent</h2>
+      <p class="note" style="margin-top:0">Führt dich Schritt für Schritt durch Auto, Wartung, Reifen und Notfall-Daten.</p>
+      <button data-open="wizard" style="width:100%">✨ Assistent starten</button>
+    </div>
+    <div class="card">
       <h2>Mein Auto</h2>
       <form id="carForm">
         <label class="field"><span>Bezeichnung</span><input name="name" required></label>
@@ -694,6 +714,7 @@
 </nav>
 
 <button id="recBar" data-view="drive"></button>
+<dialog id="wizard" class="wizard"><form method="dialog" id="wizardForm"></form></dialog>
 <dialog id="viewer" class="viewer"><img alt="Foto"></dialog>
 <dialog id="sheet"><form method="dialog" id="sheetForm"></form></dialog>
 
