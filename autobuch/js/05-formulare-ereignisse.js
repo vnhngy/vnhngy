@@ -187,6 +187,17 @@ document.addEventListener('click', (e) => {
   if (t.dataset.open === 'fuel') return fuelForm();
   if (t.dataset.open === 'cost') return costForm();
   if (t.dataset.open === 'budget') return budgetForm();
+  if (t.dataset.open === 'issuesShare') return shareIssues();
+  if (t.dataset.delIssue) { state.issues = state.issues.filter((x) => x.id !== t.dataset.delIssue); return save(); }
+  if (t.dataset.open === 'datacheck') return dataCheckSheet();
+  if (t.dataset.open === 'csvImport') return csvImportSheet();
+  if (t.dataset.open === 'fuelCsv') {
+    if (!state.fuel.length) return alert(tr('Noch keine Tankfüllung. Tipp oben auf „Tankfüllung eintragen“.'));
+    return downloadFile(new File([fuelCsv()], `${tr('tankbuch')}-${today()}.csv`, { type: 'text/csv' }));
+  }
+  if (t.dataset.open === 'tax') return taxForm();
+  if (t.dataset.open === 'drivemode') return openDriveMode();
+  if (t.dataset.open === 'priceTarget') return priceTargetForm();
   if (t.dataset.accent) { state.car.accent = t.dataset.accent; return save(); }
   if (t.dataset.lock === 'setup') return lockSetup();
   if (t.dataset.lock === 'off') { if (confirm(tr('App-Sperre ausschalten?'))) { state.lock = null; save(); } return; }

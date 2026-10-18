@@ -213,7 +213,7 @@ function storyCards(y) {
 function openStory(y) {
   const cards = storyCards(y);
   if (cards.length < 3) return alert(tr('Für {year} gibt es noch zu wenige Daten für einen Rückblick.', { year: y }));
-  story = { cards, i: 0 };
+  story = { cards, i: 0, y };
   drawStory();
   $('#story').showModal();
 }
@@ -228,12 +228,14 @@ function drawStory() {
       <div class="story-big">${c.big}</div>
       <div class="story-text">${c.text}</div>
     </div>
+    ${i === cards.length - 1 ? `<button type="button" class="story-share" data-story="share">${tr('Als Bild teilen')}</button>` : ''}
     <div class="story-hint">${tr(i < cards.length - 1 ? 'Tippen zum Weiterblättern' : 'Tippen zum Schließen')}</div>`;
 }
 
 $('#story').addEventListener('click', (e) => {
   if (!story) return;
   if (e.target.closest('[data-story="close"]')) return $('#story').close();
+  if (e.target.closest('[data-story="share"]')) return shareStoryImage(story.y);
   const back = e.clientX < window.innerWidth / 3;
   if (back) story.i = Math.max(0, story.i - 1);
   else if (story.i < story.cards.length - 1) story.i++;

@@ -300,7 +300,7 @@ test('Neue Formulare sind übersetzt', async ({ page }) => {
   const missing = await page.evaluate(async () => {
     setLang('en'); MISSING.clear();
     state.trips.push({ id: 't1', date: today(), type: 'Privat', from: 'A', to: 'B', startKm: 1, endKm: 2, purpose: '', partner: '' });
-    fuelForm(); sheet.close(); budgetForm(); sheet.close(); noteForm(); sheet.close(); tripForm(state.trips[0]); sheet.close(); damageForm(); sheet.close(); leasingForm(); sheet.close(); commuteForm(); sheet.close(); specsForm(); sheet.close(); lockscreenSheet(); sheet.close(); handoverForm(); sheet.close(); travelForm(); sheet.close(); lockSetup(); sheet.close(); state.leasing = { start: addDays(-400), end: addDays(400), kmStart: 1, kmPerYear: 10, rate: 5 };
+    fuelForm(); sheet.close(); budgetForm(); sheet.close(); noteForm(); sheet.close(); tripForm(state.trips[0]); sheet.close(); damageForm(); sheet.close(); leasingForm(); sheet.close(); commuteForm(); sheet.close(); specsForm(); sheet.close(); lockscreenSheet(); sheet.close(); handoverForm(); sheet.close(); travelForm(); sheet.close(); lockSetup(); sheet.close(); taxForm(); sheet.close(); priceTargetForm(); sheet.close(); csvImportSheet(); sheet.close(); dataCheckSheet(); sheet.close(); openDriveMode(); document.querySelector('#driveMode').close(); state.leasing = { start: addDays(-400), end: addDays(400), kmStart: 1, kmPerYear: 10, rate: 5 };
     state.budget = { monthly: 10 }; save();
     await buildYearReport(String(new Date().getFullYear()));
     openStory(String(new Date().getFullYear())); for (let i = 0; i < story.cards.length; i++) { story.i = i; drawStory(); } document.querySelector('#story').close();
@@ -599,6 +599,89 @@ test('Reisekosten-Abrechnung und Rettungskarte', async ({ page }) => {
   assert.match(rep, /30,00/); // 100 km × 0,30 €
   assert.doesNotMatch(rep, /A → B/);
   assert.match(await page.getAttribute('#rescueBody a', 'href'), /Rettungskarte%20Mercedes%20A%20180%202015/);
+});
+
+test('Mängelliste für die Werkstatt', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => showView('maint'));
+  await page.fill('#issueForm [name=text]', 'Klappern vorne links');
+  await page.press('#issueForm [name=text]', 'Enter');
+  assert.match(await page.innerText('#issueList'), /Klappern vorne links/);
+  assert.equal(await page.isHidden('#issueShare'), false);
+  await page.click('#issueList input[data-issue]');
+  const r = await page.evaluate(() => ({ done: state.issues[0].done, open: document.querySelector('#issueList').innerText }));
+  assert.equal(r.done, true);
+  assert.match(r.open, /Keine offenen Punkte/);
+});
+
+test('Datencheck findet Tippfehler', async ({ page }) => {
+  await seed(page);
+  const r = await page.evaluate(() => {
+    state.fuel.push({ id: 'x1', date: today(), km: 90000, liters: 40, total: 4, full: true, station: '' });
+    save();
+    return dataCheck().map((x) => x.level + ': ' + x.text);
+  });
+  assert.ok(r.some((x) => /^bad: .*kleiner als/.test(x)), r.join('\n'));
+  assert.ok(r.some((x) => /^bad: .*unrealistisch/.test(x)), r.join('\n'));
+  await page.evaluate(() => showView('more'));
+  await page.click('#view-more button[data-open="datacheck"]');
+  assert.match(await page.innerText('#sheetForm'), /Hinweise/);
+});
+
+test('Tankdaten aus CSV übernehmen und als CSV exportieren', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => showView('more'));
+  await page.click('#view-more button[data-open="csvImport"]');
+  const csv = '﻿Datum;Kilometerstand;Tageskilometer;Getankte Menge;Kosten;Tankstelle\n01.09.2025;90000;500;40,5;70,10;Aral\n15.09.2025;90600;600;42,0;"73,50";Shell Süd\n15.09.2025;90600;600;42,0;73,50;Shell Süd\nkaputt;;;;;\n';
+  await page.setInputFiles('#csvFile', { name: 'spritmonitor.csv', mimeType: 'text/csv', buffer: Buffer.from(csv) });
+  await page.waitForSelector('#csvMap select');
+  assert.equal(await page.inputValue('#sheetForm [name=col_km]'), '1'); // Kilometerstand, nicht Tageskilometer
+  assert.equal(await page.inputValue('#sheetForm [name=col_liters]'), '3');
+  await page.click('#sheetForm button.primary');
+  const f = await page.evaluate(() => state.fuel.filter((x) => x.date.startsWith('2025-09')).map((x) => [x.date, x.km, x.liters, x.total, x.station]));
+  assert.deepEqual(f, [['2025-09-01', 90000, 40.5, 70.1, 'Aral'], ['2025-09-15', 90600, 42, 73.5, 'Shell Süd']]);
+  const out = await page.evaluate(() => fuelCsv());
+  assert.match(out, /"Datum";"Kilometerstand";"Spritsorte"/);
+  assert.match(out, /"15\.09\.2025";"90600"/);
+});
+
+test('Kfz-Steuer-Rechner', async ({ page }) => {
+  await seed(page);
+  const r = await page.evaluate(() => [
+    kfzTax({ ccm: '1595', co2: '128', firstReg: '2015-03' }, 'Benzin').total, // 16 × 2 € + 33 g × 2 €
+    kfzTax({ ccm: '1332', co2: '130', firstReg: '2022-01' }, 'Benzin').total, // 14 × 2 € + 20 g × 2 € + 15 g × 2,20 €
+    kfzTax({ ccm: '1950', co2: '120', firstReg: '2016-05' }, 'Diesel').total, // 20 × 9,50 € + 25 g × 2 €
+    kfzTax({ ccm: '1600', co2: '150', firstReg: '2008-01' }, 'Benzin').old,
+  ]);
+  assert.deepEqual(r.map((x) => (typeof x === 'number' ? Math.round(x * 100) / 100 : x)), [98, 101, 240, true]);
+  await page.evaluate(() => { state.specs = { ccm: '1595', co2: '128', firstReg: '2015-03' }; save(); showView('specs'); });
+  assert.match(await page.innerText('#taxBody'), /98\s€/);
+});
+
+test('Fahrmodus, Wunschpreis und Autojahr als Bild', async ({ page }) => {
+  await seed(page);
+  await page.click('#view-start button[data-open="drivemode"]');
+  assert.equal(await page.evaluate(() => document.querySelector('#driveMode').open), true);
+  await page.click('#driveMode [data-dm="fuel"]');
+  assert.equal(await page.evaluate(() => [document.querySelector('#driveMode').open, sheet.open].join()), 'false,true');
+  await page.evaluate(() => sheet.close());
+
+  await page.evaluate(() => {
+    state.prices.key = 'x'; state.prices.target = 1.7;
+    prices.list = [{ brand: 'Billig', street: 'A', place: 'B', dist: 1, price: 1.659, lat: 0, lng: 0 }, { brand: 'Teuer', street: 'A', place: 'B', dist: 2, price: 1.799, lat: 0, lng: 0 }];
+    prices.time = '12:00'; save();
+  });
+  const pb = await page.innerText('#priceBody');
+  assert.match(pb, /1 Tankstellen liegen unter deinem Wunschpreis/);
+  assert.match(pb, /unter Wunschpreis/);
+
+  const size = await page.evaluate(() => { const c = storyImage(String(new Date().getFullYear())); return [c.width, c.height]; });
+  assert.deepEqual(size, [1080, 1920]);
+  await page.evaluate(() => showView('stats'));
+  await page.click('#view-stats button[data-open="story"]');
+  const n = await page.evaluate(() => story.cards.length);
+  for (let i = 0; i < n - 1; i++) await page.mouse.click(300, 300);
+  assert.ok(await page.$('#story [data-story="share"]'), 'Teilen-Knopf auf der letzten Karte');
 });
 
 test('Keine bunten Emojis auf dem Bildschirm', async ({ page }) => {

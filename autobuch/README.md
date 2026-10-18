@@ -48,6 +48,14 @@ Alle Daten bleiben auf dem iPhone (localStorage).
 - **Rettungskarte & Rückrufe:** Suche nach der Rettungskarte des Modells, KBA-Rückrufdatenbank, HSN/TSN im Steckbrief
 - **Übergabe-Protokoll:** km, Tank, Schlüssel, Zubehör, Schäden, Fotos und Unterschriften, als PDF
 - **Reisekosten-Abrechnung:** Geschäftsfahrten eines Zeitraums als PDF
+- **Mängelliste:** Auffälligkeiten sammeln, abhaken, als Text an die Werkstatt schicken (Tab Wartung)
+- **Datencheck:** findet rückwärts laufende km-Stände, unrealistische Literpreise, Ausreißer und doppelte Einträge
+- **Tankdaten importieren:** CSV mit Spaltenzuordnung (z. B. Spritmonitor), überspringt Doppelte
+- **Tankbuch-Export:** alle Tankfüllungen als CSV
+- **Kfz-Steuer-Rechner:** Hubraum, CO₂ und Erstzulassung ab 07/2009 (alte und neue CO₂-Staffel)
+- **Fahrmodus:** sechs große Knöpfe für unterwegs
+- **Wunschpreis:** markiert Tankstellen unter deinem Zielpreis
+- **Autojahr als Bild:** Story-Bild 1080 × 1920 zum Teilen
 - **Einrichtungs-Assistent:** erscheint beim ersten Start (Sprache, Auto, Wartung, Reifen, Notfall);
   jederzeit erneut unter **Mehr → Einrichtungs-Assistent**
 - **Tanken:** Verbrauch (l/100 km) zwischen vollen Tankfüllungen, Ø-Literpreis
@@ -85,7 +93,7 @@ wird die Sprache des iPhones übernommen. Zahlen- und Datumsformate folgen der S
 
 Dateien:
 - `index.html`: Aufbau, Design und Symbole
-- `js/01-…` bis `js/14-…`: Programmlogik, nach Bereichen aufgeteilt und in dieser Reihenfolge geladen;
+- `js/01-…` bis `js/15-…`: Programmlogik, nach Bereichen aufgeteilt und in dieser Reihenfolge geladen;
   alle sichtbaren Texte laufen über `tr('deutscher Text')`
 - `icon-quelle.svg`: Vorlage für das App-Symbol (daraus entstehen `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`)
 - `i18n.js`: Sprachumschaltung und Übersetzungen (`T`: `'Deutsch': ['English', 'Tiếng Việt']`)

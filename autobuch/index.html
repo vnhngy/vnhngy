@@ -333,6 +333,13 @@
   .warn-text { color: var(--warn); }
   .bad-text { color: var(--bad); }
   .good-text { color: var(--good); }
+  dialog.drive-mode { margin: 0; width: 100vw; max-width: 100vw; height: 100vh; max-height: 100vh; border-radius: 0; border: 0; padding: calc(env(safe-area-inset-top) + 16px) 14px calc(env(safe-area-inset-bottom) + 16px); background: var(--bg); color: var(--text); }
+  dialog.drive-mode[open] { animation: none; }
+  .dm-grid { display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: 1fr; gap: 12px; height: 100%; }
+  .dm-grid button, .dm-grid a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; border-radius: 28px; font-size: 44px; text-decoration: none; color: var(--text); background: var(--surface-2); border: 1px solid var(--edge); min-height: 0; }
+  .dm-grid span { font-size: 20px; font-weight: 700; }
+  .dm-grid .dm-sos { background: color-mix(in srgb, var(--bad) 22%, var(--surface-2)); color: var(--bad); }
+  .story-share { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom) + 60px); z-index: 2; background: #fff; color: #10141b; border: 0; padding: 12px 22px; border-radius: 999px; font-weight: 700; }
   .swatches { display: flex; flex-wrap: wrap; gap: 10px; }
   .swatch { width: 38px; height: 38px; min-height: 0; padding: 0; border-radius: 50%; background: var(--c); border: 2px solid transparent; box-shadow: inset 0 0 0 2px rgba(255,255,255,.25); }
   .swatch[aria-pressed="true"] { border-color: var(--text); }
@@ -654,6 +661,7 @@
     <div class="actions" data-sec="actions">
       <button class="primary" data-open="fuel">⛽ Tanken</button>
       <button class="primary" data-open="cost">€ Ausgabe</button>
+      <button data-open="drivemode" style="grid-column:1/-1">🚗 Fahrmodus (große Knöpfe)</button>
     </div>
     <div class="card" data-sec="forecast">
       <h2>Tank-Prognose</h2>
@@ -688,8 +696,9 @@
       <div class="stat"><div class="label">Ø Verbrauch</div><div class="value" id="fCons">–</div></div>
       <div class="stat"><div class="label">Ø Literpreis</div><div class="value" id="fPrice">–</div></div>
     </div>
-    <div class="actions" style="grid-template-columns:1fr">
+    <div class="actions">
       <button class="primary" data-open="fuel">⛽ Tankfüllung eintragen</button>
+      <button data-open="fuelCsv">⬇︎ Export (Excel)</button>
     </div>
     <div class="card" id="e10Card">
       <h2>E5 oder E10?</h2>
@@ -717,6 +726,16 @@
       <button type="button" data-sub="reifen" aria-pressed="false">Reifen</button>
     </div>
     <div id="sub-termine">
+    <div class="card">
+      <h2>Mängelliste für die Werkstatt</h2>
+      <form id="issueForm" class="lock-pin" style="margin:0 0 6px">
+        <input name="text" placeholder="z. B. Klappern vorne links" aria-label="Neuer Punkt">
+        <button>＋</button>
+      </form>
+      <ul class="list" id="issueList"></ul>
+      <div id="issueDone"></div>
+      <button data-open="issuesShare" id="issueShare" style="width:100%;margin-top:10px">Liste an die Werkstatt schicken</button>
+    </div>
     <div class="card">
       <h2>Wartung &amp; Termine</h2>
       <ul class="list" id="maintList"></ul>
@@ -851,6 +870,11 @@
     <div class="actions">
       <button class="primary" data-open="specs">Bearbeiten</button>
       <button data-open="shareSpecs">Teilen</button>
+    </div>
+    <div class="card">
+      <h2>Kfz-Steuer</h2>
+      <div id="taxBody"></div>
+      <button data-open="tax" style="width:100%;margin-top:10px">Angaben eintragen</button>
     </div>
   </section>
 
@@ -1221,6 +1245,14 @@
       <input type="file" id="importFile" accept="application/json,.json" hidden>
     </div>
     <div class="card">
+      <h2>Daten prüfen &amp; übernehmen</h2>
+      <p class="note" style="margin-top:0">Der Datencheck findet Tippfehler wie km-Stände, die rückwärts laufen, unrealistische Literpreise oder doppelte Einträge.</p>
+      <div class="actions" style="margin-bottom:0">
+        <button data-open="datacheck">✅ Datencheck</button>
+        <button data-open="csvImport">📁 Tankdaten importieren</button>
+      </div>
+    </div>
+    <div class="card">
       <h2>Auf den Home-Bildschirm</h2>
       <p class="note" style="margin:0">In Safari unten auf <b>Teilen</b> (Quadrat mit Pfeil) tippen, dann <b>„Zum Home-Bildschirm“</b>. Danach startet Autobuch wie eine normale App, auch ohne Internet.</p>
     </div>
@@ -1250,6 +1282,7 @@
 <dialog id="wizard" class="wizard"><form method="dialog" id="wizardForm"></form></dialog>
 <dialog id="viewer" class="viewer"><img alt="Foto"></dialog>
 <dialog id="story" class="story" aria-label="Dein Autojahr"></dialog>
+<dialog id="driveMode" class="drive-mode" aria-label="Fahrmodus"></dialog>
 <dialog id="lockDlg" class="lock-dlg" aria-label="Autobuch ist gesperrt">
   <div class="lock-box">
     <div class="lock-ico">🔒</div>
@@ -1278,6 +1311,7 @@
 <script src="js/11-schaeden-leasing-steuer.js"></script>
 <script src="js/12-kosten-vergleich-erinnerung.js"></script>
 <script src="js/13-farbe-sperre-chronik.js"></script>
-<script src="js/14-assistent-start.js"></script>
+<script src="js/14-werkstatt-daten-steuer.js"></script>
+<script src="js/15-assistent-start.js"></script>
 </body>
 </html>

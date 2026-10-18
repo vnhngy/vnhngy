@@ -5,7 +5,7 @@
 /* ---------- Daten ---------- */
 
 const STORE_KEY = 'autobuch-v1';
-const APP_VERSION = '28'; // bei jedem Update zusammen mit VERSION in sw.js erhöhen
+const APP_VERSION = '29'; // bei jedem Update zusammen mit VERSION in sw.js erhöhen
 const COST_CATS = ['Werkstatt', 'Versicherung', 'Kfz-Steuer', 'Reifen', 'Pflege', 'Parken', 'Leasing/Finanzierung', 'Bußgeld', 'Sonstiges'];
 // Antriebsarten des Fahrzeugs und Spritsorten beim Tanken (Erdgas wird in kg getankt)
 const CAR_FUELS = ['Benzin', 'Super E10', 'Super Plus', 'Diesel', 'Autogas (LPG)', 'Erdgas (CNG)', 'Hybrid', 'Plug-in-Hybrid'];
@@ -24,7 +24,7 @@ const unitOf = (grade) => gradeOf(grade).unit || 'l';
 const consUnit = () => unitOf(defaultGrade()) + '/100';
 
 // Daten, die zu einem Fahrzeug gehören. Beim Wechsel des Autos werden genau diese Felder getauscht.
-const CAR_KEYS = ['car', 'fuel', 'costs', 'maint', 'trips', 'tires', 'mounted', 'drives', 'accidents', 'parking', 'docs', 'recurring', 'fines', 'values', 'logs', 'notes', 'budget', 'damages', 'leasing', 'specs', 'handovers'];
+const CAR_KEYS = ['car', 'fuel', 'costs', 'maint', 'trips', 'tires', 'mounted', 'drives', 'accidents', 'parking', 'docs', 'recurring', 'fines', 'values', 'logs', 'notes', 'budget', 'damages', 'leasing', 'specs', 'handovers', 'issues'];
 
 // Richtwerte für eine Mercedes A-Klasse W176 (Baujahr 2015). Im Serviceheft prüfen.
 function defaultMaint(fuel) {
@@ -51,7 +51,7 @@ function freshState() {
     drives: [], documents: [],
     docs: { plate: '', vin: '', insurer: '', policy: '', claimPhone: '', breakdown: '' }, accidents: [],
     lang: null, onboarded: false, checks: {}, garages: [],
-    recurring: [], fines: [], values: [], logs: [], notes: [], budget: { monthly: null }, damages: [], leasing: null, specs: {}, handovers: [], lock: null, dismissed: [],
+    recurring: [], fines: [], values: [], logs: [], notes: [], budget: { monthly: null }, damages: [], leasing: null, specs: {}, handovers: [], issues: [], lock: null, dismissed: [],
     carId: null, otherCars: {}, lastBackup: null, backupSnooze: null,
     home: null, // { order, hidden, tiles } – Aufbau der Übersicht
   };
@@ -259,6 +259,7 @@ function render() {
   renderExtras2();
   renderExtras3();
   renderExtras4();
+  renderExtras5();
   const lb = $('#lastBackup');
   lb.textContent = state.lastBackup ? tr('Letzte Sicherung: {date}', { date: fmtDate(state.lastBackup) }) : tr('Noch keine Sicherung angelegt.');
 

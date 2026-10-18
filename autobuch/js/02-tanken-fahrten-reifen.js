@@ -92,14 +92,19 @@ function renderPrices() {
     html += prices.list.length ? `<ul class="list" style="margin-top:12px">${prices.list.map((s, i) => `
       <li>
         <div class="grow">
-          <div class="title">${esc(s.brand || s.name)}${i === 0 ? ` <span class="pill ok">${tr('Am günstigsten')}</span>` : ''}</div>
+          <div class="title">${esc(s.brand || s.name)}${i === 0 ? ` <span class="pill ok">${tr('Am günstigsten')}</span>` : ''}${cfg.target && s.price <= cfg.target ? ` <span class="pill ok">${tr('unter Wunschpreis')}</span>` : ''}</div>
           <div class="meta">${esc(s.street)} ${esc(s.houseNumber || '')}, ${esc(s.place)} · ${fmtNum(s.dist, 1)} km</div>
         </div>
         <div class="amount">${fmtEUR(s.price, 3)}<br><a class="btn" href="https://maps.apple.com/?daddr=${s.lat},${s.lng}&dirflg=d" target="_blank" rel="noopener">${tr('Route')}</a></div>
       </li>`).join('')}</ul>`
       : `<p class="empty">${tr('Keine geöffnete Tankstelle mit diesem Kraftstoff im Umkreis.')}</p>`;
+    if (cfg.target && prices.list.length) {
+      const hits = prices.list.filter((s) => s.price <= cfg.target).length;
+      html += `<p class="note ${hits ? 'good-text' : ''}">${hits ? tr('🎯 {n} Tankstellen liegen unter deinem Wunschpreis von {price}.', { n: hits, price: fmtEUR(cfg.target, 3) }) : tr('Keine Tankstelle liegt gerade unter deinem Wunschpreis von {price}.', { price: fmtEUR(cfg.target, 3) })}</p>`;
+    }
     html += `<p class="note" style="margin-bottom:0">${tr('Stand {time} Uhr · Daten: MTS-K über Tankerkönig (CC BY 4.0)', { time: prices.time })}</p>`;
   }
+  html += `<button class="link" data-open="priceTarget" style="width:100%;margin-top:6px">${cfg.target ? tr('Wunschpreis: {price}', { price: fmtEUR(cfg.target, 3) }) : tr('🎯 Wunschpreis festlegen')}</button>`;
   body.innerHTML = html;
 }
 
