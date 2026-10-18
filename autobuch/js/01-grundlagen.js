@@ -5,8 +5,22 @@
 /* ---------- Daten ---------- */
 
 const STORE_KEY = 'autobuch-v1';
-const APP_VERSION = '18'; // bei jedem Update zusammen mit VERSION in sw.js erhöhen
+const APP_VERSION = '19'; // bei jedem Update zusammen mit VERSION in sw.js erhöhen
 const COST_CATS = ['Werkstatt', 'Versicherung', 'Kfz-Steuer', 'Reifen', 'Pflege', 'Parken', 'Leasing/Finanzierung', 'Bußgeld', 'Sonstiges'];
+// Antriebsarten des Fahrzeugs und Spritsorten beim Tanken (Erdgas wird in kg getankt)
+const CAR_FUELS = ['Benzin', 'Diesel', 'Autogas (LPG)', 'Erdgas (CNG)', 'Hybrid', 'Plug-in-Hybrid'];
+const GRADES = [
+  { id: 'Super E5', fam: 'benzin' }, { id: 'Super E10', fam: 'benzin' }, { id: 'Super Plus', fam: 'benzin' },
+  { id: 'Diesel', fam: 'diesel' }, { id: 'Premium-Diesel', fam: 'diesel' },
+  { id: 'Autogas (LPG)', fam: 'lpg' }, { id: 'Erdgas (CNG)', fam: 'cng', unit: 'kg' },
+];
+const gradeOf = (id) => GRADES.find((g) => g.id === id) || GRADES[0];
+const defaultGrade = (carFuel = state.car.fuel) => ({ Diesel: 'Diesel', 'Autogas (LPG)': 'Autogas (LPG)', 'Erdgas (CNG)': 'Erdgas (CNG)' })[carFuel] || 'Super E5';
+const fillGrade = (f) => f.grade || defaultGrade(); // ältere Einträge haben noch keine Sorte
+const mainFam = () => gradeOf(defaultGrade()).fam;
+const unitOf = (grade) => gradeOf(grade).unit || 'l';
+const consUnit = () => unitOf(defaultGrade()) + '/100';
+
 // Daten, die zu einem Fahrzeug gehören. Beim Wechsel des Autos werden genau diese Felder getauscht.
 const CAR_KEYS = ['car', 'fuel', 'costs', 'maint', 'trips', 'tires', 'mounted', 'drives', 'accidents', 'parking', 'docs', 'recurring', 'fines', 'values', 'logs'];
 
@@ -111,7 +125,8 @@ function currentKm() {
 
 // Verbrauch je volle Tankfüllung: alle Liter seit der letzten vollen Füllung / gefahrene km.
 function consumption() {
-  const fills = [...state.fuel].sort((a, b) => a.km - b.km);
+  const fam = mainFam();
+  const fills = state.fuel.filter((f) => gradeOf(fillGrade(f)).fam === fam).sort((a, b) => a.km - b.km);
   const per = {}, segs = [];
   let lastFull = null, liters = 0, totalL = 0, totalKm = 0;
   for (const f of fills) {
@@ -194,7 +209,7 @@ function render() {
 
   // Übersicht
   $('#sKm').innerHTML = km != null ? `${fmtNum(km)} <small>km</small>` : '–';
-  $('#sCons').innerHTML = cons.avg != null ? `${fmtNum(cons.avg, 1)} <small>l/100</small>` : '–';
+  $('#sCons').innerHTML = cons.avg != null ? `${fmtNum(cons.avg, 1)} <small>${consUnit()}</small>` : '–';
   $('#sYearLabel').textContent = year;
   $('#sYear').textContent = fmtEUR(yearSum, 0);
   const kms = state.fuel.map((f) => f.km);
@@ -247,9 +262,9 @@ function render() {
     <li data-edit-fuel="${f.id}">
       <div class="grow">
         <div class="title">${fmtDate(f.date)}${f.full ? '' : ` <span class="pill unknown">${tr('Teil')}</span>`}</div>
-        <div class="meta">${fmtNum(f.km)} km · ${fmtNum(f.liters, 2)} l · ${fmtEUR(f.total / f.liters, 3)}/l${f.station ? ' · ' + esc(f.station) : ''}</div>
+        <div class="meta">${tr(fillGrade(f))} · ${fmtNum(f.km)} km · ${fmtNum(f.liters, 2)} ${unitOf(fillGrade(f))} · ${fmtEUR(f.total / f.liters, 3)}/${unitOf(fillGrade(f))}${f.station ? ' · ' + esc(f.station) : ''}</div>
       </div>
-      <div class="amount">${fmtEUR(f.total)}<div class="meta">${cons.per[f.id] != null ? fmtNum(cons.per[f.id], 1) + ' l/100' : ''}</div></div>
+      <div class="amount">${fmtEUR(f.total)}<div class="meta">${cons.per[f.id] != null ? fmtNum(cons.per[f.id], 1) + ' ' + consUnit() : ''}</div></div>
     </li>`).join('') || `<li class="empty">${tr('Noch keine Tankfüllung. Tipp oben auf „Tankfüllung eintragen“.')}</li>`;
 
   // Wartung
@@ -372,8 +387,8 @@ function renderConsChart(cons) {
     return { label: LANG === 'de' ? `${d.getDate()}.${d.getMonth() + 1}.` : `${d.getDate()}/${d.getMonth() + 1}`, full: fmtDate(f.date), value: cons.per[f.id] };
   }), {
     aria: tr('Verbrauch je Tankfüllung'),
-    tip: (v) => fmtNum(v, 1) + ' l/100 km',
-    axis: (g) => fmtNum(g, g % 1 ? 1 : 0) + ' l',
+    tip: (v) => fmtNum(v, 1) + ' ' + consUnit() + ' km',
+    axis: (g) => fmtNum(g, g % 1 ? 1 : 0) + ' ' + unitOf(defaultGrade()),
     empty: tr('Ab der zweiten vollen Tankfüllung siehst du hier deinen Verbrauch.'),
   });
 }

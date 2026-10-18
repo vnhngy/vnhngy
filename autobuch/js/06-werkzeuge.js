@@ -69,7 +69,12 @@ function renderStats() {
     ${su && wi ? `<p class="note" style="margin-bottom:0">${tr(wi > su ? 'Im Winter verbrauchst du {p} % mehr: kalter Motor, Heizung, Winterreifen.' : 'Im Winter verbrauchst du nicht mehr als im Sommer.', { p: fmtNum((wi / su - 1) * 100, 0) })}</p>` : ''}`
     : `<p class="empty" style="margin:0">${tr('Dafür brauchst du volle Tankfüllungen im Sommer und im Winter.')}</p>`;
 
-  const fills = state.fuel.filter((x) => x.liters > 0).map((x) => ({ ...x, ppl: x.total / x.liters }));
+  // Preise je Sorte; günstigster/teuerster Tankstopp nur innerhalb der Hauptsorte (gleiche Einheit)
+  const fills = state.fuel.filter((x) => x.liters > 0 && gradeOf(fillGrade(x)).fam === mainFam()).map((x) => ({ ...x, ppl: x.total / x.liters }));
+  const byGrade = GRADES.map((g) => {
+    const gf = state.fuel.filter((x) => x.liters > 0 && fillGrade(x) === g.id);
+    return gf.length ? { g, n: gf.length, avg: gf.reduce((s, x) => s + x.total, 0) / gf.reduce((s, x) => s + x.liters, 0) } : null;
+  }).filter(Boolean);
   if (fills.length) {
     const lo = fills.reduce((a, b) => (b.ppl < a.ppl ? b : a)), hi = fills.reduce((a, b) => (b.ppl > a.ppl ? b : a));
     const avg = fills.reduce((s, x) => s + x.total, 0) / fills.reduce((s, x) => s + x.liters, 0);
@@ -77,6 +82,7 @@ function renderStats() {
       <li><div class="grow"><div class="title">${tr('Am günstigsten')}</div><div class="meta">${fmtDate(lo.date)}${lo.station ? ' · ' + esc(lo.station) : ''}</div></div><div class="amount">${fmtEUR(lo.ppl, 3)}</div></li>
       <li><div class="grow"><div class="title">${tr('Am teuersten')}</div><div class="meta">${fmtDate(hi.date)}${hi.station ? ' · ' + esc(hi.station) : ''}</div></div><div class="amount">${fmtEUR(hi.ppl, 3)}</div></li>
       <li><div class="grow"><div class="title">${tr('Durchschnitt')}</div><div class="meta">${tr('{n} Tankfüllungen', { n: fills.length })}</div></div><div class="amount">${fmtEUR(avg, 3)}</div></li>
+      ${byGrade.length > 1 ? byGrade.map((x) => `<li><div class="grow"><div class="title">Ø ${tr(x.g.id)}</div><div class="meta">${tr('{n} Tankfüllungen', { n: x.n })}</div></div><div class="amount">${fmtEUR(x.avg, 3)}/${unitOf(x.g.id)}</div></li>`).join('') : ''}
     </ul>`;
   } else {
     $('#statPrices').innerHTML = `<p class="empty" style="margin:0">${tr('Noch keine Tankfüllung. Tipp oben auf „Tankfüllung eintragen“.')}</p>`;

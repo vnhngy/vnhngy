@@ -958,6 +958,19 @@ const T = {
   'z. B. Bremsen, Michelin, Kunde …': ['e.g. brakes, Michelin, client …', 'VD: phanh, Michelin, khách hàng …'],
   'Durchsucht Tankbuch, Kosten, Fahrten, Wartung, Reifen, Dokumente, Unfälle, Strafzettel und Werkstätten.': ['Searches fuel log, costs, trips, service, tyres, documents, accidents, fines and garages.', 'Tìm trong sổ đổ xăng, chi phí, chuyến đi, bảo dưỡng, lốp, giấy tờ, tai nạn, vé phạt và gara.'],
 
+  // ---- Spritsorten ----
+  'Autogas (LPG)': ['LPG (autogas)', 'Khí hóa lỏng (LPG)'],
+  'Erdgas (CNG)': ['CNG (natural gas)', 'Khí thiên nhiên nén (CNG)'],
+  'Hybrid': ['Hybrid', 'Hybrid'],
+  'Plug-in-Hybrid': ['Plug-in hybrid', 'Hybrid sạc ngoài'],
+  'Super E5': ['Super E5', 'Xăng Super E5'],
+  'Super E10': ['Super E10', 'Xăng Super E10'],
+  'Super Plus': ['Super Plus (98)', 'Xăng Super Plus (98)'],
+  'Premium-Diesel': ['Premium diesel', 'Dầu diesel cao cấp'],
+  'Spritsorte': ['Fuel grade', 'Loại nhiên liệu'],
+  'Kilogramm': ['Kilograms', 'Kilôgam'],
+  'Ob dein Auto E10 verträgt, steht innen auf der Tankklappe. Tankerkönig liefert nur Preise für Super E5, Super E10 und Diesel.': ['Whether your car can take E10 is written inside the fuel flap. Tankerkönig only provides prices for Super E5, Super E10 and diesel.', 'Xe có dùng được E10 hay không được ghi ở mặt trong nắp bình xăng. Tankerkönig chỉ cung cấp giá Super E5, Super E10 và diesel.'],
+
   // ---- Allgemein ----
   'Abbrechen': ['Cancel', 'Hủy'],
   'Eintrag löschen': ['Delete entry', 'Xóa mục này'],

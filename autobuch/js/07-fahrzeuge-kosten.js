@@ -44,7 +44,7 @@ function carsSheet() {
       ${field('Bezeichnung', 'name', '', 'placeholder="z. B. VW Golf"')}
       <div class="row2">
         ${field('Baujahr', 'year', '', 'inputmode="numeric"')}
-        <label class="field"><span>${tr('Kraftstoff')}</span><select name="fuel"><option value="Benzin">${tr('Benzin')}</option><option value="Diesel">${tr('Diesel')}</option></select></label>
+        <label class="field"><span>${tr('Kraftstoff')}</span><select name="fuel">${CAR_FUELS.map((f) => `<option value="${f}">${tr(f)}</option>`).join('')}</select></label>
       </div>
     </fieldset>
   `, (d) => {
@@ -155,7 +155,7 @@ function recurringForm(entry) {
 function costsCsv() {
   const q = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
   const rows = [['Datum', 'Kategorie', 'Betrag (€)', 'Kilometerstand', 'Notiz'].map((h) => tr(h))];
-  [...state.fuel.map((f) => ({ date: f.date, cat: 'Kraftstoff', amount: f.total, km: f.km, note: `${fmtIn(f.liters, 2)} l${f.station ? ' · ' + f.station : ''}` })), ...state.costs]
+  [...state.fuel.map((f) => ({ date: f.date, cat: 'Kraftstoff', amount: f.total, km: f.km, note: `${tr(fillGrade(f))} · ${fmtIn(f.liters, 2)} ${unitOf(fillGrade(f))}${f.station ? ' · ' + f.station : ''}` })), ...state.costs]
     .sort((a, b) => a.date.localeCompare(b.date))
     .forEach((x) => rows.push([fmtDate(x.date), tr(x.cat), fmtIn(x.amount, 2), x.km ?? '', x.note || '']));
   return '﻿' + rows.map((r) => r.map(q).join(LANG === 'en' ? ',' : ';')).join('\r\n') + '\r\n';

@@ -66,6 +66,33 @@ test('Tankfüllung eintragen und Verbrauch berechnen', async ({ page }) => {
   assert.equal(r.avg, 5.5); // (44 + 33) l / 1.400 km
 });
 
+test('Spritsorte wird gespeichert, Erdgas in Kilogramm', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => showView('fuel'));
+  await page.click('#view-fuel button[data-open="fuel"]');
+  await page.selectOption('#sheetForm [name=grade]', 'Erdgas (CNG)');
+  assert.equal((await page.innerText('#sheetForm label:has([name=liters]) span')).trim(), 'Kilogramm');
+  await page.selectOption('#sheetForm [name=grade]', 'Super E10');
+  await page.fill('#sheetForm [name=km]', '98400'); await page.fill('#sheetForm [name=liters]', '30'); await page.fill('#sheetForm [name=total]', '52');
+  await page.click('#sheetForm button.primary');
+  assert.equal(await page.evaluate(() => state.fuel.find((f) => f.km === 98400).grade), 'Super E10');
+  assert.match(await page.innerText('#fuelList'), /Super E10/);
+});
+
+test('Autogas-Auto: Benzin wird nicht in den Verbrauch gerechnet', async ({ page }) => {
+  await page.evaluate(() => {
+    closeWizard();
+    state.car.fuel = 'Autogas (LPG)';
+    state.fuel = [
+      { id: 'a', date: '2026-01-01', km: 1000, liters: 50, total: 50, full: true, grade: 'Autogas (LPG)' },
+      { id: 'b', date: '2026-01-05', km: 1200, liters: 20, total: 36, full: true, grade: 'Super E5' },
+      { id: 'c', date: '2026-01-10', km: 1500, liters: 45, total: 45, full: true, grade: 'Autogas (LPG)' },
+    ];
+    save();
+  });
+  assert.equal(await page.evaluate(() => consumption().avg), 9); // 45 l LPG auf 500 km
+});
+
 test('Zahlen-Eingabe versteht deutsche und englische Schreibweise', async ({ page }) => {
   const r = await page.evaluate(() => [num('1.234,56'), num('98.500'), num('42,5'), num('7')]);
   assert.deepEqual(r, [1234.56, 98500, 42.5, 7]);

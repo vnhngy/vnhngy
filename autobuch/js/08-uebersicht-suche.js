@@ -103,7 +103,7 @@ const fold = (s) => String(s ?? '').toLowerCase().normalize('NFD').replace(/[̀-
 function searchIndex() {
   const out = [];
   const add = (icon, view, title, meta, text, open) => out.push({ icon, view, title, meta, hay: fold([title, meta, text].join(' ')), open });
-  state.fuel.forEach((f) => add('⛽', 'fuel', tr('Tankfüllung'), `${fmtDate(f.date)} · ${fmtNum(f.km)} km · ${fmtEUR(f.total)}`, [f.station, f.liters], () => fuelForm(f)));
+  state.fuel.forEach((f) => add('⛽', 'fuel', tr('Tankfüllung'), `${fmtDate(f.date)} · ${tr(fillGrade(f))} · ${fmtNum(f.km)} km · ${fmtEUR(f.total)}`, [f.station, f.liters, fillGrade(f)], () => fuelForm(f)));
   state.costs.forEach((c) => add('€', 'costs', tr(c.cat), `${fmtDate(c.date)} · ${fmtEUR(c.amount)}${c.note ? ' · ' + c.note : ''}`, [c.cat, c.km], () => costForm(c)));
   state.trips.forEach((t) => add('🛣', 'trips', `${t.from || '?'} → ${t.to || '?'}`, `${fmtDate(t.date)} · ${tr(TRIP_LABEL[t.type])}${t.purpose ? ' · ' + t.purpose : ''}`, [t.partner], () => tripForm(t)));
   state.maint.forEach((m) => add('🔧', 'maint', tr(m.name), m.lastDate ? tr('Zuletzt') + ': ' + fmtDate(m.lastDate) : '', [m.info && tr(m.info), m.name], () => maintForm(m)));

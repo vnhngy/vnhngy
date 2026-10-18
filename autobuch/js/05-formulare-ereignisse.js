@@ -32,13 +32,17 @@ const field = (label, name, value = '', attrs = '') =>
   `<label class="field"><span>${tr(label)}</span><input name="${name}" value="${esc(value)}" ${attrs.replace(/placeholder="([^"]*)"/, (m0, ph) => `placeholder="${esc(tr(ph))}"`)}></label>`;
 
 function fuelForm(entry, prefill = {}) {
-  const e = entry || { date: today(), km: '', liters: '', total: '', full: true, station: '', ...prefill };
+  // Vorbelegt mit der zuletzt getankten Sorte
+  const lastGrade = [...state.fuel].sort((a, b) => b.date.localeCompare(a.date))[0]?.grade;
+  const e = entry || { date: today(), km: '', liters: '', total: '', full: true, station: '', grade: lastGrade || defaultGrade(), ...prefill };
+  const grade = fillGrade(e);
   const kmHint = currentKm() != null && !entry ? `<p class="hint">${tr('Letzter bekannter Stand: {km} km', { km: fmtNum(currentKm()) })}</p>` : '';
   openSheet(entry ? 'Tankfüllung bearbeiten' : 'Tankfüllung eintragen', `
     ${field('Datum', 'date', e.date, 'type="date" required')}
     ${field('Kilometerstand', 'km', e.km, 'inputmode="numeric" required placeholder="z. B. 98500"')}${kmHint}
+    <label class="field"><span>${tr('Spritsorte')}</span><select name="grade">${GRADES.map((g) => `<option value="${g.id}" ${g.id === grade ? 'selected' : ''}>${tr(g.id)}</option>`).join('')}</select></label>
     <div class="row2">
-      ${field('Liter', 'liters', fmtIn(e.liters, 2), 'inputmode="decimal" required placeholder="z. B. 42,5"')}
+      ${field(unitOf(grade) === 'kg' ? 'Kilogramm' : 'Liter', 'liters', fmtIn(e.liters, 2), 'inputmode="decimal" required placeholder="z. B. 42,5"')}
       ${field('Betrag (€)', 'total', fmtIn(e.total, 2), 'inputmode="decimal" required placeholder="z. B. 74,30"')}
     </div>
     <label class="check"><input type="checkbox" name="full" ${e.full ? 'checked' : ''}> ${tr('Vollgetankt')}</label>
@@ -46,10 +50,16 @@ function fuelForm(entry, prefill = {}) {
   `, (d) => {
     const km = num(d.km), liters = num(d.liters), total = num(d.total);
     if (km == null || liters == null || total == null || liters <= 0) return tr('Bitte Kilometerstand, Liter und Betrag ausfüllen.');
-    if (state.car.tank && liters > state.car.tank * 1.15) return tr('{l} Liter passen nicht in einen {tank}-Liter-Tank. Bitte prüfen.', { l: fmtNum(liters, 1), tank: state.car.tank });
-    const rec = { id: entry?.id || uid(), date: d.date, km, liters, total, full: d.full === 'on', station: d.station.trim() };
+    // Tankgröße nur bei Benzin/Diesel prüfen (Gastanks sind anders bemessen)
+    const fam = gradeOf(d.grade).fam;
+    if (state.car.tank && fam === mainFam() && (fam === 'benzin' || fam === 'diesel') && liters > state.car.tank * 1.15) return tr('{l} Liter passen nicht in einen {tank}-Liter-Tank. Bitte prüfen.', { l: fmtNum(liters, 1), tank: state.car.tank });
+    const rec = { id: entry?.id || uid(), date: d.date, km, liters, total, full: d.full === 'on', station: d.station.trim(), grade: d.grade };
     if (entry) Object.assign(entry, rec); else state.fuel.push(rec);
   }, { deleteFn: entry && (() => { state.fuel = state.fuel.filter((x) => x !== entry); }) });
+  // Erdgas wird in Kilogramm getankt
+  sheetForm.grade.addEventListener('change', () => {
+    sheetForm.liters.closest('.field').querySelector('span').textContent = tr(unitOf(sheetForm.grade.value) === 'kg' ? 'Kilogramm' : 'Liter');
+  });
 }
 
 function costForm(entry) {
@@ -198,7 +208,7 @@ function fuelChanged(oldFuel) {
   if (oldFuel === state.car.fuel) return;
   if (state.car.fuel === 'Diesel') state.maint = state.maint.filter((m) => m.id !== 'plugs');
   else if (!state.maint.some((m) => m.id === 'plugs')) state.maint.push(defaultMaint('Benzin').find((m) => m.id === 'plugs'));
-  state.prices.type = state.car.fuel === 'Diesel' ? 'diesel' : 'e5';
+  state.prices.type = state.car.fuel === 'Diesel' ? 'diesel' : 'e5'; // Tankerkönig kennt nur E5, E10 und Diesel
 }
 
 $('#carForm').addEventListener('submit', (e) => {
