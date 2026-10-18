@@ -33,6 +33,13 @@ Alle Daten bleiben auf dem iPhone (localStorage).
 - **Spritspar-Rechner:** Ersparnis in € und CO₂ bei weniger Verbrauch, mit Spartipps
 - **Steckbrief:** Reifengröße, Reifendruck, Ölsorte usw., zum Teilen
 - **Notfall-Sperrbildschirm:** Hintergrundbild mit Notfallkontakt, Kennzeichen und Versicherung
+- **km-Stand schnell eintragen:** Tipp auf „Kilometerstand“ in der Übersicht
+- **E5 oder E10?** Rechner mit Mehrverbrauch und Ersparnis pro Jahr (nur Benziner)
+- **Fahrtkosten teilen:** Anteil pro Mitfahrer (Sprit, alle Kosten oder 0,30 €/km), zum Verschicken
+- **Was kostet mein Auto wirklich?** Monatskosten inkl. Wertverlust, im Vergleich zum Deutschlandticket
+- **Monats-Check:** wiederkehrender Kalendertermin (Reifendruck, Öl, Licht …)
+- **Fahrzeugvergleich:** alle Autos der letzten 12 Monate nebeneinander
+- **Safari-Hinweis:** warnt, wenn die App leer in Safari statt vom Home-Bildschirm geöffnet wird
 - **Einrichtungs-Assistent:** erscheint beim ersten Start (Sprache, Auto, Wartung, Reifen, Notfall);
   jederzeit erneut unter **Mehr → Einrichtungs-Assistent**
 - **Tanken:** Verbrauch (l/100 km) zwischen vollen Tankfüllungen, Ø-Literpreis
@@ -70,7 +77,7 @@ wird die Sprache des iPhones übernommen. Zahlen- und Datumsformate folgen der S
 
 Dateien:
 - `index.html`: Aufbau, Design und Symbole
-- `js/01-…` bis `js/12-…`: Programmlogik, nach Bereichen aufgeteilt und in dieser Reihenfolge geladen;
+- `js/01-…` bis `js/13-…`: Programmlogik, nach Bereichen aufgeteilt und in dieser Reihenfolge geladen;
   alle sichtbaren Texte laufen über `tr('deutscher Text')`
 - `i18n.js`: Sprachumschaltung und Übersetzungen (`T`: `'Deutsch': ['English', 'Tiếng Việt']`)
 - `tests/run.js`: automatische Tests (siehe unten)

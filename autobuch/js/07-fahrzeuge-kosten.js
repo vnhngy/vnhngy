@@ -106,7 +106,7 @@ function deleteCar(id) {
 /* ---------- Hinweise auf der Übersicht ---------- */
 
 function renderNotices() {
-  const out = [];
+  const out = [safariNotice()].filter(Boolean);
   const bn = budgetNotice();
   if (bn) out.push(bn);
   const ln = leasingNotice();

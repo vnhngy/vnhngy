@@ -11,6 +11,7 @@ function kmPoints() {
   return [
     ...state.fuel.map((f) => [f.date, f.km]), ...state.costs.filter((x) => x.km != null).map((x) => [x.date, x.km]),
     ...state.trips.map((t) => [t.date, t.endKm]), ...state.maint.filter((m) => m.lastDate && m.lastKm != null).map((m) => [m.lastDate, m.lastKm]),
+    [state.car.kmDate, state.car.km],
   ].filter(([d, k]) => d && k != null);
 }
 

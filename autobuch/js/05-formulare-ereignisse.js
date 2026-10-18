@@ -180,12 +180,15 @@ function showView(v) {
 }
 
 document.addEventListener('click', (e) => {
-  const t = e.target.closest('button, li[data-edit-fuel], li[data-edit-cost], li[data-edit-trip], [data-edit-acc], li[data-drive], li[data-edit-doc], li[data-edit-rec], li[data-edit-value], li[data-edit-log], li[data-edit-note], li[data-agenda], li[data-edit-dmg]');
+  const t = e.target.closest('button, li[data-edit-fuel], li[data-edit-cost], li[data-edit-trip], [data-edit-acc], li[data-drive], li[data-edit-doc], li[data-edit-rec], li[data-edit-value], li[data-edit-log], li[data-edit-note], li[data-agenda], li[data-edit-dmg], .stat[data-open]');
   if (!t) return;
   if (t.dataset.view) return showView(t.dataset.view);
   if (t.dataset.open === 'fuel') return fuelForm();
   if (t.dataset.open === 'cost') return costForm();
   if (t.dataset.open === 'budget') return budgetForm();
+  if (t.dataset.open === 'km') return kmForm();
+  if (t.dataset.shareTrip) return shareTripCost(state.trips.find((x) => x.id === t.dataset.shareTrip));
+  if (t.dataset.open === 'checkIcs') return downloadFile(new File([checkReminderFile()], 'autobuch-monats-check.ics', { type: 'text/calendar' }));
   if (t.dataset.dmgZone) return damageForm(null, t.dataset.dmgZone);
   if (t.dataset.open === 'damage') return damageForm();
   if (t.dataset.editDmg) return damageForm(state.damages.find((x) => x.id === t.dataset.editDmg));
@@ -267,8 +270,9 @@ function fuelChanged(oldFuel) {
 $('#carForm').addEventListener('submit', (e) => {
   e.preventDefault();
   const f = e.target;
-  const oldFuel = state.car.fuel;
+  const oldFuel = state.car.fuel, old = state.car;
   state.car = { ...state.car, name: f.name.value.trim(), variant: f.variant.value.trim(), year: f.year.value.trim(), fuel: f.fuel.value, km: num(f.km.value), tank: num(f.tank.value) };
+  if (state.car.km != null && state.car.km !== old.km) state.car.kmDate = today();
   fuelChanged(oldFuel);
   f.querySelector('button').blur();
   save();

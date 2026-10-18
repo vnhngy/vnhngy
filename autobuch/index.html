@@ -333,6 +333,8 @@
   .warn-text { color: var(--warn); }
   .bad-text { color: var(--bad); }
   .good-text { color: var(--good); }
+  .stat[data-open] { position: relative; cursor: pointer; }
+  .stat[data-open]::after { content: '+'; position: absolute; top: 10px; right: 14px; font-weight: 700; color: var(--accent); }
   .dmg-car { position: relative; width: 190px; margin: 4px auto 0; aspect-ratio: 100 / 160; }
   .dmg-car svg { width: 100%; height: 100%; display: block; }
   .dmg-car .body { fill: var(--surface-2); stroke: var(--edge); stroke-width: 1.2; }
@@ -573,6 +575,7 @@
   <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"/></symbol>
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></symbol>
   <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4.5"/><path d="m11.2 11.8 8.8-8.8"/><path d="m17 6 3 3"/><path d="m14.5 8.5 2 2"/></symbol>
+  <symbol id="i-train" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="14" rx="3"/><path d="M5 11h14"/><path d="M9 14.5v.01"/><path d="M15 14.5v.01"/><path d="m8 21 2-4"/><path d="m16 21-2-4"/></symbol>
   <symbol id="i-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 14a4.5 4.5 0 0 0 7 0"/><path d="M9 9.5v.01"/><path d="M15 9.5v.01"/></symbol>
 </defs></svg>
 <header>
@@ -623,7 +626,7 @@
       </div>
     </div>
     <div class="stats" data-sec="stats">
-      <div class="stat"><div class="label">Kilometerstand</div><div class="value" id="sKm">–</div></div>
+      <div class="stat" data-open="km" role="button" tabindex="0" aria-label="Kilometerstand eintragen"><div class="label">Kilometerstand</div><div class="value" id="sKm">–</div></div>
       <div class="stat"><div class="label">Ø Verbrauch</div><div class="value" id="sCons">–</div></div>
       <div class="stat"><div class="label">Kosten <span id="sYearLabel"></span></div><div class="value" id="sYear">–</div></div>
       <div class="stat"><div class="label">Kosten pro km</div><div class="value" id="sPerKm">–</div></div>
@@ -667,6 +670,14 @@
     </div>
     <div class="actions" style="grid-template-columns:1fr">
       <button class="primary" data-open="fuel">⛽ Tankfüllung eintragen</button>
+    </div>
+    <div class="card" id="e10Card">
+      <h2>E5 oder E10?</h2>
+      <form id="e10Form" class="row2">
+        <label class="field"><span>Preis Super E5 (€)</span><input name="e5" inputmode="decimal" placeholder="z. B. 1,799"></label>
+        <label class="field"><span>Preis Super E10 (€)</span><input name="e10" inputmode="decimal" placeholder="z. B. 1,739"></label>
+      </form>
+      <div id="e10Out"></div>
     </div>
     <div class="card">
       <h2>Tankfüllungen</h2>
@@ -772,6 +783,10 @@
           <li>Auf der Autobahn 120 statt 150 km/h spart rund 20 %.</li>
         </ul>
       </details>
+    </div>
+    <div class="card" id="compareCard" hidden>
+      <h2>Fahrzeugvergleich</h2>
+      <div id="compareBody"></div>
     </div>
     <div class="actions">
       <button class="primary" data-open="story">✨ Dein Autojahr</button>
@@ -903,6 +918,7 @@
       <h2>Reifendruck</h2>
       <div id="pressureInfo"></div>
       <button data-open="pressure" style="width:100%;margin-top:12px">＋ Reifendruck geprüft</button>
+      <button data-open="checkIcs" style="width:100%;margin-top:10px">📅 Monatliche Erinnerung in den Kalender</button>
       <p class="note" style="margin-bottom:0">Empfohlen: einmal im Monat und vor langen Fahrten, bei kalten Reifen. Die Sollwerte stehen innen in der Tankklappe.</p>
     </div>
     <div class="card">
@@ -1036,6 +1052,10 @@
     </div>
     <div class="card" id="budgetCard"></div>
     <div class="card">
+      <h2>Was kostet mein Auto wirklich?</h2>
+      <div id="trueCost"></div>
+    </div>
+    <div class="card">
       <h2>Wiederkehrende Kosten</h2>
       <ul class="list" id="recList"></ul>
       <button data-open="recurring" style="width:100%;margin-top:12px">🔁 Wiederkehrende Kosten hinzufügen</button>
@@ -1094,6 +1114,7 @@
     <div class="card">
       <h2>Siri &amp; Kurzbefehle</h2>
       <p class="note" style="margin-top:0">Diese Links öffnen direkt eine Funktion. Füge sie in der Kurzbefehle-App als Aktion „URL öffnen“ ein.</p>
+      <p class="note warn-text">Achtung: iOS öffnet solche Links in Safari. Safari speichert getrennt von der App auf deinem Home-Bildschirm. Was du dort einträgst, landet nicht in deiner App.</p>
       <ul class="list" id="linkList"></ul>
       <details class="howto">
         <summary>Per Sprache: „Hey Siri, Tanken eintragen“</summary>
@@ -1196,6 +1217,7 @@
 <script src="js/09-notizen-termine-budget.js"></script>
 <script src="js/10-kompass-rueckblick-rekorde.js"></script>
 <script src="js/11-schaeden-leasing-steuer.js"></script>
-<script src="js/12-assistent-start.js"></script>
+<script src="js/12-kosten-vergleich-erinnerung.js"></script>
+<script src="js/13-assistent-start.js"></script>
 </body>
 </html>

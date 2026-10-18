@@ -193,7 +193,7 @@ function tripForm(entry, prefill = {}) {
     </div>
     ${field('Zweck', 'purpose', e.purpose, 'placeholder="bei Geschäftsfahrten Pflicht, z. B. Kundentermin"')}
     ${field('Geschäftspartner (optional)', 'partner', e.partner, 'placeholder="z. B. Firma Müller GmbH"')}
-    ${entry ? `<button type="button" data-return-trip="${entry.id}" style="width:100%">${tr('🔁 Rückfahrt eintragen')}</button>` : ''}
+    ${entry ? `<div class="actions" style="margin-bottom:0"><button type="button" data-return-trip="${entry.id}">${tr('🔁 Rückfahrt eintragen')}</button><button type="button" data-share-trip="${entry.id}">${tr('€ Kosten teilen')}</button></div>` : ''}
   `, (d) => {
     const startKm = num(d.startKm), endKm = num(d.endKm);
     if (startKm == null || endKm == null) return tr('Bitte km-Stand Start und Ende eingeben.');

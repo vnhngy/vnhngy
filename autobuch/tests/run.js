@@ -441,6 +441,64 @@ test('Kacheln nach Kategorien, leere Kategorie wird ausgeblendet', async ({ page
   assert.deepEqual(r, [['Auswerten', false], ['Planen', false], ['Fahrzeug & Pflege', false], ['Unterlagen', true]]);
 });
 
+test('km-Stand schnell auf der Übersicht eintragen', async ({ page }) => {
+  await seed(page);
+  await page.click('#view-start .stat[data-open="km"]');
+  await page.fill('#sheetForm [name=km]', '90000');
+  await page.click('#sheetForm button.primary'); // kleiner als bekannt -> Fehlermeldung, Formular bleibt offen
+  assert.equal(await page.evaluate(() => sheet.open), true);
+  await page.fill('#sheetForm [name=km]', '99.100');
+  await page.click('#sheetForm button.primary');
+  const r = await page.evaluate(() => ({ km: currentKm(), date: state.car.kmDate === today(), point: kmPoints().some(([d, k]) => k === 99100 && d === today()) }));
+  assert.deepEqual(r, { km: 99100, date: true, point: true });
+});
+
+test('E5 oder E10 und Fahrtkosten teilen', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => showView('fuel'));
+  await page.fill('#e10Form [name=e5]', '1,80');
+  await page.fill('#e10Form [name=e10]', '1,70');
+  assert.match(await page.innerText('#e10Out'), /E10 lohnt sich:/);
+  await page.fill('#e10Form [name=e10]', '1,79');
+  assert.match(await page.innerText('#e10Out'), /E5 ist hier günstiger/);
+
+  await page.evaluate(() => { state.trips.push({ id: 't9', date: today(), type: 'Privat', from: 'A', to: 'Berlin', startKm: 98000, endKm: 98120, purpose: '', partner: '' }); save(); showView('trips'); });
+  await page.click('#tripList li[data-edit-trip="t9"]');
+  await page.click('#sheetForm button[data-share-trip]');
+  await page.waitForSelector('#splitOut');
+  await page.selectOption('#sheetForm [name=mode]', 'biz');
+  await page.fill('#sheetForm [name=people]', '3');
+  assert.match(await page.innerText('#splitOut'), /^12,00\s€ pro Person$/); // 120 km × 0,30 € / 3
+});
+
+test('Echte Monatskosten, Monats-Check und Fahrzeugvergleich', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => showView('costs'));
+  const tc = await page.innerText('#trueCost');
+  assert.match(tc, /pro Monat/);
+  assert.match(tc, /Deutschlandtickets/);
+  const ics = await page.evaluate(() => checkReminderFile());
+  assert.match(ics, /RRULE:FREQ=MONTHLY;BYDAY=1SA/);
+
+  const r = await page.evaluate(() => {
+    const other = freshCar({ name: 'Zweitwagen' });
+    other.fuel = [{ id: 'z1', date: addDays(-50), km: 10000, liters: 30, total: 50, full: true }, { id: 'z2', date: addDays(-20), km: 10500, liters: 35, total: 60, full: true }];
+    state.otherCars.z = other; save(); showView('stats');
+    return { name: state.car.name, fuel: state.fuel.length, hidden: document.querySelector('#compareCard').hidden };
+  });
+  assert.deepEqual(r, { name: 'Mercedes A 180', fuel: 2, hidden: false }); // Vergleich verändert das aktive Auto nicht
+  const cmp = await page.innerText('#compareBody');
+  assert.match(cmp, /Zweitwagen/);
+  assert.match(cmp, /7,0/); // 35 l / 500 km
+});
+
+test('Hinweis, wenn die App leer in Safari geöffnet wird', async ({ page }) => {
+  await page.evaluate(() => { closeWizard(); renderNotices(); });
+  assert.match(await page.innerText('#notices'), /Safari/); // Test-Browser gibt sich als iPhone aus, ohne Home-Bildschirm-Modus
+  await seed(page);
+  assert.doesNotMatch(await page.innerText('#notices'), /Safari/);
+});
+
 test('Keine bunten Emojis auf dem Bildschirm', async ({ page }) => {
   await seed(page);
   const left = await page.evaluate(() => {
