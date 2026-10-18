@@ -79,6 +79,7 @@ Dateien:
 - `index.html`: Aufbau, Design und Symbole
 - `js/01-…` bis `js/13-…`: Programmlogik, nach Bereichen aufgeteilt und in dieser Reihenfolge geladen;
   alle sichtbaren Texte laufen über `tr('deutscher Text')`
+- `icon-quelle.svg`: Vorlage für das App-Symbol (daraus entstehen `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`)
 - `i18n.js`: Sprachumschaltung und Übersetzungen (`T`: `'Deutsch': ['English', 'Tiếng Việt']`)
 - `tests/run.js`: automatische Tests (siehe unten)
 

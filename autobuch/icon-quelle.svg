@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f78a8"/><stop offset="1" stop-color="#1b2c44"/></linearGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+  <!-- Buch -->
+  <path d="M232 250 Q232 214 268 214 H760 Q792 214 792 246 V780 Q792 810 762 810 H280 Q232 810 232 762 Z" fill="#f4f6f9"/>
+  <path d="M232 762 Q232 714 280 714 H792" fill="none" stroke="#c9d3df" stroke-width="18"/>
+  <rect x="232" y="214" width="56" height="500" fill="#d9e1ea"/>
+  <!-- Auto auf dem Einband -->
+  <g fill="none" stroke="#2b4a6f" stroke-width="30" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M352 540 V500 Q352 478 374 472 L430 458 L486 400 Q498 388 516 388 H624 Q648 388 662 404 L712 458 L730 464 Q744 469 744 485 V540"/>
+    <path d="M512 458 L540 420 H600 V458 Z" stroke-width="22"/>
+  </g>
+  <g fill="#f4f6f9" stroke="#2b4a6f" stroke-width="30"><circle cx="440" cy="548" r="44"/><circle cx="660" cy="548" r="44"/></g>
+  <path d="M340 630 H760" stroke="#4f78a8" stroke-width="16" stroke-linecap="round"/>
+</svg>
