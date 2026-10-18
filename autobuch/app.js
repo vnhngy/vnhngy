@@ -3,7 +3,7 @@
 /* ---------- Daten ---------- */
 
 const STORE_KEY = 'autobuch-v1';
-const APP_VERSION = '15'; // bei jedem Update zusammen mit VERSION in sw.js erhöhen
+const APP_VERSION = '16'; // bei jedem Update zusammen mit VERSION in sw.js erhöhen
 const COST_CATS = ['Werkstatt', 'Versicherung', 'Kfz-Steuer', 'Reifen', 'Pflege', 'Parken', 'Leasing/Finanzierung', 'Bußgeld', 'Sonstiges'];
 // Daten, die zu einem Fahrzeug gehören. Beim Wechsel des Autos werden genau diese Felder getauscht.
 const CAR_KEYS = ['car', 'fuel', 'costs', 'maint', 'trips', 'tires', 'mounted', 'drives', 'accidents', 'parking', 'docs', 'recurring', 'fines', 'values', 'logs'];
@@ -2423,6 +2423,54 @@ function closeWizard() {
 }
 wizard.addEventListener('close', () => { if (!state.onboarded) closeWizard(); }); // z. B. per Escape-Taste
 
+/* ---------- Einfarbige Symbole statt Emojis ---------- */
+
+// Emojis in allen Texten (auch Übersetzungen) werden auf dem Bildschirm durch Linien-Symbole ersetzt.
+const EMOJI_ICONS = { '⛽': 'fuel', '📍': 'pin', '🔧': 'wrench', '🛠': 'wrench', '🚨': 'siren', '🚗': 'car', '📎': 'clip', '🛢': 'drop', '🔁': 'repeat', '🔄': 'refresh', '💾': 'save', '🛞': 'tire', '✅': 'checks', '🗺': 'map', '🧾': 'receipt', '🏆': 'trophy', '🏅': 'medal', '📅': 'calendar', '▶': 'play', '⬇': 'download', '📄': 'doc', '📁': 'folder', '📝': 'pen', '🖨': 'printer', '📞': 'phone', '👍': 'okcircle', '❄': 'snow', '☀': 'sun', '📊': 'chart', '📉': 'trend', '🚑': 'medic', '🚓': 'shield', '✨': 'sparkle', '🚶': 'walk', '📷': 'camera', '📸': 'camera', '💡': 'bulb', '🛰': 'gps', '🧳': 'suitcase', '🌸': 'leaf', '🏷': 'tag', '🕘': 'clock', '⏱': 'clock', '⏰': 'clock', '👤': 'user', '🗑': 'trash', '🌱': 'leaf', '🍃': 'leaf', '🛣': 'road', '📒': 'book', '👋': 'smile', '🎉': 'flag', '⚠': 'alert' };
+const EMOJI_RE = new RegExp(`(${Object.keys(EMOJI_ICONS).join('|')})[\uFE0E\uFE0F]?`, 'gu');
+const NO_SVG = new Set(['OPTION', 'TITLE', 'TEXTAREA', 'SCRIPT', 'STYLE']);
+
+function iconizeText(node) {
+  const text = node.nodeValue;
+  EMOJI_RE.lastIndex = 0;
+  if (!EMOJI_RE.test(text)) return;
+  const parent = node.parentNode;
+  if (!parent || parent.closest?.('svg')) return;
+  EMOJI_RE.lastIndex = 0;
+  if (NO_SVG.has(parent.nodeName)) { node.nodeValue = text.replace(EMOJI_RE, '').trim(); return; }
+  const frag = document.createDocumentFragment();
+  let last = 0;
+  for (const m of text.matchAll(EMOJI_RE)) {
+    if (m.index > last) frag.append(text.slice(last, m.index));
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'i');
+    svg.setAttribute('aria-hidden', 'true');
+    const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    use.setAttribute('href', '#i-' + EMOJI_ICONS[m[1]]);
+    svg.append(use);
+    frag.append(svg);
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) frag.append(text.slice(last));
+  parent.replaceChild(frag, node);
+}
+
+function iconize(root) {
+  if (root.nodeType === 3) return iconizeText(root);
+  if (root.nodeType !== 1 || root.closest('svg')) return;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(iconizeText);
+}
+
+new MutationObserver((muts) => {
+  for (const m of muts) {
+    if (m.type === 'characterData') iconizeText(m.target);
+    else m.addedNodes.forEach(iconize);
+  }
+}).observe(document.body, { childList: true, subtree: true, characterData: true });
+
 /* ---------- Sprache ---------- */
 
 function setLang(l) {
@@ -2444,6 +2492,7 @@ collectStatic();
 applyStatic();
 render();
 showView(TITLES[startView] && !['drive', 'report'].includes(startView) ? startView : 'start');
+iconize(document.body);
 renderLinks();
 if (!state.onboarded && hasNoData()) openWizard();
 handleUrlAction();
