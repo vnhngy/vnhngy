@@ -83,11 +83,22 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden) rend
 let prices = { loading: false, error: '', list: null, time: null };
 const FUEL_NAMES = { e5: 'Super E5', e10: 'Super E10', diesel: 'Diesel' };
 
+// Ohne Tankerkönig-Schlüssel: Preise auf einer Website bzw. Tankstellen in Apple Karten öffnen
+function priceLinks() {
+  const q = { de: 'Tankstelle', en: 'petrol station', vi: 'cây xăng' }[LANG] || 'Tankstelle';
+  return `<div class="actions" style="margin:10px 0 0">
+    <a class="btn" style="text-align:center;padding:12px" href="https://www.clever-tanken.de/" target="_blank" rel="noopener">${tr('⛽ clever-tanken.de')}</a>
+    <a class="btn" style="text-align:center;padding:12px" href="https://maps.apple.com/?q=${encodeURIComponent(q)}" target="_blank" rel="noopener">${tr('🗺️ Apple Karten')}</a>
+  </div>`;
+}
+
 function renderPrices() {
   const cfg = state.prices, body = $('#priceBody');
   if (!cfg.key) {
-    body.innerHTML = `<p class="note" style="margin:0 0 10px">${tr('Zeigt die günstigsten Tankstellen in deiner Nähe. Dafür brauchst du einmalig einen kostenlosen Schlüssel von Tankerkönig.')}</p>
-      <button data-view="more" style="width:100%">${tr('Einrichten')}</button>`;
+    body.innerHTML = `<p class="note" style="margin:0 0 10px">${tr('Ohne Schlüssel: Öffne die Preise direkt auf clever-tanken.de (dort „Standort verwenden“) oder such Tankstellen in Apple Karten.')}</p>
+      ${priceLinks()}
+      <p class="note">${tr('Mit einem kostenlosen Schlüssel von Tankerkönig zeigt Autobuch die günstigsten Tankstellen direkt hier an, inklusive Wunschpreis.')}</p>
+      <button data-view="more" style="width:100%">${tr('Schlüssel einrichten')}</button>`;
     return;
   }
   let html = `<button class="primary" data-prices="load" style="width:100%" ${prices.loading ? 'disabled' : ''}>

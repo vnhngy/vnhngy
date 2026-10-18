@@ -6,6 +6,7 @@
 /* ---------- Neu in dieser Version ---------- */
 
 const CHANGELOG = [
+  ['1.1.0', ['Spritpreise auch ohne Tankerkönig-Schlüssel: direkt zu clever-tanken.de oder Apple Karten']],
   ['1.0.0', ['Neue Versionsnummern: ab jetzt 1.0.0, mit neuen Funktionen 1.1.0 und so weiter']],
   ['0.32', ['Belege-Galerie: alle Fotos auf einen Blick', 'Monatskalender mit allen Einträgen', 'Parkplatz mit Foto', 'Ersatzteil-Liste im Steckbrief', 'Spritpreis-Verlauf beim Tanken', 'Checkliste für den Gebrauchtwagenkauf']],
   ['0.31', ['Pflege-Plan', 'Fahrgemeinschaft mit Monatsabrechnung', 'Zuladungs-Rechner', 'Warnleuchten-Quiz', 'Tanken per Sprache', 'Garantie-Tracker']],

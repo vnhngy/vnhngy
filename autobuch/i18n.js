@@ -1697,6 +1697,14 @@ const T = {
   '<span aria-hidden="true">🖼</span>Fotos': ['<span aria-hidden="true">🖼</span>Photos', '<span aria-hidden="true">🖼</span>Ảnh'],
   '<i class="cd-fuel"></i> Tanken <i class="cd-cost"></i> Kosten <i class="cd-trip"></i> Fahrten <i class="cd-other"></i> Sonstiges <i class="cd-due"></i> Fällig': ['<i class="cd-fuel"></i> Fuel <i class="cd-cost"></i> Costs <i class="cd-trip"></i> Trips <i class="cd-other"></i> Other <i class="cd-due"></i> Due', '<i class="cd-fuel"></i> Đổ xăng <i class="cd-cost"></i> Chi phí <i class="cd-trip"></i> Chuyến <i class="cd-other"></i> Khác <i class="cd-due"></i> Đến hạn'],
 
+  // ---- Spritpreise ohne Schlüssel ----
+  '⛽ clever-tanken.de': ['⛽ clever-tanken.de', '⛽ clever-tanken.de'],
+  '🗺️ Apple Karten': ['🗺️ Apple Maps', '🗺️ Apple Bản đồ'],
+  'Ohne Schlüssel: Öffne die Preise direkt auf clever-tanken.de (dort „Standort verwenden“) oder such Tankstellen in Apple Karten.': ['Without a key: open prices directly on clever-tanken.de (tap “use location” there) or search petrol stations in Apple Maps.', 'Không cần khóa: mở giá trực tiếp trên clever-tanken.de (chọn “dùng vị trí”) hoặc tìm cây xăng trong Apple Bản đồ.'],
+  'Mit einem kostenlosen Schlüssel von Tankerkönig zeigt Autobuch die günstigsten Tankstellen direkt hier an, inklusive Wunschpreis.': ['With a free key from Tankerkönig, Autobuch shows the cheapest stations right here, including your target price.', 'Với khóa miễn phí từ Tankerkönig, Autobuch hiển thị cây xăng rẻ nhất ngay tại đây, kèm giá mong muốn.'],
+  'Schlüssel einrichten': ['Set up key', 'Cài khóa'],
+  'Spritpreise auch ohne Tankerkönig-Schlüssel: direkt zu clever-tanken.de oder Apple Karten': ['Fuel prices without a Tankerkönig key: straight to clever-tanken.de or Apple Maps', 'Giá xăng không cần khóa Tankerkönig: đến thẳng clever-tanken.de hoặc Apple Bản đồ'],
+
   // ---- Allgemein ----
   'Abbrechen': ['Cancel', 'Hủy'],
   'Eintrag löschen': ['Delete entry', 'Xóa mục này'],

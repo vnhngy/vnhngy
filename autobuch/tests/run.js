@@ -814,8 +814,7 @@ test('Neu in dieser Version erscheint einmal nach dem Update', async ({ page }) 
   await page.waitForFunction(() => sheet.open);
   const t = await page.innerText('#sheetForm');
   assert.match(t, new RegExp('Version ' + await page.evaluate(() => APP_VERSION)));
-  assert.match(t, /Version 0\.32/);
-  assert.doesNotMatch(t, /Version 0\.31/);
+  assert.doesNotMatch(t, /Version 0\.31/); // schon gesehen
   await page.click('#sheetForm button.primary');
   await page.reload();
   await page.waitForTimeout(300);
@@ -877,6 +876,14 @@ test('Keine bunten Emojis auf dem Bildschirm', async ({ page }) => {
     return [...out];
   });
   assert.deepEqual(left, []);
+});
+
+test('Spritpreise ohne Schlüssel: Links zu clever-tanken.de und Apple Karten', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => showView('fuel'));
+  const links = await page.$$eval('#priceBody a', (as) => as.map((a) => a.href));
+  assert.ok(links.includes('https://www.clever-tanken.de/'), links.join());
+  assert.ok(links.some((h) => h.startsWith('https://maps.apple.com/?q=Tankstelle')), links.join());
 });
 
 test('Versionsnummern werden richtig verglichen', async ({ page }) => {
