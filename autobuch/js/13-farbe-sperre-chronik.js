@@ -93,6 +93,7 @@ function showLock(auto = true) {
 function unlockDone() {
   appLocked = false;
   $('#lockDlg').close();
+  setTimeout(maybeWhatsNew, 300);
 }
 
 function unlockFace(silent) {

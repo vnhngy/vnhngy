@@ -24,7 +24,7 @@ const photoGet = (id) => idb('readonly', (st) => st.get(id));
 const photoDel = (id) => idb('readwrite', (st) => st.delete(id)).catch(() => {});
 // Fotos aller Fahrzeuge (für Sicherung) plus Dokumente
 const allPhotoIds = () => [state, ...Object.values(state.otherCars || {})]
-  .flatMap((d) => [...(d.costs || []), ...(d.fuel || []), ...(d.notes || []), ...(d.damages || []), ...(d.handovers || []).map((h) => ({ photos: [...(h.photos || []), h.signFrom, h.signTo].filter(Boolean) })), ...(d.accidents || []), ...(d.fines || []), { photos: d.car?.photo ? [d.car.photo] : [] }])
+  .flatMap((d) => [...(d.costs || []), ...(d.fuel || []), ...(d.notes || []), ...(d.damages || []), ...(d.handovers || []).map((h) => ({ photos: [...(h.photos || []), h.signFrom, h.signTo].filter(Boolean) })), ...(d.accidents || []), ...(d.fines || []), { photos: d.car?.photo ? [d.car.photo] : [] }, { photos: d.parking?.photos || [] }])
   .concat(state.documents).flatMap((x) => x.photos || []);
 
 // Blob-URLs gespeicherter Fotos zwischenspeichern, damit Bilder beim Neuzeichnen nicht flackern

@@ -198,7 +198,7 @@ test('Tank-Prognose wird berechnet', async ({ page }) => {
 
 test('Übersetzungen vollständig (Englisch, Vietnamesisch)', async ({ page }) => {
   await seed(page);
-  const views = ['start', 'fuel', 'trips', 'maint', 'costs', 'more', 'help', 'stats', 'checks', 'plan', 'garages', 'fines', 'value', 'logs', 'awards', 'notes', 'agenda', 'damages', 'leasing', 'specs', 'history', 'handover'];
+  const views = ['start', 'fuel', 'trips', 'maint', 'costs', 'more', 'help', 'stats', 'checks', 'plan', 'garages', 'fines', 'value', 'logs', 'awards', 'notes', 'agenda', 'damages', 'leasing', 'specs', 'history', 'handover', 'care', 'gallery', 'calendar'];
   for (const lang of ['en', 'vi']) {
     const missing = await page.evaluate(([l, vs]) => {
       MISSING.clear(); setLang(l);
@@ -300,7 +300,7 @@ test('Neue Formulare sind übersetzt', async ({ page }) => {
   const missing = await page.evaluate(async () => {
     setLang('en'); MISSING.clear();
     state.trips.push({ id: 't1', date: today(), type: 'Privat', from: 'A', to: 'B', startKm: 1, endKm: 2, purpose: '', partner: '' });
-    fuelForm(); sheet.close(); budgetForm(); sheet.close(); noteForm(); sheet.close(); tripForm(state.trips[0]); sheet.close(); damageForm(); sheet.close(); leasingForm(); sheet.close(); commuteForm(); sheet.close(); specsForm(); sheet.close(); lockscreenSheet(); sheet.close(); handoverForm(); sheet.close(); travelForm(); sheet.close(); lockSetup(); sheet.close(); taxForm(); sheet.close(); priceTargetForm(); sheet.close(); csvImportSheet(); sheet.close(); dataCheckSheet(); sheet.close(); openDriveMode(); document.querySelector('#driveMode').close(); insKmForm(); sheet.close(); supplyForm(); sheet.close(); repairForm(); sheet.close(); state.garages.push({ id: 'g', name: 'X' }); garageForm(state.garages[0]); sheet.close(); costForm(); sheet.close(); careForm('wash'); sheet.close(); poolForm(); sheet.close(); loadForm(); sheet.close(); quizSheet(); sheet.close(); state.pool = { people: ['A'], rate: null }; save(); state.leasing = { start: addDays(-400), end: addDays(400), kmStart: 1, kmPerYear: 10, rate: 5 };
+    fuelForm(); sheet.close(); budgetForm(); sheet.close(); noteForm(); sheet.close(); tripForm(state.trips[0]); sheet.close(); damageForm(); sheet.close(); leasingForm(); sheet.close(); commuteForm(); sheet.close(); specsForm(); sheet.close(); lockscreenSheet(); sheet.close(); handoverForm(); sheet.close(); travelForm(); sheet.close(); lockSetup(); sheet.close(); taxForm(); sheet.close(); priceTargetForm(); sheet.close(); csvImportSheet(); sheet.close(); dataCheckSheet(); sheet.close(); openDriveMode(); document.querySelector('#driveMode').close(); insKmForm(); sheet.close(); supplyForm(); sheet.close(); repairForm(); sheet.close(); state.garages.push({ id: 'g', name: 'X' }); garageForm(state.garages[0]); sheet.close(); costForm(); sheet.close(); careForm('wash'); sheet.close(); poolForm(); sheet.close(); loadForm(); sheet.close(); quizSheet(); sheet.close(); state.pool = { people: ['A'], rate: null }; save(); partForm(); sheet.close(); whatsNewSheet(true); sheet.close(); showView('gallery'); showView('calendar'); state.leasing = { start: addDays(-400), end: addDays(400), kmStart: 1, kmPerYear: 10, rate: 5 };
     state.budget = { monthly: 10 }; save();
     await buildYearReport(String(new Date().getFullYear()));
     openStory(String(new Date().getFullYear())); for (let i = 0; i < story.cards.length; i++) { story.i = i; drawStory(); } document.querySelector('#story').close();
@@ -436,7 +436,7 @@ test('Notfall-Sperrbildschirm wird erzeugt', async ({ page }) => {
 });
 
 test('Kacheln nach Kategorien, leere Kategorie wird ausgeblendet', async ({ page }) => {
-  await page.evaluate(() => { closeWizard(); state.home = { order: null, hidden: [], tiles: ['notes', 'fines', 'leasing', 'handover'] }; save(); });
+  await page.evaluate(() => { closeWizard(); state.home = { order: null, hidden: [], tiles: ['notes', 'fines', 'leasing', 'handover', 'gallery'] }; save(); });
   const r = await page.evaluate(() => [...document.querySelectorAll('#view-start .tile-group')].map((g) => [g.querySelector('h3').textContent, g.hidden]));
   assert.deepEqual(r, [['Auswerten', false], ['Planen', false], ['Fahrzeug & Pflege', false], ['Unterlagen', true]]);
 });
@@ -805,6 +805,61 @@ test('Zuladung, Quiz und Tanken per Sprache', async ({ page }) => {
   assert.deepEqual(p[0], { liters: 42.5, total: 75.3, km: 98500 });
   assert.deepEqual(p[1], { liters: 40, total: 70, km: 98500 });
   assert.deepEqual([p[2].liters, p[2].total], [35, 61.2]);
+});
+
+test('Neu in dieser Version erscheint einmal nach dem Update', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => { state.seenVersion = '30'; save(); });
+  await page.reload();
+  await page.waitForFunction(() => sheet.open);
+  const t = await page.innerText('#sheetForm');
+  assert.match(t, new RegExp('Version ' + await page.evaluate(() => APP_VERSION)));
+  assert.match(t, /Version 31/);
+  assert.doesNotMatch(t, /Version 30/);
+  await page.click('#sheetForm button.primary');
+  await page.reload();
+  await page.waitForTimeout(300);
+  assert.equal(await page.evaluate(() => sheet.open), false);
+});
+
+test('Parkplatz-Foto, Belege-Galerie und Kalender', async ({ page }) => {
+  await seed(page);
+  const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', 'base64');
+  await page.evaluate(() => { state.parking = { lat: null, lng: null, time: Date.now(), note: '', until: null }; save(); parkForm(); });
+  await page.setInputFiles('#photoInput', { name: 'p.png', mimeType: 'image/png', buffer: png });
+  await page.waitForFunction(() => document.querySelectorAll('#thumbs img').length === 1);
+  await page.click('#sheetForm button.primary');
+  const pid = await page.evaluate(() => state.parking.photos[0]);
+  assert.ok(pid);
+  await page.waitForFunction(() => document.querySelector('#parkBody img.park-photo')?.src.startsWith('blob:'));
+
+  await page.evaluate(() => showView('gallery'));
+  await page.waitForFunction(() => document.querySelectorAll('#galGrid img[src^="blob:"]').length === 1);
+  assert.match(await page.innerText('#galGrid'), /Parkplatz/);
+  await page.click('#galSeg [data-gal="receipt"]');
+  assert.match(await page.innerText('#galGrid'), /Noch keine Fotos/);
+
+  await page.evaluate(() => { showView('start'); });
+  await page.click('#view-start button[data-park="clear"]');
+  await page.waitForFunction((id) => photoGet(id).then((b) => !b), pid);
+
+  const d2 = await page.evaluate(() => state.fuel.find((f) => f.id === 'f2').date);
+  await page.evaluate((d) => { showView('calendar'); calMonth = d.slice(0, 7); calDay = d; renderCalendar(); }, d2);
+  assert.ok(await page.$(`#calGrid [data-cal-day="${d2}"] .cd-fuel`), 'Punkt für Tanken');
+  assert.match(await page.innerText('#calList'), /Getankt/);
+});
+
+test('Ersatzteile, Spritpreis-Verlauf und Gebrauchtwagen-Checkliste', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => showView('specs'));
+  await page.click('#view-specs button[data-open="part"]');
+  await page.fill('#sheetForm [name=name]', 'Ölfilter');
+  await page.fill('#sheetForm [name=number]', 'A 270 180 02 10');
+  await page.click('#sheetForm button.primary');
+  assert.match(await page.innerText('#partList'), /Ölfilter[\s\S]*A 270 180 02 10/);
+  assert.equal(await page.evaluate(() => document.querySelectorAll('#priceTrend circle').length), 2);
+  await page.evaluate(() => showView('checks'));
+  assert.match(await page.innerText('#checkLists'), /Gebrauchtwagenkauf/);
 });
 
 test('Keine bunten Emojis auf dem Bildschirm', async ({ page }) => {

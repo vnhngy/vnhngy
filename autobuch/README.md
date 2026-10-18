@@ -68,6 +68,13 @@ Alle Daten bleiben auf dem iPhone (localStorage).
 - **Warnleuchten-Quiz:** 5 Fragen mit Erklärung und Bestwert
 - **Tanken per Sprache:** falls der Browser Spracherkennung anbietet („42 Liter für 75 Euro bei 98.500 Kilometer“)
 - **Garantien:** Garantie-/Gewährleistungsende zu Ausgaben, Liste, Hinweis und Termin
+- **Was ist neu:** zeigt nach einem Update einmal die Neuerungen (`CHANGELOG` in `js/17-…`, bei jeder Version ergänzen)
+- **Parkplatz-Foto:** z. B. vom Schild mit Ebene und Platz
+- **Belege & Fotos:** alle Fotos gesammelt, mit Filter
+- **Kalender:** Monatsansicht mit Punkten für Tanken, Kosten, Fahrten, Sonstiges und Fälliges
+- **Ersatzteile:** Teilenummern, Bezugsquelle und Preis im Steckbrief
+- **Spritpreis-Verlauf:** Literpreis der letzten 24 Tankfüllungen
+- **Checkliste Gebrauchtwagenkauf**
 - **Einrichtungs-Assistent:** erscheint beim ersten Start (Sprache, Auto, Wartung, Reifen, Notfall);
   jederzeit erneut unter **Mehr → Einrichtungs-Assistent**
 - **Tanken:** Verbrauch (l/100 km) zwischen vollen Tankfüllungen, Ø-Literpreis
@@ -105,7 +112,7 @@ wird die Sprache des iPhones übernommen. Zahlen- und Datumsformate folgen der S
 
 Dateien:
 - `index.html`: Aufbau, Design und Symbole
-- `js/01-…` bis `js/17-…`: Programmlogik, nach Bereichen aufgeteilt und in dieser Reihenfolge geladen;
+- `js/01-…` bis `js/18-…`: Programmlogik, nach Bereichen aufgeteilt und in dieser Reihenfolge geladen;
   alle sichtbaren Texte laufen über `tr('deutscher Text')`
 - `icon-quelle.svg`: Vorlage für das App-Symbol (daraus entstehen `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`)
 - `i18n.js`: Sprachumschaltung und Übersetzungen (`T`: `'Deutsch': ['English', 'Tiếng Việt']`)

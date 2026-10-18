@@ -333,6 +333,20 @@
   .warn-text { color: var(--warn); }
   .bad-text { color: var(--bad); }
   .good-text { color: var(--good); }
+  .park-photo { display: block; width: 100%; max-height: 180px; object-fit: cover; border-radius: 14px; margin-top: 8px; }
+  .gal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .gal-item { margin: 0; }
+  .gal-item img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 12px; display: block; background: var(--surface-2); cursor: pointer; }
+  .gal-item figcaption { font-size: 11px; color: var(--muted); margin-top: 3px; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .cal-head { text-align: center; font-size: 11px; color: var(--muted); font-weight: 600; }
+  .cal-day { min-height: 44px; padding: 4px 0 2px; border-radius: 10px; font-size: 14px; display: flex; flex-direction: column; align-items: center; gap: 3px; background: transparent; border: 1px solid transparent; box-shadow: none; }
+  .cal-day.today { color: var(--accent); font-weight: 800; }
+  .cal-day.sel { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+  .cal-day span { display: flex; gap: 2px; min-height: 6px; }
+  .cal-day i, .cal-legend i { display: inline-block; width: 6px; height: 6px; border-radius: 50%; }
+  .cal-legend i { margin: 0 2px 0 8px; }
+  .cd-fuel { background: var(--accent); } .cd-cost { background: var(--warn); } .cd-trip { background: var(--good); } .cd-other { background: var(--muted); } .cd-due { background: var(--bad); }
   .qdot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 4px; vertical-align: 1px; }
   .quiz-a.right { border-color: var(--good); background: color-mix(in srgb, var(--good) 18%, var(--surface-2)); }
   .quiz-a.wrong { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 18%, var(--surface-2)); }
@@ -608,6 +622,8 @@
   <symbol id="i-battery" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="12" rx="2"/><path d="M7 7V5h3v2"/><path d="M14 7V5h3v2"/><path d="M7 13h3"/><path d="M14 13h3"/><path d="M15.5 11.5v3"/></symbol>
   <symbol id="i-thermo" viewBox="0 0 24 24"><path d="M10 14V5a2 2 0 0 1 4 0v9a4 4 0 1 1-4 0z"/><path d="M12 9v7"/></symbol>
   <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></symbol>
+  <symbol id="i-calgrid" viewBox="0 0 24 24"><path d="M4 5h16v16H4z"/><path d="M4 10h16"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 17.5h.01"/><path d="M12 17.5h.01"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></symbol>
   <symbol id="i-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 14a4.5 4.5 0 0 0 7 0"/><path d="M9 9.5v.01"/><path d="M15 9.5v.01"/></symbol>
 </defs></svg>
 <header>
@@ -638,6 +654,7 @@
           <button data-view="agenda"><span aria-hidden="true">📅</span>Termine</button>
           <button data-view="plan"><span aria-hidden="true">🗺️</span>Reiseplaner</button>
           <button data-view="checks"><span aria-hidden="true">✅</span>Checklisten</button>
+          <button data-view="calendar"><span aria-hidden="true">🗓</span>Kalender</button>
         </div>
       </div>
       <div class="tile-group">
@@ -657,6 +674,7 @@
           <button data-view="fines"><span aria-hidden="true">🧾</span>Strafzettel</button>
           <button data-view="leasing"><span aria-hidden="true">🔑</span>Leasing</button>
           <button data-view="handover"><span aria-hidden="true">📝</span>Übergabe</button>
+          <button data-view="gallery"><span aria-hidden="true">🖼</span>Fotos</button>
         </div>
       </div>
     </div>
@@ -707,6 +725,10 @@
     <div class="actions">
       <button class="primary" data-open="fuel">⛽ Tankfüllung eintragen</button>
       <button data-open="fuelCsv">⬇︎ Export (Excel)</button>
+    </div>
+    <div class="card">
+      <h2>Spritpreis-Verlauf</h2>
+      <div class="chart" id="priceTrend"></div>
     </div>
     <div class="card" id="e10Card">
       <h2>E5 oder E10?</h2>
@@ -884,6 +906,11 @@
       <button class="primary" data-open="specs">Bearbeiten</button>
       <button data-open="shareSpecs">Teilen</button>
     </div>
+    <div class="card">
+      <h2>Ersatzteile</h2>
+      <ul class="list" id="partList"></ul>
+      <button data-open="part" style="width:100%;margin-top:10px">＋ Ersatzteil hinzufügen</button>
+    </div>
     <button data-open="load" style="width:100%;margin-bottom:12px">🧳 Zuladungs-Rechner</button>
     <div class="card">
       <h2>Haltbarkeit im Auto</h2>
@@ -919,6 +946,28 @@
     <p class="note" style="margin-top:0" id="careSummary"></p>
     <div class="card"><ul class="list" id="careList"></ul></div>
     <p class="note">Tipp auf ✓, wenn du es heute erledigt hast. Tipp auf den Namen, um ein anderes Datum oder Kosten einzutragen.</p>
+  </section>
+
+  <!-- Belege & Fotos -->
+  <section class="view" id="view-gallery">
+    <button class="back" data-view="start">‹ Zurück</button>
+    <div class="seg seg-wrap" id="galSeg"></div>
+    <div class="gal-grid" id="galGrid"></div>
+  </section>
+
+  <!-- Kalender -->
+  <section class="view" id="view-calendar">
+    <button class="back" data-view="start">‹ Zurück</button>
+    <div class="card">
+      <div class="maint-head" style="margin-bottom:8px">
+        <button class="small" data-cal-shift="-1" aria-label="Vorheriger Monat">‹</button>
+        <span class="title" id="calTitle" style="text-transform:capitalize"></span>
+        <button class="small" data-cal-shift="1" aria-label="Nächster Monat">›</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <p class="note cal-legend"><i class="cd-fuel"></i> Tanken <i class="cd-cost"></i> Kosten <i class="cd-trip"></i> Fahrten <i class="cd-other"></i> Sonstiges <i class="cd-due"></i> Fällig</p>
+    </div>
+    <div class="card"><ul class="list" id="calList"></ul></div>
   </section>
 
   <!-- Notizbuch -->
@@ -1305,6 +1354,7 @@
     <button class="danger" id="resetBtn" style="width:100%;background:var(--surface)">Alle Daten löschen</button>
     <button data-open="home" style="width:100%;margin-top:12px">Übersicht anpassen</button>
     <button id="updateBtn" style="width:100%;margin-top:12px">🔄 Nach Update suchen</button>
+    <button data-open="whatsnew" style="width:100%;margin-top:10px">✨ Was ist neu?</button>
     <p class="note" id="appVersion" data-noi18n style="text-align:center;margin-top:12px"></p>
   </section>
 </main>
@@ -1360,6 +1410,7 @@
 <script src="js/14-werkstatt-daten-steuer.js"></script>
 <script src="js/15-versicherung-pannen-gewohnheiten.js"></script>
 <script src="js/16-pflege-gemeinschaft-quiz.js"></script>
-<script src="js/17-assistent-start.js"></script>
+<script src="js/17-neu-galerie-kalender.js"></script>
+<script src="js/18-assistent-start.js"></script>
 </body>
 </html>

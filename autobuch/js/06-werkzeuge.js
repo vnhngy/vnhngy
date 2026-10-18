@@ -128,6 +128,13 @@ const CHECKLISTS = [
     'Verkaufs-Mappe erstellen (Tab „Mehr“)', 'Serviceheft, Rechnungen und TÜV-Bericht bereitlegen', 'Beide Schlüssel bereitlegen',
     'Auto innen und außen reinigen', 'Fotos bei Tageslicht machen', 'Marktwert recherchieren', 'Schriftlichen Kaufvertrag verwenden',
     'Abmeldung bzw. Ummeldung und Versicherung klären'] },
+  { id: 'buy', icon: '🔎', name: 'Gebrauchtwagenkauf', items: [
+    'Fahrzeugbrief prüfen: Steht der Verkäufer drin? Mit dem Ausweis vergleichen', 'FIN am Auto mit den Papieren vergleichen',
+    'Serviceheft und Rechnungen ansehen: Wurde regelmäßig gewartet?', 'HU-Bericht und Termin der nächsten HU prüfen',
+    'Kilometerstand plausibel? Mit Serviceheft und HU-Berichten vergleichen', 'Bei Tageslicht ansehen: Lackunterschiede, Spaltmaße, Rost',
+    'Reifen: Profil, Alter (DOT) und gleichmäßige Abnutzung', 'Kaltstart: Geräusche, Rauch, gehen alle Warnleuchten aus?',
+    'Probefahrt: Bremsen, Lenkung, Kupplung oder Getriebe, Geräusche', 'Motor und Unterboden auf Öl- oder Wasserverlust prüfen',
+    'Bekannte Unfallschäden schriftlich in den Kaufvertrag', 'Rückrufe für das Modell prüfen (KBA)'] },
 ];
 
 const openChecks = new Set(); // aufgeklappte Listen bleiben beim Neuzeichnen offen

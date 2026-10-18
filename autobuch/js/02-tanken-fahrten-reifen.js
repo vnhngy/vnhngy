@@ -24,6 +24,7 @@ function renderPark() {
   body.innerHTML = `
     <div class="title">${tr('Seit {time} Uhr', { time: fmtTime(p.time) })} <span class="meta">(${ago})</span></div>
     ${p.note ? `<div class="meta">${esc(p.note)}</div>` : ''}
+    ${p.photos?.length ? `<img class="park-photo" data-photo="${p.photos[0]}" alt="${tr('Foto vom Parkplatz')}">` : ''}
     ${p.lat == null ? `<div class="meta">${tr('Ohne Standort gespeichert')}</div>` : ''}
     ${meter ? `<div style="margin-top:6px">${meter}</div>` : ''}
     <div class="maint-btns">
@@ -31,6 +32,7 @@ function renderPark() {
       <button class="small" data-park="edit">${tr('Notiz &amp; Parkuhr')}</button>
       <button class="small" data-park="clear">${tr('Weggefahren')}</button>
     </div>`;
+  body.querySelectorAll('img[data-photo]').forEach(async (img) => { img.src = await photoUrl(img.dataset.photo) || ''; });
 }
 
 function setParking() {
@@ -56,8 +58,10 @@ function parkForm() {
   openSheet('Parkplatz', `
     ${field('Notiz', 'note', p.note, 'placeholder="z. B. Parkhaus Ebene 2, Platz 117"')}
     ${field('Parkuhr läuft bis (optional)', 'until', until, 'type="time"')}
+    ${photoField(p.photos, 'Foto (z. B. Schild mit Ebene und Platz)')}
   `, (d) => {
     p.note = d.note.trim();
+    p.photos = commitPhotos();
     if (d.until) {
       const [h, mi] = d.until.split(':').map(Number);
       const t = new Date();
@@ -68,6 +72,7 @@ function parkForm() {
       p.until = null;
     }
   });
+  wirePhotos();
 }
 
 setInterval(() => { if (state.parking) renderPark(); }, 30000);

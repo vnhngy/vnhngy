@@ -166,7 +166,7 @@ function maintForm(m) {
 
 /* ---------- Ereignisse ---------- */
 
-const TITLES = { search: 'Suchen', care: 'Pflege', history: 'Chronik', handover: 'Übergabe-Protokoll', damages: 'Schäden', leasing: 'Leasing', specs: 'Steckbrief', notes: 'Notizbuch', agenda: 'Termine', yearReport: 'Jahresbericht', fines: 'Strafzettel & Fristen', value: 'Wertverlauf', logs: 'Öl & Reifendruck', awards: 'Erfolge', stats: 'Statistik', checks: 'Checklisten', plan: 'Reiseplaner', garages: 'Werkstätten', report: 'Verkaufs-Mappe', drive: 'Fahrt läuft', help: 'Notfall & Hilfe', start: 'Übersicht', fuel: 'Tanken', trips: 'Fahrtenbuch', maint: 'Wartung', costs: 'Kosten', more: 'Mehr' };
+const TITLES = { search: 'Suchen', gallery: 'Belege & Fotos', calendar: 'Kalender', care: 'Pflege', history: 'Chronik', handover: 'Übergabe-Protokoll', damages: 'Schäden', leasing: 'Leasing', specs: 'Steckbrief', notes: 'Notizbuch', agenda: 'Termine', yearReport: 'Jahresbericht', fines: 'Strafzettel & Fristen', value: 'Wertverlauf', logs: 'Öl & Reifendruck', awards: 'Erfolge', stats: 'Statistik', checks: 'Checklisten', plan: 'Reiseplaner', garages: 'Werkstätten', report: 'Verkaufs-Mappe', drive: 'Fahrt läuft', help: 'Notfall & Hilfe', start: 'Übersicht', fuel: 'Tanken', trips: 'Fahrtenbuch', maint: 'Wartung', costs: 'Kosten', more: 'Mehr' };
 
 function showSub(sub) {
   $('#sub-termine').hidden = sub !== 'termine';
@@ -179,17 +179,26 @@ function showView(v) {
   document.querySelectorAll('.view').forEach((s) => s.classList.toggle('active', s.id === 'view-' + v));
   document.querySelectorAll('nav.tabs button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.view === v)));
   $('#viewTitle').textContent = tr(TITLES[v]);
+  if (v === 'gallery') renderGallery();
+  if (v === 'calendar') renderCalendar();
   window.scrollTo(0, 0);
   try { sessionStorage.setItem('autobuch-view', v); } catch (e) { /* egal */ }
 }
 
 document.addEventListener('click', (e) => {
-  const t = e.target.closest('button, li[data-edit-fuel], li[data-edit-cost], li[data-edit-trip], [data-edit-acc], li[data-drive], li[data-edit-doc], li[data-edit-rec], li[data-edit-value], li[data-edit-log], li[data-edit-note], li[data-agenda], li[data-edit-dmg], .stat[data-open], li[data-hist-item], li[data-handover], li[data-edit-supply], [data-care-edit]');
+  const t = e.target.closest('button, li[data-edit-fuel], li[data-edit-cost], li[data-edit-trip], [data-edit-acc], li[data-drive], li[data-edit-doc], li[data-edit-rec], li[data-edit-value], li[data-edit-log], li[data-edit-note], li[data-agenda], li[data-edit-dmg], .stat[data-open], li[data-hist-item], li[data-handover], li[data-edit-supply], [data-care-edit], li[data-edit-part], li[data-cal-item]');
   if (!t) return;
   if (t.dataset.view) { showView(t.dataset.view); if (t.dataset.sub) showSub(t.dataset.sub); return; }
   if (t.dataset.open === 'fuel') return fuelForm();
   if (t.dataset.open === 'cost') return costForm();
   if (t.dataset.open === 'budget') return budgetForm();
+  if (t.dataset.gal) { galFilter = t.dataset.gal; return renderGallery(); }
+  if (t.dataset.calDay) { calDay = t.dataset.calDay; return renderCalendar(); }
+  if (t.dataset.calShift) return calShift(Number(t.dataset.calShift));
+  if (t.dataset.calItem) return renderCalendar.list[t.dataset.calItem].open();
+  if (t.dataset.open === 'whatsnew') return whatsNewSheet(true);
+  if (t.dataset.open === 'part') return partForm();
+  if (t.dataset.editPart) return partForm(state.parts.find((x) => x.id === t.dataset.editPart));
   if (t.dataset.care) { state.care = { ...state.care, [t.dataset.care]: today() }; return save(); }
   if (t.dataset.careEdit) return careForm(t.dataset.careEdit);
   if (t.dataset.open === 'pool') return poolForm();
@@ -250,7 +259,7 @@ document.addEventListener('click', (e) => {
   if (t.dataset.park === 'compass') return parkCompass();
   if (t.dataset.open === 'story') return openStory(statYear);
   if (t.dataset.fav) return favTrip(renderFavRoutes.list[t.dataset.fav]);
-  if (t.dataset.park === 'clear') { state.parking = null; save(); }
+  if (t.dataset.park === 'clear') { (state.parking?.photos || []).forEach(photoDel); state.parking = null; save(); }
   if (t.dataset.prices === 'load') loadPrices();
   if (t.dataset.open === 'trip') return tripForm();
   if (t.dataset.editTrip) return tripForm(state.trips.find((x) => x.id === t.dataset.editTrip));
