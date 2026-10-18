@@ -159,7 +159,7 @@ wizard.addEventListener('close', () => { if (!state.onboarded) closeWizard(); })
 /* ---------- Einfarbige Symbole statt Emojis ---------- */
 
 // Emojis in allen Texten (auch Übersetzungen) werden auf dem Bildschirm durch Linien-Symbole ersetzt.
-const EMOJI_ICONS = { '⛽': 'fuel', '📍': 'pin', '🔧': 'wrench', '🛠': 'wrench', '🚨': 'siren', '🚗': 'car', '📎': 'clip', '🛢': 'drop', '🔁': 'repeat', '🔄': 'refresh', '💾': 'save', '🛞': 'tire', '✅': 'checks', '🗺': 'map', '🧾': 'receipt', '🏆': 'trophy', '🏅': 'medal', '📅': 'calendar', '▶': 'play', '⬇': 'download', '📄': 'doc', '📁': 'folder', '📝': 'pen', '🖨': 'printer', '📞': 'phone', '👍': 'okcircle', '❄': 'snow', '☀': 'sun', '📊': 'chart', '📉': 'trend', '🚑': 'medic', '🚓': 'shield', '✨': 'sparkle', '🚶': 'walk', '📷': 'camera', '📸': 'camera', '💡': 'bulb', '🛰': 'gps', '🧳': 'suitcase', '🌸': 'leaf', '🏷': 'tag', '🕘': 'clock', '⏱': 'clock', '⏰': 'clock', '👤': 'user', '🗑': 'trash', '🌱': 'leaf', '🍃': 'leaf', '🛣': 'road', '📒': 'book', '👋': 'smile', '🎉': 'flag', '⚠': 'alert', '🎯': 'target', '🧭': 'compass', '🌳': 'tree', '🌍': 'globe', '🔒': 'lock', '🔑': 'key', '🚆': 'train' };
+const EMOJI_ICONS = { '⛽': 'fuel', '📍': 'pin', '🔧': 'wrench', '🛠': 'wrench', '🚨': 'siren', '🚗': 'car', '📎': 'clip', '🛢': 'drop', '🔁': 'repeat', '🔄': 'refresh', '💾': 'save', '🛞': 'tire', '✅': 'checks', '🗺': 'map', '🧾': 'receipt', '🏆': 'trophy', '🏅': 'medal', '📅': 'calendar', '▶': 'play', '⬇': 'download', '📄': 'doc', '📁': 'folder', '📝': 'pen', '🖨': 'printer', '📞': 'phone', '👍': 'okcircle', '❄': 'snow', '☀': 'sun', '📊': 'chart', '📉': 'trend', '🚑': 'medic', '🚓': 'shield', '✨': 'sparkle', '🚶': 'walk', '📷': 'camera', '📸': 'camera', '💡': 'bulb', '🛰': 'gps', '🧳': 'suitcase', '🌸': 'leaf', '🏷': 'tag', '🕘': 'clock', '⏱': 'clock', '⏰': 'clock', '👤': 'user', '🗑': 'trash', '🌱': 'leaf', '🍃': 'leaf', '🛣': 'road', '📒': 'book', '👋': 'smile', '🎉': 'flag', '⚠': 'alert', '🎯': 'target', '🧭': 'compass', '🌳': 'tree', '🌍': 'globe', '🔒': 'lock', '🔑': 'key', '🚆': 'train', '🛡': 'shield', '🔎': 'search' };
 const EMOJI_RE = new RegExp(`(${Object.keys(EMOJI_ICONS).join('|')})[\uFE0E\uFE0F]?`, 'gu');
 const NO_SVG = new Set(['OPTION', 'TITLE', 'TEXTAREA', 'SCRIPT', 'STYLE']);
 
@@ -228,7 +228,8 @@ showView(TITLES[startView] && !['drive', 'report'].includes(startView) ? startVi
 iconize(document.body);
 applyTextSize();
 renderLinks();
-if (!state.onboarded && hasNoData()) openWizard();
+if (state.lock) showLock();
+if (!state.onboarded && hasNoData() && !state.lock) openWizard();
 handleUrlAction();
 
 // Zoomen mit zwei Fingern verhindern (Safari ignoriert user-scalable=no teilweise)

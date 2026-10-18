@@ -238,14 +238,14 @@
   dialog h3 { margin: 0 0 16px; font-size: 21px; letter-spacing: -.01em; }
   .field { display: block; margin-bottom: 12px; }
   .field > span { display: block; font-size: 13px; color: var(--muted); margin: 0 0 5px 4px; }
-  .field input, .field select, .field textarea {
+  .field input, .field select, .field textarea, .lock-pin input {
     width: 100%; font: inherit; font-size: 17px; color: var(--text);
     background: var(--surface-2); border: 1px solid var(--edge); border-radius: 16px; padding: 11px 14px;
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, .06);
     -webkit-appearance: none; appearance: none; min-height: 46px; outline: none;
     transition: border-color .2s, box-shadow .2s;
   }
-  .field input:focus, .field select:focus, .field textarea:focus {
+  .field input:focus, .field select:focus, .field textarea:focus, .lock-pin input:focus {
     border-color: color-mix(in srgb, var(--accent) 60%, transparent);
     box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent);
   }
@@ -333,6 +333,24 @@
   .warn-text { color: var(--warn); }
   .bad-text { color: var(--bad); }
   .good-text { color: var(--good); }
+  .swatches { display: flex; flex-wrap: wrap; gap: 10px; }
+  .swatch { width: 38px; height: 38px; min-height: 0; padding: 0; border-radius: 50%; background: var(--c); border: 2px solid transparent; box-shadow: inset 0 0 0 2px rgba(255,255,255,.25); }
+  .swatch[aria-pressed="true"] { border-color: var(--text); }
+  .seg-wrap { flex-wrap: wrap; margin-bottom: 12px; }
+  .hist-year { font-size: 22px; font-weight: 800; padding-top: 16px !important; border-bottom: 0 !important; }
+  canvas.sign { display: block; width: 100%; height: 130px; background: #fff; border-radius: 12px; border: 1px solid var(--edge); touch-action: none; }
+  dialog.lock-dlg { margin: 0; width: 100vw; max-width: 100vw; height: 100vh; max-height: 100vh; border-radius: 0; border: 0; background: var(--bg); color: var(--text); display: none; }
+  dialog.lock-dlg[open] { display: grid; place-items: center; animation: none; }
+  dialog.lock-dlg::backdrop { background: var(--bg); }
+  .lock-box { width: min(320px, 86vw); text-align: center; }
+  .lock-ico { font-size: 54px; color: var(--accent); margin-bottom: 6px; }
+  .lock-pin { display: flex; gap: 8px; margin-top: 12px; padding: 0; }
+  .lock-pin input { flex: 1; width: auto; min-width: 0; text-align: center; letter-spacing: .3em; }
+  .lock-pin button { flex: none; padding: 0 20px; }
+  .report .sig-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 28px; break-inside: avoid; }
+  .report img.sig { width: 100%; height: 90px; object-fit: contain; }
+  .report .sig-empty { height: 90px; }
+  .report .sig-line { border-top: 1px solid #15181d; padding-top: 4px; font-size: 12px; color: #5d6573; }
   .stat[data-open] { position: relative; cursor: pointer; }
   .stat[data-open]::after { content: '+'; position: absolute; top: 10px; right: 14px; font-weight: 700; color: var(--accent); }
   .dmg-car { position: relative; width: 190px; margin: 4px auto 0; aspect-ratio: 100 / 160; }
@@ -597,6 +615,7 @@
           <button data-view="stats"><span aria-hidden="true">📊</span>Statistik</button>
           <button data-view="value"><span aria-hidden="true">📉</span>Wert</button>
           <button data-view="awards"><span aria-hidden="true">🏆</span>Erfolge</button>
+          <button data-view="history"><span aria-hidden="true">🕘</span>Chronik</button>
         </div>
       </div>
       <div class="tile-group">
@@ -622,6 +641,7 @@
           <button data-view="notes"><span aria-hidden="true">📒</span>Notizbuch</button>
           <button data-view="fines"><span aria-hidden="true">🧾</span>Strafzettel</button>
           <button data-view="leasing"><span aria-hidden="true">🔑</span>Leasing</button>
+          <button data-view="handover"><span aria-hidden="true">📝</span>Übergabe</button>
         </div>
       </div>
     </div>
@@ -834,6 +854,22 @@
     </div>
   </section>
 
+  <!-- Chronik -->
+  <section class="view" id="view-history">
+    <button class="back" data-view="start">‹ Zurück</button>
+    <div class="seg seg-wrap" id="histSeg"></div>
+    <div class="card"><ul class="list" id="histList"></ul></div>
+    <p class="note" id="histMore" hidden>Es werden die neuesten 300 Einträge gezeigt.</p>
+  </section>
+
+  <!-- Übergabe-Protokoll -->
+  <section class="view" id="view-handover">
+    <button class="back" data-view="start">‹ Zurück</button>
+    <button class="primary" data-open="handover" style="width:100%">📝 Neues Übergabe-Protokoll</button>
+    <div class="card"><ul class="list" id="handoverList"></ul></div>
+    <p class="note">Mit km-Stand, Tank, Schlüsseln, offenen Schäden, Fotos und Unterschrift beider Seiten. Danach als PDF sichern oder ausdrucken.</p>
+  </section>
+
   <!-- Notizbuch -->
   <section class="view" id="view-notes">
     <button class="back" data-view="start">‹ Zurück</button>
@@ -970,6 +1006,10 @@
       <ul class="list" id="accList"></ul>
     </div>
     <div class="card">
+      <h2>Rettungskarte &amp; Rückrufe</h2>
+      <div id="rescueBody"></div>
+    </div>
+    <div class="card">
       <h2>Warnleuchten</h2>
       <p class="note" style="margin-top:0">Deine A-Klasse zeigt meist zusätzlich eine Textmeldung im Kombiinstrument. Die hat Vorrang. Im Zweifel: Betriebsanleitung im Handschuhfach.</p>
       <label class="field"><input id="lightSearch" type="search" placeholder="Suchen, z. B. Öl, Batterie …"></label>
@@ -1017,6 +1057,7 @@
       <button data-open="trip">＋ Fahrt eintragen</button>
       <button id="tripCsv">⬇︎ Export (Excel)</button>
     </div>
+    <button data-open="travel" style="width:100%;margin-bottom:12px">📄 Reisekosten-Abrechnung (PDF)</button>
     <div class="card">
       <h2>Aufgezeichnete Fahrten</h2>
       <ul class="list" id="driveList"></ul>
@@ -1162,6 +1203,12 @@
         <button type="button" data-theme="light">Hell</button>
         <button type="button" data-theme="dark">Dunkel</button>
       </div>
+      <p class="note" style="margin-bottom:6px">Akzentfarbe (gilt für das ausgewählte Fahrzeug)</p>
+      <div class="swatches" id="accentSeg"></div>
+    </div>
+    <div class="card">
+      <h2>App-Sperre</h2>
+      <div id="lockBody"></div>
     </div>
     <div class="card">
       <h2>Datensicherung</h2>
@@ -1203,6 +1250,18 @@
 <dialog id="wizard" class="wizard"><form method="dialog" id="wizardForm"></form></dialog>
 <dialog id="viewer" class="viewer"><img alt="Foto"></dialog>
 <dialog id="story" class="story" aria-label="Dein Autojahr"></dialog>
+<dialog id="lockDlg" class="lock-dlg" aria-label="Autobuch ist gesperrt">
+  <div class="lock-box">
+    <div class="lock-ico">🔒</div>
+    <h3>Autobuch ist gesperrt</h3>
+    <button type="button" class="primary" id="lockFace" style="width:100%">Mit Face ID entsperren</button>
+    <form id="lockForm" class="lock-pin">
+      <input id="lockPin" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN" aria-label="PIN">
+      <button>OK</button>
+    </form>
+    <p class="hint bad-text" id="lockErr" role="alert"></p>
+  </div>
+</dialog>
 <dialog id="sheet"><form method="dialog" id="sheetForm"></form></dialog>
 
 <script src="i18n.js"></script>
@@ -1218,6 +1277,7 @@
 <script src="js/10-kompass-rueckblick-rekorde.js"></script>
 <script src="js/11-schaeden-leasing-steuer.js"></script>
 <script src="js/12-kosten-vergleich-erinnerung.js"></script>
-<script src="js/13-assistent-start.js"></script>
+<script src="js/13-farbe-sperre-chronik.js"></script>
+<script src="js/14-assistent-start.js"></script>
 </body>
 </html>

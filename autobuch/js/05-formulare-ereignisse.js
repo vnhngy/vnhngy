@@ -8,6 +8,7 @@ const sheet = $('#sheet'), sheetForm = $('#sheetForm');
 let onSubmit = null;
 
 function openSheet(title, fieldsHtml, submit, { deleteFn, submitLabel = 'Speichern' } = {}) {
+  if (appLocked) return; // gesperrt: keine Formulare über dem Sperrbildschirm
   sheetForm.innerHTML = `<h3>${tr(title)}</h3>${fieldsHtml}
     <div class="form-btns"><button type="button" data-close>${tr('Abbrechen')}</button><button class="primary" value="ok">${tr(submitLabel)}</button></div>
     ${deleteFn ? `<button type="button" class="link danger" data-delete style="width:100%;margin-top:12px">${tr('Eintrag löschen')}</button>` : ''}`;
@@ -162,7 +163,7 @@ function maintForm(m) {
 
 /* ---------- Ereignisse ---------- */
 
-const TITLES = { search: 'Suchen', damages: 'Schäden', leasing: 'Leasing', specs: 'Steckbrief', notes: 'Notizbuch', agenda: 'Termine', yearReport: 'Jahresbericht', fines: 'Strafzettel & Fristen', value: 'Wertverlauf', logs: 'Öl & Reifendruck', awards: 'Erfolge', stats: 'Statistik', checks: 'Checklisten', plan: 'Reiseplaner', garages: 'Werkstätten', report: 'Verkaufs-Mappe', drive: 'Fahrt läuft', help: 'Notfall & Hilfe', start: 'Übersicht', fuel: 'Tanken', trips: 'Fahrtenbuch', maint: 'Wartung', costs: 'Kosten', more: 'Mehr' };
+const TITLES = { search: 'Suchen', history: 'Chronik', handover: 'Übergabe-Protokoll', damages: 'Schäden', leasing: 'Leasing', specs: 'Steckbrief', notes: 'Notizbuch', agenda: 'Termine', yearReport: 'Jahresbericht', fines: 'Strafzettel & Fristen', value: 'Wertverlauf', logs: 'Öl & Reifendruck', awards: 'Erfolge', stats: 'Statistik', checks: 'Checklisten', plan: 'Reiseplaner', garages: 'Werkstätten', report: 'Verkaufs-Mappe', drive: 'Fahrt läuft', help: 'Notfall & Hilfe', start: 'Übersicht', fuel: 'Tanken', trips: 'Fahrtenbuch', maint: 'Wartung', costs: 'Kosten', more: 'Mehr' };
 
 function showSub(sub) {
   $('#sub-termine').hidden = sub !== 'termine';
@@ -180,12 +181,22 @@ function showView(v) {
 }
 
 document.addEventListener('click', (e) => {
-  const t = e.target.closest('button, li[data-edit-fuel], li[data-edit-cost], li[data-edit-trip], [data-edit-acc], li[data-drive], li[data-edit-doc], li[data-edit-rec], li[data-edit-value], li[data-edit-log], li[data-edit-note], li[data-agenda], li[data-edit-dmg], .stat[data-open]');
+  const t = e.target.closest('button, li[data-edit-fuel], li[data-edit-cost], li[data-edit-trip], [data-edit-acc], li[data-drive], li[data-edit-doc], li[data-edit-rec], li[data-edit-value], li[data-edit-log], li[data-edit-note], li[data-agenda], li[data-edit-dmg], .stat[data-open], li[data-hist-item], li[data-handover]');
   if (!t) return;
-  if (t.dataset.view) return showView(t.dataset.view);
+  if (t.dataset.view) { showView(t.dataset.view); if (t.dataset.sub) showSub(t.dataset.sub); return; }
   if (t.dataset.open === 'fuel') return fuelForm();
   if (t.dataset.open === 'cost') return costForm();
   if (t.dataset.open === 'budget') return budgetForm();
+  if (t.dataset.accent) { state.car.accent = t.dataset.accent; return save(); }
+  if (t.dataset.lock === 'setup') return lockSetup();
+  if (t.dataset.lock === 'off') { if (confirm(tr('App-Sperre ausschalten?'))) { state.lock = null; save(); } return; }
+  if (t.dataset.hist) { histFilter = t.dataset.hist; return renderHistory(); }
+  if (t.dataset.histItem) return renderHistory.items[t.dataset.histItem].open();
+  if (t.dataset.dismiss) { state.dismissed = [...(state.dismissed || []), t.dataset.dismiss]; return save(); }
+  if (t.dataset.open === 'handover') return handoverForm();
+  if (t.dataset.handover) return handoverReport(state.handovers.find((x) => x.id === t.dataset.handover));
+  if (t.dataset.delHandover) return deleteHandover(t.dataset.delHandover);
+  if (t.dataset.open === 'travel') return travelForm();
   if (t.dataset.open === 'km') return kmForm();
   if (t.dataset.shareTrip) return shareTripCost(state.trips.find((x) => x.id === t.dataset.shareTrip));
   if (t.dataset.open === 'checkIcs') return downloadFile(new File([checkReminderFile()], 'autobuch-monats-check.ics', { type: 'text/calendar' }));

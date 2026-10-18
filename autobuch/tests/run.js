@@ -198,7 +198,7 @@ test('Tank-Prognose wird berechnet', async ({ page }) => {
 
 test('Übersetzungen vollständig (Englisch, Vietnamesisch)', async ({ page }) => {
   await seed(page);
-  const views = ['start', 'fuel', 'trips', 'maint', 'costs', 'more', 'help', 'stats', 'checks', 'plan', 'garages', 'fines', 'value', 'logs', 'awards', 'notes', 'agenda', 'damages', 'leasing', 'specs'];
+  const views = ['start', 'fuel', 'trips', 'maint', 'costs', 'more', 'help', 'stats', 'checks', 'plan', 'garages', 'fines', 'value', 'logs', 'awards', 'notes', 'agenda', 'damages', 'leasing', 'specs', 'history', 'handover'];
   for (const lang of ['en', 'vi']) {
     const missing = await page.evaluate(([l, vs]) => {
       MISSING.clear(); setLang(l);
@@ -300,7 +300,7 @@ test('Neue Formulare sind übersetzt', async ({ page }) => {
   const missing = await page.evaluate(async () => {
     setLang('en'); MISSING.clear();
     state.trips.push({ id: 't1', date: today(), type: 'Privat', from: 'A', to: 'B', startKm: 1, endKm: 2, purpose: '', partner: '' });
-    fuelForm(); sheet.close(); budgetForm(); sheet.close(); noteForm(); sheet.close(); tripForm(state.trips[0]); sheet.close(); damageForm(); sheet.close(); leasingForm(); sheet.close(); commuteForm(); sheet.close(); specsForm(); sheet.close(); lockscreenSheet(); sheet.close(); state.leasing = { start: addDays(-400), end: addDays(400), kmStart: 1, kmPerYear: 10, rate: 5 };
+    fuelForm(); sheet.close(); budgetForm(); sheet.close(); noteForm(); sheet.close(); tripForm(state.trips[0]); sheet.close(); damageForm(); sheet.close(); leasingForm(); sheet.close(); commuteForm(); sheet.close(); specsForm(); sheet.close(); lockscreenSheet(); sheet.close(); handoverForm(); sheet.close(); travelForm(); sheet.close(); lockSetup(); sheet.close(); state.leasing = { start: addDays(-400), end: addDays(400), kmStart: 1, kmPerYear: 10, rate: 5 };
     state.budget = { monthly: 10 }; save();
     await buildYearReport(String(new Date().getFullYear()));
     openStory(String(new Date().getFullYear())); for (let i = 0; i < story.cards.length; i++) { story.i = i; drawStory(); } document.querySelector('#story').close();
@@ -436,7 +436,7 @@ test('Notfall-Sperrbildschirm wird erzeugt', async ({ page }) => {
 });
 
 test('Kacheln nach Kategorien, leere Kategorie wird ausgeblendet', async ({ page }) => {
-  await page.evaluate(() => { closeWizard(); state.home = { order: null, hidden: [], tiles: ['notes', 'fines', 'leasing'] }; save(); });
+  await page.evaluate(() => { closeWizard(); state.home = { order: null, hidden: [], tiles: ['notes', 'fines', 'leasing', 'handover'] }; save(); });
   const r = await page.evaluate(() => [...document.querySelectorAll('#view-start .tile-group')].map((g) => [g.querySelector('h3').textContent, g.hidden]));
   assert.deepEqual(r, [['Auswerten', false], ['Planen', false], ['Fahrzeug & Pflege', false], ['Unterlagen', true]]);
 });
@@ -497,6 +497,108 @@ test('Hinweis, wenn die App leer in Safari geöffnet wird', async ({ page }) => 
   assert.match(await page.innerText('#notices'), /Safari/); // Test-Browser gibt sich als iPhone aus, ohne Home-Bildschirm-Modus
   await seed(page);
   assert.doesNotMatch(await page.innerText('#notices'), /Safari/);
+});
+
+test('Akzentfarbe gilt pro Fahrzeug', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => showView('more'));
+  await page.click('#accentSeg [data-accent="red"]');
+  assert.equal(await page.evaluate(() => document.documentElement.style.getPropertyValue('--accent')), '#9b4545');
+  const other = await page.evaluate(() => {
+    state.otherCars.x = freshCar({ name: 'Zweitwagen' }); switchCar('x');
+    return document.documentElement.style.getPropertyValue('--accent');
+  });
+  assert.equal(other, ''); // Zweitwagen hat die Standardfarbe
+});
+
+test('App-Sperre mit Face ID (Passkey) und Ersatz-PIN', async ({ page, ctx }) => {
+  const cdp = await ctx.newCDPSession(page);
+  await cdp.send('WebAuthn.enable');
+  await cdp.send('WebAuthn.addVirtualAuthenticator', { options: { protocol: 'ctap2', transport: 'internal', hasResidentKey: true, hasUserVerification: true, isUserVerified: true, automaticPresenceSimulation: true } });
+  await seed(page);
+  await page.evaluate(() => showView('more'));
+  await page.click('#lockBody button[data-lock="setup"]');
+  await page.fill('#sheetForm [name=pin]', '1234');
+  await page.fill('#sheetForm [name=pin2]', '1234');
+  await page.click('#sheetForm button.primary');
+  await page.waitForFunction(() => state.lock && state.lock.pinHash);
+  assert.ok(await page.evaluate(() => !!state.lock.credId), 'Passkey angelegt');
+
+  await page.reload();
+  await page.waitForFunction(() => !document.querySelector('#lockDlg').open || appLocked === false); // Face ID entsperrt automatisch
+  await page.evaluate(() => showLock(false));
+  assert.equal(await page.evaluate(() => document.querySelector('#lockDlg').open), true);
+  await page.evaluate(() => openSheet('Test', '', () => {}));
+  assert.equal(await page.evaluate(() => sheet.open), false, 'keine Formulare über der Sperre');
+  await page.fill('#lockPin', '9999');
+  await page.press('#lockPin', 'Enter');
+  await page.waitForFunction(() => document.querySelector('#lockErr').textContent.length > 0);
+  await page.fill('#lockPin', '1234');
+  await page.press('#lockPin', 'Enter');
+  await page.waitForFunction(() => !document.querySelector('#lockDlg').open);
+});
+
+test('Chronik mit Filtern', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => { state.trips.push({ id: 't1', date: today(), type: 'Privat', from: 'A', to: 'B', startKm: 1, endKm: 5, purpose: '', partner: '' }); save(); showView('history'); });
+  const all = await page.innerText('#histList');
+  assert.match(all, /Getankt/);
+  assert.match(all, /Bremsen vorne/);
+  assert.doesNotMatch(all, /A → B/); // Fahrten nur im eigenen Filter
+  await page.click('#histSeg [data-hist="trip"]');
+  assert.match(await page.innerText('#histList'), /A → B/);
+  await page.click('#histSeg [data-hist="fuel"]');
+  assert.doesNotMatch(await page.innerText('#histList'), /Bremsen/);
+});
+
+test('Saison- und Versicherungs-Hinweise im Oktober', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-10-20T10:00:00'));
+  await page.reload();
+  await seed(page);
+  const n = await page.innerText('#notices');
+  assert.match(n, /Winterreifen/);
+  assert.match(n, /30\. November/);
+  await page.click('#notices button[data-dismiss*="winter-tires"]');
+  assert.doesNotMatch(await page.innerText('#notices'), /Zeit für Winterreifen/);
+  assert.ok(await page.evaluate(() => agendaItems().some((x) => x.date === '2026-11-30')));
+});
+
+test('Übergabe-Protokoll mit Unterschrift', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => showView('handover'));
+  await page.click('#view-handover button[data-open="handover"]');
+  await page.fill('#sheetForm [name=from]', 'Ich');
+  await page.fill('#sheetForm [name=to]', 'Käufer');
+  await page.locator('#signFrom').scrollIntoViewIfNeeded();
+  const box = await page.locator('#signFrom').boundingBox();
+  await page.mouse.move(box.x + 20, box.y + 40); await page.mouse.down();
+  await page.mouse.move(box.x + 120, box.y + 80, { steps: 5 }); await page.mouse.move(box.x + 200, box.y + 30, { steps: 5 }); await page.mouse.up();
+  await page.click('#sheetForm button.primary');
+  await page.waitForSelector('#view-report.active');
+  const h = await page.evaluate(() => state.handovers[0]);
+  assert.ok(h.signFrom && !h.signTo, JSON.stringify(h));
+  await page.waitForFunction((id) => photoGet(id).then((b) => !!b), h.signFrom);
+  assert.match(await page.innerText('#reportBody'), /Übergabe-Protokoll[\s\S]*Käufer/);
+  assert.equal(await page.evaluate(() => document.querySelectorAll('#reportBody img.sig').length), 1);
+});
+
+test('Reisekosten-Abrechnung und Rettungskarte', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => {
+    state.trips.push({ id: 'g1', date: today(), type: 'Geschäftlich', from: 'Büro', to: 'Kunde', startKm: 1000, endKm: 1100, purpose: 'Termin', partner: 'Firma X' },
+      { id: 'g2', date: today(), type: 'Privat', from: 'A', to: 'B', startKm: 1100, endKm: 1150, purpose: '', partner: '' });
+    save(); showView('trips');
+  });
+  await page.click('#view-trips button[data-open="travel"]');
+  await page.evaluate(() => { sheetForm.from.value = addDays(-5); });
+  await page.click('#sheetForm button.primary');
+  await page.waitForSelector('#view-report.active');
+  const rep = await page.innerText('#reportBody');
+  assert.match(rep, /Reisekosten-Abrechnung/);
+  assert.match(rep, /Firma X/);
+  assert.match(rep, /30,00/); // 100 km × 0,30 €
+  assert.doesNotMatch(rep, /A → B/);
+  assert.match(await page.getAttribute('#rescueBody a', 'href'), /Rettungskarte%20Mercedes%20A%20180%202015/);
 });
 
 test('Keine bunten Emojis auf dem Bildschirm', async ({ page }) => {

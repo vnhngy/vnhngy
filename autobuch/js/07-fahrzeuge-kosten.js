@@ -95,7 +95,7 @@ function carPhotoForm() {
 function deleteCar(id) {
   const d = state.otherCars[id];
   if (!d || !confirm(tr('„{name}“ mit allen Einträgen löschen? Das kann nicht rückgängig gemacht werden.', { name: d.car.name || tr('Auto') }))) return;
-  [...(d.costs || []), ...(d.fuel || []), ...(d.notes || []), ...(d.damages || []), ...(d.accidents || []), ...(d.fines || [])].flatMap((x) => x.photos || []).forEach(photoDel);
+  [...(d.costs || []), ...(d.fuel || []), ...(d.notes || []), ...(d.damages || []), ...(d.handovers || []).map((h) => ({ photos: [...(h.photos || []), h.signFrom, h.signTo].filter(Boolean) })), ...(d.accidents || []), ...(d.fines || [])].flatMap((x) => x.photos || []).forEach(photoDel);
   if (d.car.photo) photoDel(d.car.photo);
   delete state.otherCars[id];
   sheet.close();
@@ -111,6 +111,7 @@ function renderNotices() {
   if (bn) out.push(bn);
   const ln = leasingNotice();
   if (ln) out.push(ln);
+  out.push(seasonNotices());
   const open = state.fines.filter((f) => !f.paid && f.due && daysUntil(f.due) <= 7);
   if (open.length) {
     out.push(`<div class="card notice"><span class="ico">🧾</span><div class="grow">

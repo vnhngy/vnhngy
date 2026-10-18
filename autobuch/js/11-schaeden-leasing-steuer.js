@@ -194,6 +194,7 @@ const SPEC_FIELDS = [
   ['oil', 'Motoröl', 'z. B. 5W-30, MB 229.5'], ['oilQty', 'Ölmenge mit Filter', 'z. B. 5,5 Liter'], ['power', 'Leistung', 'z. B. 90 kW / 122 PS'],
   ['engine', 'Hubraum', 'z. B. 1.595 cm³'], ['color', 'Farbe / Farbcode', 'z. B. Polarsilber 761'], ['battery', 'Batterie', 'z. B. 12 V, 70 Ah, AGM'],
   ['wipers', 'Scheibenwischer', 'z. B. 650 / 475 mm'], ['keyNo', 'Schlüsselnummer', ''], ['radioCode', 'Radio-Code', ''],
+  ['hsn', 'Herstellerschlüssel (HSN, Feld 2.1)', 'z. B. 1313'], ['tsn', 'Typschlüssel (TSN, Feld 2.2)', 'z. B. BJH'],
 ];
 
 function specRows() {

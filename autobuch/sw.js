@@ -1,6 +1,6 @@
 // Offline-Cache für die App-Dateien. Bei Änderungen an der App VERSION erhöhen.
-const VERSION = 'autobuch-v27';
-const FILES = ['./', './index.html', './i18n.js', './js/01-grundlagen.js', './js/02-tanken-fahrten-reifen.js', './js/03-fotos-notfall-gps.js', './js/04-dokumente-export.js', './js/05-formulare-ereignisse.js', './js/06-werkzeuge.js', './js/07-fahrzeuge-kosten.js', './js/08-uebersicht-suche.js', './js/09-notizen-termine-budget.js', './js/10-kompass-rueckblick-rekorde.js', './js/11-schaeden-leasing-steuer.js', './js/12-kosten-vergleich-erinnerung.js', './js/13-assistent-start.js', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
+const VERSION = 'autobuch-v28';
+const FILES = ['./', './index.html', './i18n.js', './js/01-grundlagen.js', './js/02-tanken-fahrten-reifen.js', './js/03-fotos-notfall-gps.js', './js/04-dokumente-export.js', './js/05-formulare-ereignisse.js', './js/06-werkzeuge.js', './js/07-fahrzeuge-kosten.js', './js/08-uebersicht-suche.js', './js/09-notizen-termine-budget.js', './js/10-kompass-rueckblick-rekorde.js', './js/11-schaeden-leasing-steuer.js', './js/12-kosten-vergleich-erinnerung.js', './js/13-farbe-sperre-chronik.js', './js/14-assistent-start.js', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => c.addAll(FILES)).then(() => self.skipWaiting()));

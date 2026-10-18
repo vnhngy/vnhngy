@@ -40,6 +40,14 @@ Alle Daten bleiben auf dem iPhone (localStorage).
 - **Monats-Check:** wiederkehrender Kalendertermin (Reifendruck, Öl, Licht …)
 - **Fahrzeugvergleich:** alle Autos der letzten 12 Monate nebeneinander
 - **Safari-Hinweis:** warnt, wenn die App leer in Safari statt vom Home-Bildschirm geöffnet wird
+- **Akzentfarbe:** pro Fahrzeug wählbar (7 gedeckte Farben)
+- **App-Sperre:** Face ID per Passkey, Ersatz-PIN; sperrt erneut nach 1 Minute im Hintergrund (Sichtschutz, keine Verschlüsselung)
+- **Chronik:** alle Ereignisse des Autos in einer Zeitleiste, mit Filtern
+- **Saison-Hinweise:** Winter-/Sommerreifen, Winter-, Frühjahrs- und Urlaubs-Check
+- **Versicherungs-Stichtag:** Hinweis ab Mitte Oktober und Termin am 30. November
+- **Rettungskarte & Rückrufe:** Suche nach der Rettungskarte des Modells, KBA-Rückrufdatenbank, HSN/TSN im Steckbrief
+- **Übergabe-Protokoll:** km, Tank, Schlüssel, Zubehör, Schäden, Fotos und Unterschriften, als PDF
+- **Reisekosten-Abrechnung:** Geschäftsfahrten eines Zeitraums als PDF
 - **Einrichtungs-Assistent:** erscheint beim ersten Start (Sprache, Auto, Wartung, Reifen, Notfall);
   jederzeit erneut unter **Mehr → Einrichtungs-Assistent**
 - **Tanken:** Verbrauch (l/100 km) zwischen vollen Tankfüllungen, Ø-Literpreis
@@ -77,7 +85,7 @@ wird die Sprache des iPhones übernommen. Zahlen- und Datumsformate folgen der S
 
 Dateien:
 - `index.html`: Aufbau, Design und Symbole
-- `js/01-…` bis `js/13-…`: Programmlogik, nach Bereichen aufgeteilt und in dieser Reihenfolge geladen;
+- `js/01-…` bis `js/14-…`: Programmlogik, nach Bereichen aufgeteilt und in dieser Reihenfolge geladen;
   alle sichtbaren Texte laufen über `tr('deutscher Text')`
 - `icon-quelle.svg`: Vorlage für das App-Symbol (daraus entstehen `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`)
 - `i18n.js`: Sprachumschaltung und Übersetzungen (`T`: `'Deutsch': ['English', 'Tiếng Việt']`)
