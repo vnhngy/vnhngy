@@ -1,0 +1,813 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Autobuch</title>
+<meta name="description" content="Tankbuch, Wartungsplaner und Kostenübersicht für dein Auto">
+<meta name="theme-color" content="#101318">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Autobuch">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<style>
+  :root {
+    --bg: #f2f3f6;
+    --surface: #ffffff;
+    --surface-2: #f6f7f9;
+    --line: #e2e5ea;
+    --text: #14171c;
+    --muted: #5d6573;
+    --accent: #0a7bc2;
+    --accent-ink: #ffffff;
+    --bar: #3d8fd1;
+    --good: #1d8a4a;
+    --warn: #b06d00;
+    --bad: #c62f2f;
+    --shadow: 0 1px 2px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #101318;
+      --surface: #1a1e25;
+      --surface-2: #222731;
+      --line: #2c323d;
+      --text: #eef1f5;
+      --muted: #9aa3b2;
+      --accent: #5ec8ff;
+      --accent-ink: #0b1118;
+      --bar: #5ec8ff;
+      --good: #4cc47e;
+      --warn: #f0b03c;
+      --bad: #ff6b6b;
+      --shadow: none;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #101318; --surface: #1a1e25; --surface-2: #222731; --line: #2c323d;
+    --text: #eef1f5; --muted: #9aa3b2; --accent: #5ec8ff; --accent-ink: #0b1118;
+    --bar: #5ec8ff; --good: #4cc47e; --warn: #f0b03c; --bad: #ff6b6b; --shadow: none;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.4 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  header {
+    position: sticky; top: 0; z-index: 5;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+    padding: calc(env(safe-area-inset-top) + 12px) 16px 10px;
+  }
+  header h1 { font-size: 30px; line-height: 1.1; margin: 0; letter-spacing: -.02em; }
+  header .sub { color: var(--muted); font-size: 14px; margin-top: 2px; }
+  main {
+    max-width: 640px; margin: 0 auto;
+    padding: 4px 16px calc(env(safe-area-inset-bottom) + 96px);
+  }
+  .view { display: none; }
+  .view.active { display: block; }
+
+  .card {
+    background: var(--surface); border-radius: 16px; padding: 16px;
+    margin: 0 0 12px; box-shadow: var(--shadow);
+  }
+  .card h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 10px; font-weight: 600; }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .stat { background: var(--surface); border-radius: 16px; padding: 14px 16px; box-shadow: var(--shadow); }
+  .stat .label { font-size: 13px; color: var(--muted); }
+  .stat .value { font-size: 26px; font-weight: 700; letter-spacing: -.02em; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .stat .value small { font-size: 14px; font-weight: 500; color: var(--muted); }
+  .stats { margin-bottom: 12px; }
+
+  .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  button {
+    font: inherit; border: 0; cursor: pointer; border-radius: 12px;
+    padding: 12px 14px; background: var(--surface-2); color: var(--text);
+  }
+  button.primary { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  button.small { padding: 7px 12px; font-size: 14px; border-radius: 10px; }
+  button.danger { color: var(--bad); }
+  button.link { background: none; color: var(--accent); padding: 4px 0; }
+
+  .list { list-style: none; margin: 0; padding: 0; }
+  .list li { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+  .list li:first-child { border-top: 0; padding-top: 0; }
+  .list li:last-child { padding-bottom: 0; }
+  .list .grow { flex: 1; min-width: 0; }
+  .list .title { font-weight: 600; }
+  .list .meta { font-size: 14px; color: var(--muted); }
+  .list .amount { font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+  .list .amount .meta { font-weight: 400; }
+  .empty { color: var(--muted); text-align: center; padding: 18px 0; }
+
+  .pill {
+    display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600;
+    padding: 3px 8px; border-radius: 999px; white-space: nowrap;
+    background: color-mix(in srgb, currentColor 14%, transparent);
+  }
+  .pill.ok { color: var(--good); }
+  .pill.soon { color: var(--warn); }
+  .pill.over { color: var(--bad); }
+  .pill.unknown { color: var(--muted); }
+
+  .maint-item { display: block !important; }
+  .maint-head { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+  .maint-body { font-size: 14px; color: var(--muted); margin-top: 4px; }
+  .maint-body b { color: var(--text); font-weight: 600; }
+  .maint-btns { display: flex; gap: 8px; margin-top: 10px; }
+
+  /* Diagramm */
+  .chart { position: relative; }
+  .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .chart .axis { fill: var(--muted); font-size: 11px; }
+  .chart .grid { stroke: var(--line); stroke-width: 1; }
+  .chart .bar { fill: var(--bar); }
+  .chart .bar.dim { opacity: .35; }
+  .chart .hit { fill: transparent; cursor: pointer; }
+  .tip {
+    position: absolute; pointer-events: none; transform: translate(-50%, -100%);
+    background: var(--text); color: var(--bg); font-size: 13px; padding: 6px 9px; border-radius: 8px;
+    white-space: nowrap; display: none; font-variant-numeric: tabular-nums;
+  }
+  details.table-view { margin-top: 10px; font-size: 14px; }
+  details.table-view summary { color: var(--accent); cursor: pointer; }
+  details.table-view table { width: 100%; border-collapse: collapse; margin-top: 8px; font-variant-numeric: tabular-nums; }
+  details.table-view td { padding: 4px 0; border-top: 1px solid var(--line); }
+  details.table-view td:last-child { text-align: right; }
+
+  /* Tab-Leiste */
+  nav.tabs {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+    border-top: 1px solid var(--line);
+    padding: 6px 4px calc(env(safe-area-inset-bottom) + 6px);
+  }
+  nav.tabs button {
+    background: none; border-radius: 10px; padding: 4px 0; color: var(--muted);
+    display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11px;
+  }
+  nav.tabs button svg { width: 26px; height: 26px; }
+  nav.tabs button[aria-selected="true"] { color: var(--accent); }
+
+  /* Formular-Blatt */
+  dialog {
+    border: 0; padding: 0; margin: auto auto 0; width: 100%; max-width: 640px;
+    background: var(--surface); color: var(--text); border-radius: 20px 20px 0 0;
+    max-height: 92vh;
+  }
+  dialog::backdrop { background: rgba(0,0,0,.45); }
+  dialog form { padding: 18px 16px calc(env(safe-area-inset-bottom) + 18px); }
+  dialog h3 { margin: 0 0 14px; font-size: 20px; }
+  .field { display: block; margin-bottom: 12px; }
+  .field > span { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+  .field input, .field select {
+    width: 100%; font: inherit; font-size: 17px; color: var(--text);
+    background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px;
+    -webkit-appearance: none; appearance: none; min-height: 44px;
+  }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .check { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .check input { width: 22px; height: 22px; accent-color: var(--accent); }
+  .hint { font-size: 13px; color: var(--muted); margin: -4px 0 12px; }
+  .form-btns { display: flex; gap: 10px; margin-top: 6px; }
+  .form-btns button { flex: 1; }
+  .note { font-size: 13px; color: var(--muted); }
+  .seg { display: flex; background: var(--surface-2); border-radius: 10px; padding: 3px; gap: 3px; }
+  .seg button { flex: 1; padding: 8px; font-size: 14px; background: none; border-radius: 8px; }
+  .seg button[aria-pressed="true"] { background: var(--surface); box-shadow: var(--shadow); font-weight: 600; }
+
+  @media (min-width: 560px) { .stats { grid-template-columns: repeat(4, 1fr); } }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="viewTitle">Übersicht</h1>
+  <div class="sub" id="carLine"></div>
+</header>
+
+<main>
+  <!-- Übersicht -->
+  <section class="view active" id="view-start">
+    <div class="stats">
+      <div class="stat"><div class="label">Kilometerstand</div><div class="value" id="sKm">–</div></div>
+      <div class="stat"><div class="label">Ø Verbrauch</div><div class="value" id="sCons">–</div></div>
+      <div class="stat"><div class="label">Kosten <span id="sYearLabel"></span></div><div class="value" id="sYear">–</div></div>
+      <div class="stat"><div class="label">Kosten pro km</div><div class="value" id="sPerKm">–</div></div>
+    </div>
+    <div class="actions">
+      <button class="primary" data-open="fuel">⛽ Tanken</button>
+      <button class="primary" data-open="cost">€ Ausgabe</button>
+    </div>
+    <div class="card">
+      <h2>Als Nächstes fällig</h2>
+      <ul class="list" id="startMaint"></ul>
+    </div>
+    <div class="card">
+      <h2>Kosten der letzten 12 Monate</h2>
+      <div class="chart" id="costChart"></div>
+    </div>
+  </section>
+
+  <!-- Tanken -->
+  <section class="view" id="view-fuel">
+    <div class="stats">
+      <div class="stat"><div class="label">Ø Verbrauch</div><div class="value" id="fCons">–</div></div>
+      <div class="stat"><div class="label">Ø Literpreis</div><div class="value" id="fPrice">–</div></div>
+    </div>
+    <div class="actions" style="grid-template-columns:1fr">
+      <button class="primary" data-open="fuel">⛽ Tankfüllung eintragen</button>
+    </div>
+    <div class="card">
+      <h2>Tankfüllungen</h2>
+      <ul class="list" id="fuelList"></ul>
+    </div>
+    <p class="note">Der Verbrauch wird zwischen zwei <b>vollen</b> Tankfüllungen berechnet. Teilbetankungen werden mitgezählt.</p>
+  </section>
+
+  <!-- Wartung -->
+  <section class="view" id="view-maint">
+    <div class="card">
+      <h2>Wartung &amp; Termine</h2>
+      <ul class="list" id="maintList"></ul>
+    </div>
+    <div class="actions" style="grid-template-columns:1fr">
+      <button data-open="maintNew">＋ Eigenen Termin hinzufügen</button>
+    </div>
+    <p class="note">Die Intervalle sind Richtwerte für die A-Klasse (W176). Maßgeblich sind dein Serviceheft und die Service-Anzeige im Kombiinstrument. Du kannst jedes Intervall über „Bearbeiten“ anpassen.</p>
+  </section>
+
+  <!-- Kosten -->
+  <section class="view" id="view-costs">
+    <div class="stats">
+      <div class="stat"><div class="label">Dieses Jahr gesamt</div><div class="value" id="cYear">–</div></div>
+      <div class="stat"><div class="label">davon Kraftstoff</div><div class="value" id="cFuel">–</div></div>
+    </div>
+    <div class="actions" style="grid-template-columns:1fr">
+      <button class="primary" data-open="cost">€ Ausgabe eintragen</button>
+    </div>
+    <div class="card">
+      <h2>Nach Kategorie (dieses Jahr)</h2>
+      <ul class="list" id="catList"></ul>
+    </div>
+    <div class="card">
+      <h2>Ausgaben</h2>
+      <ul class="list" id="costList"></ul>
+    </div>
+  </section>
+
+  <!-- Mehr -->
+  <section class="view" id="view-more">
+    <div class="card">
+      <h2>Mein Auto</h2>
+      <form id="carForm">
+        <label class="field"><span>Bezeichnung</span><input name="name" required></label>
+        <label class="field"><span>Ausstattung</span><input name="variant"></label>
+        <div class="row2">
+          <label class="field"><span>Baujahr</span><input name="year" inputmode="numeric"></label>
+          <label class="field"><span>Kraftstoff</span>
+            <select name="fuel"><option>Benzin</option><option>Diesel</option></select>
+          </label>
+        </div>
+        <div class="row2">
+          <label class="field"><span>Kilometerstand</span><input name="km" inputmode="numeric" placeholder="z. B. 98500"></label>
+          <label class="field"><span>Tankgröße (Liter)</span><input name="tank" inputmode="decimal"></label>
+        </div>
+        <button class="primary" style="width:100%">Speichern</button>
+      </form>
+    </div>
+    <div class="card">
+      <h2>Darstellung</h2>
+      <div class="seg" id="themeSeg">
+        <button type="button" data-theme="auto">Automatisch</button>
+        <button type="button" data-theme="light">Hell</button>
+        <button type="button" data-theme="dark">Dunkel</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Datensicherung</h2>
+      <p class="note" style="margin-top:0">Deine Daten liegen nur auf diesem iPhone. Sichere sie ab und zu, z. B. in iCloud Drive.</p>
+      <div class="actions" style="margin:0">
+        <button id="exportBtn">Sichern</button>
+        <button id="importBtn">Wiederherstellen</button>
+      </div>
+      <input type="file" id="importFile" accept="application/json,.json" hidden>
+    </div>
+    <div class="card">
+      <h2>Auf den Home-Bildschirm</h2>
+      <p class="note" style="margin:0">In Safari unten auf <b>Teilen</b> (Quadrat mit Pfeil) tippen, dann <b>„Zum Home-Bildschirm“</b>. Danach startet Autobuch wie eine normale App, auch ohne Internet.</p>
+    </div>
+    <button class="danger" id="resetBtn" style="width:100%;background:var(--surface)">Alle Daten löschen</button>
+  </section>
+</main>
+
+<nav class="tabs" role="tablist">
+  <button role="tab" data-view="start" aria-selected="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18a8 8 0 1 1 16 0"/><path d="M12 18l4-6"/><circle cx="12" cy="18" r="1.2" fill="currentColor"/></svg>Übersicht</button>
+  <button role="tab" data-view="fuel" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16"/><path d="M3 21h14"/><path d="M7 8h6"/><path d="M15 10h2a2 2 0 0 1 2 2v4a1.5 1.5 0 0 0 3 0V8l-3-3"/></svg>Tanken</button>
+  <button role="tab" data-view="maint" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/></svg>Wartung</button>
+  <button role="tab" data-view="costs" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>Kosten</button>
+  <button role="tab" data-view="more" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Mehr</button>
+</nav>
+
+<dialog id="sheet"><form method="dialog" id="sheetForm"></form></dialog>
+
+<script>
+'use strict';
+
+/* ---------- Daten ---------- */
+
+const STORE_KEY = 'autobuch-v1';
+const COST_CATS = ['Werkstatt', 'Versicherung', 'Kfz-Steuer', 'Reifen', 'Pflege', 'Parken', 'Sonstiges'];
+
+// Richtwerte für eine Mercedes A-Klasse W176 (Baujahr 2015). Im Serviceheft prüfen.
+function defaultMaint(fuel) {
+  const items = [
+    { id: 'service', name: 'Mercedes-Service (ASSYST)', months: 12, km: 25000, alt: ['A', 'B'], altLabel: 'Service',
+      info: 'Service A und B wechseln sich ab. Die genaue Fälligkeit zeigt auch das Kombiinstrument an.' },
+    { id: 'hu', name: 'Hauptuntersuchung (HU/TÜV)', months: 24, km: 0, info: 'Alle 2 Jahre. Den Monat siehst du auf der Plakette am Kennzeichen.' },
+    { id: 'brake', name: 'Bremsflüssigkeit wechseln', months: 24, km: 0, info: 'Wird meist beim Service mitgemacht.' },
+    { id: 'tires', name: 'Reifenwechsel', months: 6, km: 0, alt: ['Winterreifen', 'Sommerreifen'], altLabel: '',
+      info: 'Faustregel: von O bis O (Oktober bis Ostern) Winterreifen.' },
+  ];
+  if (fuel !== 'Diesel') {
+    items.push({ id: 'plugs', name: 'Zündkerzen', months: 0, km: 75000, info: 'Richtwert, bitte im Serviceheft nachsehen.' });
+  }
+  return items.map((m) => ({ lastDate: '', lastKm: null, lastAlt: '', ...m }));
+}
+
+function freshState() {
+  return {
+    car: { name: 'Mercedes A 180', variant: 'AMG Line', year: '2015', fuel: 'Benzin', km: null, tank: 50 },
+    fuel: [], costs: [], maint: defaultMaint('Benzin'), theme: 'auto',
+  };
+}
+
+let state = load();
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) return { ...freshState(), ...JSON.parse(raw) };
+  } catch (e) { /* Speicher nicht verfügbar: mit leeren Daten starten */ }
+  return freshState();
+}
+
+function save() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* ignorieren */ }
+  render();
+}
+
+/* ---------- Hilfsfunktionen ---------- */
+
+const $ = (s, el = document) => el.querySelector(s);
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+// Versteht deutsche Eingaben wie "42,5", "1.234,56" und "98.500"
+const num = (v) => {
+  let s = String(v ?? '').replace(/[\s€]/g, '');
+  if (/^-?\d{1,3}(\.\d{3})+(,\d*)?$/.test(s)) s = s.replace(/\./g, '');
+  const n = parseFloat(s.replace(',', '.'));
+  return isFinite(n) ? n : null;
+};
+const today = () => new Date().toISOString().slice(0, 10);
+
+const fmtEUR = (v, d = 2) => v == null ? '–' : v.toLocaleString('de-DE', { style: 'currency', currency: 'EUR', minimumFractionDigits: d, maximumFractionDigits: d });
+const fmtNum = (v, d = 0) => v == null ? '–' : v.toLocaleString('de-DE', { minimumFractionDigits: d, maximumFractionDigits: d });
+const fmtDate = (s) => s ? new Date(s + 'T12:00:00').toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '–';
+const fmtMonth = (s) => s ? new Date(s + 'T12:00:00').toLocaleDateString('de-DE', { month: 'long', year: 'numeric' }) : '–';
+
+function addMonths(dateStr, months) {
+  const d = new Date(dateStr + 'T12:00:00');
+  const day = d.getDate();
+  d.setDate(1);
+  d.setMonth(d.getMonth() + months);
+  d.setDate(Math.min(day, new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()));
+  return d.toISOString().slice(0, 10);
+}
+const daysUntil = (dateStr) => Math.round((new Date(dateStr + 'T12:00:00') - new Date(today() + 'T12:00:00')) / 86400000);
+
+/* ---------- Berechnungen ---------- */
+
+function currentKm() {
+  const all = [state.car.km, ...state.fuel.map((f) => f.km), ...state.costs.map((c) => c.km), ...state.maint.map((m) => m.lastKm)];
+  const vals = all.filter((v) => typeof v === 'number' && isFinite(v));
+  return vals.length ? Math.max(...vals) : null;
+}
+
+// Verbrauch je volle Tankfüllung: alle Liter seit der letzten vollen Füllung / gefahrene km.
+function consumption() {
+  const fills = [...state.fuel].sort((a, b) => a.km - b.km);
+  const per = {};
+  let lastFull = null, liters = 0, totalL = 0, totalKm = 0;
+  for (const f of fills) {
+    liters += f.liters;
+    if (!f.full) continue;
+    if (lastFull) {
+      const dist = f.km - lastFull.km;
+      if (dist > 0) { per[f.id] = liters / dist * 100; totalL += liters; totalKm += dist; }
+    }
+    lastFull = f; liters = 0;
+  }
+  return { per, avg: totalKm > 0 ? totalL / totalKm * 100 : null };
+}
+
+// Alle Ausgaben inkl. Tanken als eine Liste.
+function allExpenses() {
+  return [
+    ...state.fuel.map((f) => ({ date: f.date, amount: f.total, cat: 'Kraftstoff' })),
+    ...state.costs.map((c) => ({ date: c.date, amount: c.amount, cat: c.cat })),
+  ];
+}
+
+function maintStatus(m) {
+  const cur = currentKm();
+  if (!m.lastDate && m.lastKm == null) return { cls: 'unknown', label: 'Unbekannt', text: 'Trag ein, wann es zuletzt gemacht wurde.', score: 1e9 - 1 };
+  let dueDate = null, days = null, dueKm = null, kmLeft = null;
+  if (m.months && m.lastDate) { dueDate = addMonths(m.lastDate, m.months); days = daysUntil(dueDate); }
+  if (m.km && m.lastKm != null) { dueKm = m.lastKm + m.km; kmLeft = cur != null ? dueKm - cur : null; }
+  const over = (days != null && days < 0) || (kmLeft != null && kmLeft < 0);
+  const soon = (days != null && days <= 30) || (kmLeft != null && kmLeft <= 1500);
+  const parts = [];
+  if (dueDate) parts.push(`am <b>${fmtDate(dueDate)}</b>${days != null ? ` (${days < 0 ? `seit ${-days} Tagen` : days === 0 ? 'heute' : `in ${days} Tagen`})` : ''}`);
+  if (dueKm != null) parts.push(`bei <b>${fmtNum(dueKm)} km</b>${kmLeft != null ? ` (${kmLeft < 0 ? `${fmtNum(-kmLeft)} km drüber` : `noch ${fmtNum(kmLeft)} km`})` : ''}`);
+  // Sortier-Wert: je kleiner, desto dringender (km grob in Tage umgerechnet, ~40 km/Tag)
+  const score = Math.min(days ?? Infinity, kmLeft != null ? kmLeft / 40 : Infinity);
+  let next = '';
+  if (m.alt) {
+    const i = m.alt.indexOf(m.lastAlt);
+    next = `${m.altLabel ? m.altLabel + ' ' : ''}${m.alt[(i + 1) % m.alt.length]}`;
+  }
+  return {
+    cls: over ? 'over' : soon ? 'soon' : 'ok',
+    label: over ? '⚠︎ Überfällig' : soon ? '⏱ Bald fällig' : '✓ In Ordnung',
+    text: (next ? `Als Nächstes: <b>${esc(next)}</b>. ` : '') + (parts.length ? 'Fällig ' + parts.join(' oder ') + '.' : 'Kein Intervall gesetzt.'),
+    score,
+  };
+}
+
+/* ---------- Anzeige ---------- */
+
+function render() {
+  applyTheme();
+  const c = state.car;
+  $('#carLine').textContent = [c.name, c.variant, c.year, c.fuel].filter(Boolean).join(' · ');
+
+  const km = currentKm();
+  const cons = consumption();
+  const year = new Date().getFullYear();
+  const exp = allExpenses();
+  const yearExp = exp.filter((e) => e.date && e.date.startsWith(String(year)));
+  const yearSum = yearExp.reduce((s, e) => s + e.amount, 0);
+
+  // Übersicht
+  $('#sKm').innerHTML = km != null ? `${fmtNum(km)} <small>km</small>` : '–';
+  $('#sCons').innerHTML = cons.avg != null ? `${fmtNum(cons.avg, 1)} <small>l/100</small>` : '–';
+  $('#sYearLabel').textContent = year;
+  $('#sYear').textContent = fmtEUR(yearSum, 0);
+  const kms = state.fuel.map((f) => f.km);
+  const driven = kms.length > 1 ? Math.max(...kms) - Math.min(...kms) : 0;
+  // Kosten pro km: alles seit der ersten Tankfüllung, ohne die erste Füllung selbst
+  if (driven > 0) {
+    const first = [...state.fuel].sort((a, b) => a.km - b.km)[0];
+    const total = exp.filter((e) => e.date >= first.date).reduce((s, e) => s + e.amount, 0) - first.total;
+    $('#sPerKm').innerHTML = `${fmtNum(total / driven * 100, 0)} <small>ct</small>`;
+  } else {
+    $('#sPerKm').textContent = '–';
+  }
+
+  const ranked = state.maint.map((m) => ({ m, st: maintStatus(m) })).sort((a, b) => a.st.score - b.st.score);
+  $('#startMaint').innerHTML = ranked.slice(0, 3).map(({ m, st }) => `
+    <li><div class="grow"><div class="title">${esc(m.name)}</div><div class="meta">${st.text}</div></div>
+    <span class="pill ${st.cls}">${st.label}</span></li>`).join('') || '<li class="empty">Keine Termine</li>';
+
+  renderChart(exp);
+
+  // Tanken
+  $('#fCons').innerHTML = $('#sCons').innerHTML;
+  const lSum = state.fuel.reduce((s, f) => s + f.liters, 0);
+  const eSum = state.fuel.reduce((s, f) => s + f.total, 0);
+  $('#fPrice').textContent = lSum > 0 ? fmtEUR(eSum / lSum, 3) : '–';
+  const fuelSorted = [...state.fuel].sort((a, b) => b.date.localeCompare(a.date) || b.km - a.km);
+  $('#fuelList').innerHTML = fuelSorted.map((f) => `
+    <li data-edit-fuel="${f.id}">
+      <div class="grow">
+        <div class="title">${fmtDate(f.date)}${f.full ? '' : ' <span class="pill unknown">Teil</span>'}</div>
+        <div class="meta">${fmtNum(f.km)} km · ${fmtNum(f.liters, 2)} l · ${fmtEUR(f.total / f.liters, 3)}/l${f.station ? ' · ' + esc(f.station) : ''}</div>
+      </div>
+      <div class="amount">${fmtEUR(f.total)}<div class="meta">${cons.per[f.id] != null ? fmtNum(cons.per[f.id], 1) + ' l/100' : ''}</div></div>
+    </li>`).join('') || '<li class="empty">Noch keine Tankfüllung. Tipp oben auf „Tankfüllung eintragen“.</li>';
+
+  // Wartung
+  $('#maintList').innerHTML = ranked.map(({ m, st }) => `
+    <li class="maint-item">
+      <div class="maint-head"><span class="title">${esc(m.name)}</span><span class="pill ${st.cls}">${st.label}</span></div>
+      <div class="maint-body">${st.text}<br>Zuletzt: ${m.lastDate ? fmtDate(m.lastDate) : '–'}${m.lastKm != null ? ' bei ' + fmtNum(m.lastKm) + ' km' : ''}${m.lastAlt ? ' (' + esc(m.lastAlt) + ')' : ''}
+      · Intervall: ${[m.months ? m.months + ' Monate' : '', m.km ? fmtNum(m.km) + ' km' : ''].filter(Boolean).join(' / ') || '–'}
+      ${m.info ? `<br><span style="font-size:13px">${esc(m.info)}</span>` : ''}</div>
+      <div class="maint-btns">
+        <button class="small primary" data-done="${m.id}">Erledigt</button>
+        <button class="small" data-edit-maint="${m.id}">Bearbeiten</button>
+      </div>
+    </li>`).join('');
+
+  // Kosten
+  $('#cYear').textContent = fmtEUR(yearSum, 0);
+  $('#cFuel').textContent = fmtEUR(yearExp.filter((e) => e.cat === 'Kraftstoff').reduce((s, e) => s + e.amount, 0), 0);
+  const byCat = {};
+  yearExp.forEach((e) => { byCat[e.cat] = (byCat[e.cat] || 0) + e.amount; });
+  $('#catList').innerHTML = Object.entries(byCat).sort((a, b) => b[1] - a[1]).map(([cat, v]) => `
+    <li><div class="grow"><div class="title">${esc(cat)}</div><div class="meta">${fmtNum(v / yearSum * 100, 0)} %</div></div>
+    <div class="amount">${fmtEUR(v)}</div></li>`).join('') || '<li class="empty">Dieses Jahr noch keine Ausgaben</li>';
+  const costSorted = [...state.costs].sort((a, b) => b.date.localeCompare(a.date));
+  $('#costList').innerHTML = costSorted.map((cst) => `
+    <li data-edit-cost="${cst.id}">
+      <div class="grow"><div class="title">${esc(cst.cat)}</div>
+      <div class="meta">${fmtDate(cst.date)}${cst.note ? ' · ' + esc(cst.note) : ''}${cst.km != null ? ' · ' + fmtNum(cst.km) + ' km' : ''}</div></div>
+      <div class="amount">${fmtEUR(cst.amount)}</div>
+    </li>`).join('') || '<li class="empty">Noch keine Ausgaben (Tankfüllungen werden automatisch mitgezählt).</li>';
+
+  // Einstellungen
+  const f = $('#carForm');
+  if (document.activeElement?.form !== f) {
+    f.name.value = c.name || ''; f.variant.value = c.variant || ''; f.year.value = c.year || '';
+    f.fuel.value = c.fuel || 'Benzin'; f.km.value = c.km ?? ''; f.tank.value = c.tank ?? '';
+  }
+  document.querySelectorAll('#themeSeg button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.theme === state.theme)));
+}
+
+// Tippen außerhalb des Diagramms blendet den Tooltip aus
+let chartHide = null;
+document.addEventListener('pointerdown', (e) => { if (chartHide && !$('#costChart').contains(e.target)) chartHide(); });
+
+function renderChart(exp) {
+  const box = $('#costChart');
+  const now = new Date();
+  const months = [];
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    months.push({ key, label: d.toLocaleDateString('de-DE', { month: 'narrow' }), full: d.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' }), sum: 0 });
+  }
+  exp.forEach((e) => { const m = months.find((x) => e.date && e.date.startsWith(x.key)); if (m) m.sum += e.amount; });
+  const max = Math.max(...months.map((m) => m.sum));
+  if (!max) { box.innerHTML = '<p class="empty" style="margin:0">Noch keine Daten. Sobald du tankst oder Ausgaben einträgst, erscheint hier dein Verlauf.</p>'; return; }
+
+  // "schöne" Obergrenze für die Achse
+  const step = Math.pow(10, Math.floor(Math.log10(max)));
+  const top = Math.ceil(max / step) * step;
+  const W = 340, H = 170, L = 40, B = 20, T = 8, R = 4;
+  const cw = (W - L - R) / months.length, bw = Math.max(cw - 6, 4);
+  const y = (v) => T + (H - T - B) * (1 - v / top);
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Kosten pro Monat, letzte 12 Monate">`;
+  [0, top / 2, top].forEach((g) => {
+    svg += `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(g)}" y2="${y(g)}"/>`;
+    svg += `<text class="axis" x="${L - 6}" y="${y(g) + 4}" text-anchor="end">${fmtNum(g)} €</text>`;
+  });
+  months.forEach((m, i) => {
+    const x = L + i * cw + (cw - bw) / 2, yy = y(m.sum), h = H - B - yy, r = Math.min(4, h, bw / 2);
+    if (m.sum > 0) {
+      svg += `<path class="bar" data-i="${i}" d="M${x},${H - B} V${yy + r} Q${x},${yy} ${x + r},${yy} H${x + bw - r} Q${x + bw},${yy} ${x + bw},${yy + r} V${H - B} Z"/>`;
+    }
+    svg += `<text class="axis" x="${x + bw / 2}" y="${H - 5}" text-anchor="middle">${m.label}</text>`;
+    svg += `<rect class="hit" data-i="${i}" x="${L + i * cw}" y="${T}" width="${cw}" height="${H - T - B}"/>`;
+  });
+  svg += '</svg>';
+  box.innerHTML = svg + '<div class="tip"></div>' +
+    `<details class="table-view"><summary>Als Tabelle anzeigen</summary><table>${months.map((m) => `<tr><td>${m.full}</td><td>${fmtEUR(m.sum)}</td></tr>`).join('')}</table></details>`;
+
+  const tip = $('.tip', box), svgEl = $('svg', box);
+  const show = (i) => {
+    const m = months[i];
+    box.querySelectorAll('.bar').forEach((b) => b.classList.toggle('dim', +b.dataset.i !== i));
+    const scale = svgEl.getBoundingClientRect().width / W;
+    tip.innerHTML = `${m.full}: <b>${fmtEUR(m.sum)}</b>`;
+    tip.style.display = 'block';
+    const px = (L + i * cw + cw / 2) * scale;
+    const half = tip.offsetWidth / 2;
+    tip.style.left = Math.max(half, Math.min(box.clientWidth - half, px)) + 'px';
+    tip.style.top = (y(m.sum) * scale - 6) + 'px';
+  };
+  const hide = () => { tip.style.display = 'none'; box.querySelectorAll('.bar').forEach((b) => b.classList.remove('dim')); };
+  box.querySelectorAll('.hit').forEach((h) => {
+    h.addEventListener('pointerenter', () => show(+h.dataset.i));
+    h.addEventListener('pointerdown', () => show(+h.dataset.i));
+  });
+  svgEl.addEventListener('pointerleave', hide);
+  chartHide = hide;
+}
+
+function applyTheme() {
+  if (state.theme === 'auto') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', state.theme);
+}
+
+/* ---------- Formulare ---------- */
+
+const sheet = $('#sheet'), sheetForm = $('#sheetForm');
+let onSubmit = null;
+
+function openSheet(title, fieldsHtml, submit, { deleteFn, submitLabel = 'Speichern' } = {}) {
+  sheetForm.innerHTML = `<h3>${title}</h3>${fieldsHtml}
+    <div class="form-btns"><button type="button" data-close>Abbrechen</button><button class="primary" value="ok">${submitLabel}</button></div>
+    ${deleteFn ? '<button type="button" class="link danger" data-delete style="width:100%;margin-top:12px">Eintrag löschen</button>' : ''}`;
+  onSubmit = submit;
+  $('[data-close]', sheetForm).onclick = () => sheet.close();
+  if (deleteFn) $('[data-delete]', sheetForm).onclick = () => { if (confirm('Wirklich löschen?')) { deleteFn(); sheet.close(); save(); } };
+  sheet.showModal();
+}
+
+sheetForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(sheetForm));
+  const err = onSubmit && onSubmit(data);
+  if (err) { alert(err); return; }
+  sheet.close();
+  save();
+});
+
+const field = (label, name, value = '', attrs = '') =>
+  `<label class="field"><span>${label}</span><input name="${name}" value="${esc(value)}" ${attrs}></label>`;
+
+function fuelForm(entry) {
+  const e = entry || { date: today(), km: '', liters: '', total: '', full: true, station: '' };
+  const kmHint = currentKm() != null && !entry ? `<p class="hint">Letzter bekannter Stand: ${fmtNum(currentKm())} km</p>` : '';
+  openSheet(entry ? 'Tankfüllung bearbeiten' : 'Tankfüllung eintragen', `
+    ${field('Datum', 'date', e.date, 'type="date" required')}
+    ${field('Kilometerstand', 'km', e.km, 'inputmode="numeric" required placeholder="z. B. 98500"')}${kmHint}
+    <div class="row2">
+      ${field('Liter', 'liters', e.liters !== '' ? fmtNum(e.liters, 2) : '', 'inputmode="decimal" required placeholder="z. B. 42,5"')}
+      ${field('Betrag (€)', 'total', e.total !== '' ? fmtNum(e.total, 2) : '', 'inputmode="decimal" required placeholder="z. B. 74,30"')}
+    </div>
+    <label class="check"><input type="checkbox" name="full" ${e.full ? 'checked' : ''}> Vollgetankt</label>
+    ${field('Tankstelle (optional)', 'station', e.station)}
+  `, (d) => {
+    const km = num(d.km), liters = num(d.liters), total = num(d.total);
+    if (km == null || liters == null || total == null || liters <= 0) return 'Bitte Kilometerstand, Liter und Betrag ausfüllen.';
+    if (state.car.tank && liters > state.car.tank * 1.15) return `${fmtNum(liters, 1)} Liter passen nicht in einen ${state.car.tank}-Liter-Tank. Bitte prüfen.`;
+    const rec = { id: entry?.id || uid(), date: d.date, km, liters, total, full: d.full === 'on', station: d.station.trim() };
+    if (entry) Object.assign(entry, rec); else state.fuel.push(rec);
+  }, { deleteFn: entry && (() => { state.fuel = state.fuel.filter((x) => x !== entry); }) });
+}
+
+function costForm(entry) {
+  const e = entry || { date: today(), cat: 'Werkstatt', amount: '', note: '', km: null };
+  openSheet(entry ? 'Ausgabe bearbeiten' : 'Ausgabe eintragen', `
+    ${field('Datum', 'date', e.date, 'type="date" required')}
+    <label class="field"><span>Kategorie</span><select name="cat">${COST_CATS.map((c) => `<option ${c === e.cat ? 'selected' : ''}>${c}</option>`).join('')}</select></label>
+    ${field('Betrag (€)', 'amount', e.amount !== '' ? fmtNum(e.amount, 2) : '', 'inputmode="decimal" required placeholder="z. B. 389,00"')}
+    ${field('Notiz (optional)', 'note', e.note, 'placeholder="z. B. Service B, Bremsbeläge vorne"')}
+    ${field('Kilometerstand (optional)', 'km', e.km ?? '', 'inputmode="numeric"')}
+  `, (d) => {
+    const amount = num(d.amount);
+    if (amount == null) return 'Bitte einen Betrag eingeben.';
+    const rec = { id: entry?.id || uid(), date: d.date, cat: d.cat, amount, note: d.note.trim(), km: num(d.km) };
+    if (entry) Object.assign(entry, rec); else state.costs.push(rec);
+  }, { deleteFn: entry && (() => { state.costs = state.costs.filter((x) => x !== entry); }) });
+}
+
+function altField(m, selected) {
+  if (!m.alt) return '';
+  return `<label class="field"><span>${m.id === 'tires' ? 'Aufgezogen' : 'Art'}</span><select name="alt">
+    ${m.alt.map((a) => `<option value="${esc(a)}" ${a === selected ? 'selected' : ''}>${esc((m.altLabel ? m.altLabel + ' ' : '') + a)}</option>`).join('')}</select></label>`;
+}
+
+function doneForm(m) {
+  let nextAlt = '';
+  if (m.alt) { const i = m.alt.indexOf(m.lastAlt); nextAlt = m.alt[(i + 1) % m.alt.length]; }
+  openSheet(`${esc(m.name)}: erledigt`, `
+    ${field('Datum', 'date', today(), 'type="date" required')}
+    ${field('Kilometerstand', 'km', m.km ? currentKm() ?? '' : '', 'inputmode="numeric"')}
+    ${altField(m, nextAlt)}
+    ${field('Kosten (€, optional)', 'cost', '', 'inputmode="decimal" placeholder="wird bei den Kosten eingetragen"')}
+  `, (d) => {
+    m.lastDate = d.date; m.lastKm = num(d.km);
+    if (m.alt) m.lastAlt = d.alt;
+    const cost = num(d.cost);
+    if (cost) {
+      state.costs.push({ id: uid(), date: d.date, cat: m.id === 'tires' ? 'Reifen' : 'Werkstatt', amount: cost,
+        note: m.name + (m.alt ? ` (${d.alt})` : ''), km: m.lastKm });
+    }
+  });
+}
+
+function maintForm(m) {
+  const isNew = !m;
+  const e = m || { id: uid(), name: '', months: 12, km: 0, lastDate: '', lastKm: null, lastAlt: '', info: '', custom: true };
+  openSheet(isNew ? 'Eigener Termin' : esc(e.name), `
+    ${field('Name', 'name', e.name, 'required placeholder="z. B. Innenraumfilter"')}
+    <div class="row2">
+      ${field('Alle … Monate', 'months', e.months || '', 'inputmode="numeric" placeholder="leer = keins"')}
+      ${field('Alle … km', 'km', e.km || '', 'inputmode="numeric" placeholder="leer = keins"')}
+    </div>
+    <p class="hint">Was zuerst eintritt, zählt.</p>
+    <div class="row2">
+      ${field('Zuletzt am', 'lastDate', e.lastDate, 'type="date"')}
+      ${field('Zuletzt bei km', 'lastKm', e.lastKm ?? '', 'inputmode="numeric"')}
+    </div>
+    ${altField(e, e.lastAlt)}
+  `, (d) => {
+    if (!d.name.trim()) return 'Bitte einen Namen eingeben.';
+    Object.assign(e, { name: d.name.trim(), months: num(d.months) || 0, km: num(d.km) || 0, lastDate: d.lastDate, lastKm: num(d.lastKm) });
+    if (e.alt && d.alt) e.lastAlt = d.alt;
+    if (isNew) state.maint.push(e);
+  }, { deleteFn: !isNew && (() => { state.maint = state.maint.filter((x) => x !== e); }) });
+}
+
+/* ---------- Ereignisse ---------- */
+
+const TITLES = { start: 'Übersicht', fuel: 'Tanken', maint: 'Wartung', costs: 'Kosten', more: 'Mehr' };
+function showView(v) {
+  document.querySelectorAll('.view').forEach((s) => s.classList.toggle('active', s.id === 'view-' + v));
+  document.querySelectorAll('nav.tabs button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.view === v)));
+  $('#viewTitle').textContent = TITLES[v];
+  window.scrollTo(0, 0);
+  try { sessionStorage.setItem('autobuch-view', v); } catch (e) { /* egal */ }
+}
+
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('button, li[data-edit-fuel], li[data-edit-cost]');
+  if (!t) return;
+  if (t.dataset.view) return showView(t.dataset.view);
+  if (t.dataset.open === 'fuel') return fuelForm();
+  if (t.dataset.open === 'cost') return costForm();
+  if (t.dataset.open === 'maintNew') return maintForm();
+  if (t.dataset.done) return doneForm(state.maint.find((m) => m.id === t.dataset.done));
+  if (t.dataset.editMaint) return maintForm(state.maint.find((m) => m.id === t.dataset.editMaint));
+  if (t.dataset.editFuel) return fuelForm(state.fuel.find((f) => f.id === t.dataset.editFuel));
+  if (t.dataset.editCost) return costForm(state.costs.find((c) => c.id === t.dataset.editCost));
+  if (t.dataset.theme) { state.theme = t.dataset.theme; save(); }
+});
+
+$('#carForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const f = e.target;
+  const oldFuel = state.car.fuel;
+  state.car = { name: f.name.value.trim(), variant: f.variant.value.trim(), year: f.year.value.trim(), fuel: f.fuel.value, km: num(f.km.value), tank: num(f.tank.value) };
+  // Zündkerzen gibt es nur beim Benziner
+  if (oldFuel !== state.car.fuel) {
+    if (state.car.fuel === 'Diesel') state.maint = state.maint.filter((m) => m.id !== 'plugs');
+    else if (!state.maint.some((m) => m.id === 'plugs')) state.maint.push(defaultMaint('Benzin').find((m) => m.id === 'plugs'));
+  }
+  f.querySelector('button').blur();
+  save();
+  alert('Gespeichert');
+});
+
+$('#exportBtn').addEventListener('click', async () => {
+  const name = `autobuch-${today()}.json`;
+  const file = new File([JSON.stringify(state, null, 2)], name, { type: 'application/json' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: 'Autobuch-Sicherung' }); return; } catch (e) { if (e.name === 'AbortError') return; }
+  }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(file); a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+});
+$('#importBtn').addEventListener('click', () => $('#importFile').click());
+$('#importFile').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  try {
+    const data = JSON.parse(await file.text());
+    if (!data.car || !Array.isArray(data.fuel)) throw new Error();
+    if (!confirm('Aktuelle Daten durch die Sicherung ersetzen?')) return;
+    state = { ...freshState(), ...data };
+    save();
+    alert('Sicherung wiederhergestellt');
+  } catch (err) {
+    alert('Diese Datei ist keine gültige Autobuch-Sicherung.');
+  } finally { e.target.value = ''; }
+});
+$('#resetBtn').addEventListener('click', () => {
+  if (confirm('Wirklich ALLE Daten löschen? Das kann nicht rückgängig gemacht werden.')) { state = freshState(); save(); showView('start'); }
+});
+
+let startView = 'start';
+try { startView = sessionStorage.getItem('autobuch-view') || 'start'; } catch (e) { /* egal */ }
+render();
+showView(TITLES[startView] ? startView : 'start');
+
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
