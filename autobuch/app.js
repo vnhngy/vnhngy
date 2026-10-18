@@ -3,6 +3,7 @@
 /* ---------- Daten ---------- */
 
 const STORE_KEY = 'autobuch-v1';
+const APP_VERSION = '12'; // bei jedem Update zusammen mit VERSION in sw.js erhöhen
 const COST_CATS = ['Werkstatt', 'Versicherung', 'Kfz-Steuer', 'Reifen', 'Pflege', 'Parken', 'Sonstiges'];
 
 // Richtwerte für eine Mercedes A-Klasse W176 (Baujahr 2015). Im Serviceheft prüfen.
@@ -2042,8 +2043,16 @@ if (!state.onboarded && hasNoData()) openWizard();
 handleUrlAction();
 
 // Zoomen mit zwei Fingern verhindern (Safari ignoriert user-scalable=no teilweise)
-document.addEventListener('gesturestart', (e) => e.preventDefault());
+for (const ev of ['gesturestart', 'gesturechange', 'gestureend']) document.addEventListener(ev, (e) => e.preventDefault(), { passive: false });
 document.addEventListener('touchmove', (e) => { if (e.touches.length > 1 || (e.scale && e.scale !== 1)) e.preventDefault(); }, { passive: false });
+$('#appVersion').textContent = `Autobuch · Version ${APP_VERSION}`;
+
+// Neue Version sofort übernehmen, sobald der Service Worker sie geladen hat
+if ('serviceWorker' in navigator) {
+  const hadOldVersion = !!navigator.serviceWorker.controller; // beim allerersten Besuch nicht neu laden
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadOldVersion && !reloaded) { reloaded = true; location.reload(); } });
+}
 
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
