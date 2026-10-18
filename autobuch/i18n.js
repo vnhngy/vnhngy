@@ -1684,6 +1684,7 @@ const T = {
   'Trag die Teilenummern ein, z. B. von Ölfilter, Luftfilter, Wischerblättern oder Lampen. Dann kaufst du beim nächsten Mal sofort das Richtige.': ['Enter part numbers, e.g. for oil filter, air filter, wiper blades or bulbs. Next time you buy the right one straight away.', 'Nhập mã phụ tùng, vd. lọc dầu, lọc gió, lưỡi gạt hoặc bóng đèn. Lần sau bạn sẽ mua đúng ngay.'],
   'Neue Versionsnummern: ab jetzt 1.0.0, mit neuen Funktionen 1.1.0 und so weiter': ['New version numbers: from now on 1.0.0, with new features 1.1.0 and so on', 'Số phiên bản mới: từ nay 1.0.0, khi có tính năng mới là 1.1.0 và tiếp tục'],
   'Fahrzeugfoto wird schärfer gespeichert': ['Vehicle photo is saved in sharper quality', 'Ảnh xe được lưu sắc nét hơn'],
+  'Übersicht aufgeräumt: Termine und Chronik findest du jetzt im Kalender (oben umschalten)': ['Overview tidied up: dates and history are now in the calendar (switch at the top)', 'Đã sắp xếp lại tổng quan: lịch hẹn và lịch sử giờ nằm trong mục Lịch (chuyển ở phía trên)'],
   'Version {v}': ['Version {v}', 'Phiên bản {v}'],
   'Werkstatt-Bewertung': ['Garage rating', 'Đánh giá gara'],
   'Wunschpreis beim Tanken': ['Target fuel price', 'Giá xăng mong muốn'],

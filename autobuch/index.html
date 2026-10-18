@@ -644,17 +644,8 @@
         <div class="tile-grid">
           <button data-view="stats"><span aria-hidden="true">📊</span>Statistik</button>
           <button data-view="value"><span aria-hidden="true">📉</span>Wert</button>
-          <button data-view="awards"><span aria-hidden="true">🏆</span>Erfolge</button>
-          <button data-view="history"><span aria-hidden="true">🕘</span>Chronik</button>
-        </div>
-      </div>
-      <div class="tile-group">
-        <h3>Planen</h3>
-        <div class="tile-grid">
-          <button data-view="agenda"><span aria-hidden="true">📅</span>Termine</button>
-          <button data-view="plan"><span aria-hidden="true">🗺️</span>Reiseplaner</button>
-          <button data-view="checks"><span aria-hidden="true">✅</span>Checklisten</button>
           <button data-view="calendar"><span aria-hidden="true">🗓</span>Kalender</button>
+          <button data-view="awards"><span aria-hidden="true">🏆</span>Erfolge</button>
         </div>
       </div>
       <div class="tile-group">
@@ -663,8 +654,16 @@
           <button data-view="specs"><span aria-hidden="true">📄</span>Steckbrief</button>
           <button data-view="damages"><span aria-hidden="true">📷</span>Schäden</button>
           <button data-view="logs"><span aria-hidden="true">🛢️</span>Öl &amp; Druck</button>
-          <button data-view="garages"><span aria-hidden="true">🔧</span>Werkstätten</button>
           <button data-view="care"><span aria-hidden="true">✨</span>Pflege</button>
+        </div>
+      </div>
+      <div class="tile-group">
+        <h3>Planen</h3>
+        <div class="tile-grid">
+          <button data-view="plan"><span aria-hidden="true">🗺️</span>Reiseplaner</button>
+          <button data-view="checks"><span aria-hidden="true">✅</span>Checklisten</button>
+          <button data-view="garages"><span aria-hidden="true">🔧</span>Werkstätten</button>
+          <button data-view="leasing"><span aria-hidden="true">🔑</span>Leasing</button>
         </div>
       </div>
       <div class="tile-group">
@@ -672,7 +671,6 @@
         <div class="tile-grid">
           <button data-view="notes"><span aria-hidden="true">📒</span>Notizbuch</button>
           <button data-view="fines"><span aria-hidden="true">🧾</span>Strafzettel</button>
-          <button data-view="leasing"><span aria-hidden="true">🔑</span>Leasing</button>
           <button data-view="handover"><span aria-hidden="true">📝</span>Übergabe</button>
           <button data-view="gallery"><span aria-hidden="true">🖼</span>Fotos</button>
         </div>
@@ -871,6 +869,7 @@
   <!-- Termine -->
   <section class="view" id="view-agenda">
     <button class="back" data-view="start">‹ Zurück</button>
+    <div class="seg" style="margin-bottom:12px"><button type="button" data-view="calendar" aria-pressed="false">Kalender</button><button type="button" data-view="agenda" aria-pressed="true">Termine</button><button type="button" data-view="history" aria-pressed="false">Chronik</button></div>
     <p class="note" style="margin-top:0">Alle Fristen der nächsten 12 Monate: Wartung, TÜV, Strafzettel, Dokumente und feste Zahlungen.</p>
     <div class="card"><ul class="list" id="agendaList"></ul></div>
     <button data-open="ics" style="width:100%">📅 In den iPhone-Kalender übernehmen</button>
@@ -927,6 +926,7 @@
   <!-- Chronik -->
   <section class="view" id="view-history">
     <button class="back" data-view="start">‹ Zurück</button>
+    <div class="seg" style="margin-bottom:12px"><button type="button" data-view="calendar" aria-pressed="false">Kalender</button><button type="button" data-view="agenda" aria-pressed="false">Termine</button><button type="button" data-view="history" aria-pressed="true">Chronik</button></div>
     <div class="seg seg-wrap" id="histSeg"></div>
     <div class="card"><ul class="list" id="histList"></ul></div>
     <p class="note" id="histMore" hidden>Es werden die neuesten 300 Einträge gezeigt.</p>
@@ -958,6 +958,7 @@
   <!-- Kalender -->
   <section class="view" id="view-calendar">
     <button class="back" data-view="start">‹ Zurück</button>
+    <div class="seg" style="margin-bottom:12px"><button type="button" data-view="calendar" aria-pressed="true">Kalender</button><button type="button" data-view="agenda" aria-pressed="false">Termine</button><button type="button" data-view="history" aria-pressed="false">Chronik</button></div>
     <div class="card">
       <div class="maint-head" style="margin-bottom:8px">
         <button class="small" data-cal-shift="-1" aria-label="Vorheriger Monat">‹</button>

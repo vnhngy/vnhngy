@@ -436,9 +436,11 @@ test('Notfall-Sperrbildschirm wird erzeugt', async ({ page }) => {
 });
 
 test('Kacheln nach Kategorien, leere Kategorie wird ausgeblendet', async ({ page }) => {
-  await page.evaluate(() => { closeWizard(); state.home = { order: null, hidden: [], tiles: ['notes', 'fines', 'leasing', 'handover', 'gallery'] }; save(); });
+  await page.evaluate(() => { closeWizard(); state.home = { order: null, hidden: [], tiles: ['notes', 'fines', 'handover', 'gallery'] }; save(); });
   const r = await page.evaluate(() => [...document.querySelectorAll('#view-start .tile-group')].map((g) => [g.querySelector('h3').textContent, g.hidden]));
-  assert.deepEqual(r, [['Auswerten', false], ['Planen', false], ['Fahrzeug & Pflege', false], ['Unterlagen', true]]);
+  assert.deepEqual(r, [['Auswerten', false], ['Fahrzeug & Pflege', false], ['Planen', false], ['Unterlagen', true]]);
+  const sizes = await page.evaluate(() => [...document.querySelectorAll('#view-start .tile-grid')].map((g) => g.children.length));
+  assert.deepEqual(sizes, [4, 4, 4, 4]); // nur volle Reihen
 });
 
 test('km-Stand schnell auf der Übersicht eintragen', async ({ page }) => {

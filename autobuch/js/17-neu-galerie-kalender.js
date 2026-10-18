@@ -6,6 +6,7 @@
 /* ---------- Neu in dieser Version ---------- */
 
 const CHANGELOG = [
+  ['1.1.2', ['Übersicht aufgeräumt: Termine und Chronik findest du jetzt im Kalender (oben umschalten)']],
   ['1.1.1', ['Fahrzeugfoto wird schärfer gespeichert']],
   ['1.1.0', ['Spritpreise auch ohne Tankerkönig-Schlüssel: direkt zu clever-tanken.de oder Apple Karten']],
   ['1.0.0', ['Neue Versionsnummern: ab jetzt 1.0.0, mit neuen Funktionen 1.1.0 und so weiter']],
