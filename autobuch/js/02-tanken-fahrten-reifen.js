@@ -27,7 +27,7 @@ function renderPark() {
     ${p.lat == null ? `<div class="meta">${tr('Ohne Standort gespeichert')}</div>` : ''}
     ${meter ? `<div style="margin-top:6px">${meter}</div>` : ''}
     <div class="maint-btns">
-      ${p.lat != null ? `<a class="btn primary" href="https://maps.apple.com/?daddr=${p.lat},${p.lng}&dirflg=w" target="_blank" rel="noopener">${tr('🚶 Zum Auto')}</a>` : ''}
+      ${p.lat != null ? `<a class="btn primary" href="https://maps.apple.com/?daddr=${p.lat},${p.lng}&dirflg=w" target="_blank" rel="noopener">${tr('🚶 Zum Auto')}</a><button class="small" data-park="compass">${tr('🧭 Kompass')}</button>` : ''}
       <button class="small" data-park="edit">${tr('Notiz &amp; Parkuhr')}</button>
       <button class="small" data-park="clear">${tr('Weggefahren')}</button>
     </div>`;

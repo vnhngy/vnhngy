@@ -332,6 +332,25 @@
   .kv dd { margin: 0; font-weight: 600; word-break: break-all; }
   .warn-text { color: var(--warn); }
   .bad-text { color: var(--bad); }
+  .good-text { color: var(--good); }
+  .rank { min-width: 26px; font-weight: 700; color: var(--muted); text-align: center; }
+  .compass { display: flex; justify-content: center; margin: 4px 0 6px; }
+  .compass svg { width: 170px; height: 170px; fill: var(--accent); transition: transform .25s ease-out; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--edge); padding: 14px; }
+  .compass-dist { text-align: center; font-size: 34px; font-weight: 700; letter-spacing: -.02em; }
+  dialog.story { margin: 0; width: 100vw; max-width: 100vw; height: 100vh; max-height: 100vh; border-radius: 0; border: 0; padding: 0; background: #10141b; color: #fff; overflow: hidden; }
+  dialog.story[open] { animation: none; }
+  .story-bars { position: absolute; top: calc(env(safe-area-inset-top) + 10px); left: 12px; right: 12px; display: flex; gap: 4px; z-index: 2; }
+  .story-bars i { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,.28); }
+  .story-bars i.done, .story-bars i.now { background: #fff; }
+  .story-close { position: absolute; top: calc(env(safe-area-inset-top) + 22px); right: 12px; z-index: 2; background: rgba(255,255,255,.14); color: #fff; border: 0; width: 38px; height: 38px; min-height: 0; padding: 0; border-radius: 50%; font-size: 24px; line-height: 1; }
+  .story-card { height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 80px 28px 90px; animation: storyIn .4s ease-out;
+    background: radial-gradient(120% 80% at 20% 10%, hsl(var(--hue) 38% 34%), hsl(var(--hue) 30% 14%)); }
+  .story-kicker { font-size: 18px; font-weight: 600; opacity: .85; display: flex; gap: 8px; align-items: center; }
+  .story-big { font-size: clamp(44px, 15vw, 76px); font-weight: 800; letter-spacing: -.03em; line-height: 1.05; margin: 14px 0 18px; overflow-wrap: anywhere; }
+  .story-big small { font-size: .4em; font-weight: 600; opacity: .8; }
+  .story-text { font-size: 20px; line-height: 1.4; opacity: .92; }
+  .story-hint { position: absolute; bottom: calc(env(safe-area-inset-bottom) + 22px); left: 0; right: 0; text-align: center; font-size: 13px; opacity: .6; }
+  @keyframes storyIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
   .tread { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; text-align: center; }
   .tread div { background: var(--surface-2); border: 1px solid var(--edge); border-radius: 14px; padding: 7px 2px; font-size: 12px; color: var(--muted); }
   .tread b { display: block; font-size: 16px; color: var(--text); font-variant-numeric: tabular-nums; }
@@ -534,6 +553,9 @@
   <symbol id="i-book" viewBox="0 0 24 24"><path d="M5 4a1 1 0 0 1 1-1h12v16H7a2 2 0 0 0-2 2z"/><path d="M5 21a2 2 0 0 1 2-2h11v2H7"/></symbol>
   <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4"/><path d="M5 4h12l-2.5 4L17 12H5"/></symbol>
   <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/></symbol>
+  <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></symbol>
+  <symbol id="i-tree" viewBox="0 0 24 24"><path d="M12 3 6 11h3l-4 6h14l-4-6h3z"/><path d="M12 17v4"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"/></symbol>
   <symbol id="i-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 14a4.5 4.5 0 0 0 7 0"/><path d="M9 9.5v.01"/><path d="M15 9.5v.01"/></symbol>
 </defs></svg>
 <header>
@@ -679,7 +701,22 @@
       <h2>Prognose</h2>
       <div id="statForecast"></div>
     </div>
-    <button class="primary" data-open="yearReport" style="width:100%">🖨 Jahresbericht als PDF</button>
+    <div class="card">
+      <h2>Rekorde</h2>
+      <div id="statRecords"></div>
+    </div>
+    <div class="card">
+      <h2>Tankstellen-Ranking</h2>
+      <div id="statStations"></div>
+    </div>
+    <div class="card">
+      <h2>CO₂-Bilanz</h2>
+      <div id="statCo2"></div>
+    </div>
+    <div class="actions">
+      <button class="primary" data-open="story">✨ Dein Autojahr</button>
+      <button data-open="yearReport">🖨 Jahresbericht als PDF</button>
+    </div>
   </section>
 
   <!-- Termine -->
@@ -879,6 +916,10 @@
       <h2>Nach Art</h2>
       <ul class="list" id="tripTypes"></ul>
     </div>
+    <div class="card" id="favCard" hidden>
+      <h2>Lieblingsstrecken</h2>
+      <ul class="list" id="favList"></ul>
+    </div>
     <div class="card">
       <h2>Fahrten</h2>
       <ul class="list" id="tripList"></ul>
@@ -1043,6 +1084,7 @@
 <button id="recBar" data-view="drive"></button>
 <dialog id="wizard" class="wizard"><form method="dialog" id="wizardForm"></form></dialog>
 <dialog id="viewer" class="viewer"><img alt="Foto"></dialog>
+<dialog id="story" class="story" aria-label="Dein Autojahr"></dialog>
 <dialog id="sheet"><form method="dialog" id="sheetForm"></form></dialog>
 
 <script src="i18n.js"></script>
@@ -1055,6 +1097,7 @@
 <script src="js/07-fahrzeuge-kosten.js"></script>
 <script src="js/08-uebersicht-suche.js"></script>
 <script src="js/09-notizen-termine-budget.js"></script>
-<script src="js/10-assistent-start.js"></script>
+<script src="js/10-kompass-rueckblick-rekorde.js"></script>
+<script src="js/11-assistent-start.js"></script>
 </body>
 </html>

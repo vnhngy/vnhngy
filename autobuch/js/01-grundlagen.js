@@ -5,7 +5,7 @@
 /* ---------- Daten ---------- */
 
 const STORE_KEY = 'autobuch-v1';
-const APP_VERSION = '22'; // bei jedem Update zusammen mit VERSION in sw.js erhöhen
+const APP_VERSION = '23'; // bei jedem Update zusammen mit VERSION in sw.js erhöhen
 const COST_CATS = ['Werkstatt', 'Versicherung', 'Kfz-Steuer', 'Reifen', 'Pflege', 'Parken', 'Leasing/Finanzierung', 'Bußgeld', 'Sonstiges'];
 // Antriebsarten des Fahrzeugs und Spritsorten beim Tanken (Erdgas wird in kg getankt)
 const CAR_FUELS = ['Benzin', 'Super E10', 'Super Plus', 'Diesel', 'Autogas (LPG)', 'Erdgas (CNG)', 'Hybrid', 'Plug-in-Hybrid'];
@@ -255,6 +255,7 @@ function render() {
   renderBudget();
   renderNotes();
   renderAgenda();
+  renderFavRoutes();
   const lb = $('#lastBackup');
   lb.textContent = state.lastBackup ? tr('Letzte Sicherung: {date}', { date: fmtDate(state.lastBackup) }) : tr('Noch keine Sicherung angelegt.');
 

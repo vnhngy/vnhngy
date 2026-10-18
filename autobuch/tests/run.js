@@ -303,9 +303,63 @@ test('Neue Formulare sind übersetzt', async ({ page }) => {
     fuelForm(); sheet.close(); budgetForm(); sheet.close(); noteForm(); sheet.close(); tripForm(state.trips[0]); sheet.close();
     state.budget = { monthly: 10 }; save();
     await buildYearReport(String(new Date().getFullYear()));
+    openStory(String(new Date().getFullYear())); for (let i = 0; i < story.cards.length; i++) { story.i = i; drawStory(); } document.querySelector('#story').close();
     return [...MISSING];
   });
   assert.deepEqual(missing.filter((k) => /[äöüß]/i.test(k) && !/Bremsen vorne|Aral|Shell/.test(k)), []);
+});
+
+test('Parkplatz-Kompass zeigt Entfernung zum Auto', async ({ page, ctx }) => {
+  await ctx.grantPermissions(['geolocation']);
+  await ctx.setGeolocation({ latitude: 48.7758, longitude: 9.1829 });
+  await seed(page);
+  await page.evaluate(() => { state.parking = { lat: 48.7785, lng: 9.1829, time: Date.now(), note: 'Ebene 2', until: null }; save(); });
+  await page.click('#view-start button[data-park="compass"]');
+  await page.waitForFunction(() => compass && compass.dist != null);
+  const r = await page.evaluate(() => ({ dist: Math.round(compass.dist), text: document.querySelector('#compassDist').textContent }));
+  assert.ok(r.dist > 280 && r.dist < 320, JSON.stringify(r)); // ca. 300 m nach Norden
+  assert.match(r.text, /m$/);
+  await page.click('#sheetForm [data-close]');
+  assert.equal(await page.evaluate(() => compass), null);
+});
+
+test('Rekorde, CO₂-Bilanz und Tankstellen-Ranking', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => { state.fuel.push({ id: 'f3', date: today(), km: 98300, liters: 30, total: 57, full: true, station: 'shell ' }); save(); showView('stats'); });
+  const rec = await page.innerText('#statRecords');
+  assert.match(rec, /Sparsamste Tankfüllung/);
+  assert.match(rec, /Günstigster Preis/);
+  assert.match(await page.innerText('#statCo2'), /Bäume/);
+  const rank = await page.innerText('#statStations');
+  assert.ok(rank.indexOf('Aral') < rank.indexOf('Shell'), rank); // Aral 1,75 €/l, Shell Ø 1,81 €/l
+  assert.match(rank, /2× getankt/); // „Shell“ und „shell “ zählen als dieselbe Tankstelle
+});
+
+test('Lieblingsstrecken: häufige Fahrt mit einem Tipp', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => {
+    state.trips.push({ id: 'a', date: addDays(-3), type: 'Arbeitsweg', from: 'Zuhause', to: 'Büro', startKm: 98000, endKm: 98021, purpose: '', partner: '' },
+      { id: 'b', date: addDays(-2), type: 'Arbeitsweg', from: 'Zuhause', to: 'Büro', startKm: 98042, endKm: 98063, purpose: '', partner: '' });
+    save(); showView('trips');
+  });
+  assert.equal(await page.isHidden('#favCard'), false);
+  await page.click('#favList button[data-fav="0"]');
+  assert.equal(await page.inputValue('#sheetForm [name=to]'), 'Büro');
+  assert.equal(await page.inputValue('#sheetForm [name=startKm]'), '98063');
+  assert.equal(await page.inputValue('#sheetForm [name=endKm]'), '98084');
+});
+
+test('Dein Autojahr: Rückblick zum Durchtippen', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => showView('stats'));
+  await page.click('#view-stats button[data-open="story"]');
+  const n = await page.evaluate(() => story.cards.length);
+  assert.ok(n >= 5, 'Karten: ' + n);
+  assert.match(await page.innerText('#story'), /Dein Autojahr/);
+  for (let i = 0; i < n - 1; i++) await page.mouse.click(300, 400);
+  assert.match(await page.innerText('#story'), /Erfolge/);
+  await page.mouse.click(300, 400);
+  assert.equal(await page.evaluate(() => document.querySelector('#story').open), false);
 });
 
 test('Keine bunten Emojis auf dem Bildschirm', async ({ page }) => {

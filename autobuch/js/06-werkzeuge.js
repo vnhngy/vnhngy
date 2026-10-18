@@ -103,6 +103,7 @@ function renderStats() {
   $('#statForecast').innerHTML = sum ? `<div class="bignum">≈ ${fmtEUR(sum / days * 365, 0)}</div>
     <p class="note" style="margin-bottom:0">${tr('Erwartete Kosten in den nächsten 12 Monaten, hochgerechnet aus deinen Ausgaben der letzten {n} Tage. Große Einmalkosten (z. B. neue Reifen) verzerren das.', { n: days })}</p>`
     : `<p class="empty" style="margin:0">${tr('Noch keine Daten. Sobald du tankst oder Ausgaben einträgst, erscheint hier dein Verlauf.')}</p>`;
+  renderStatsExtras();
 }
 
 /* ---------- Checklisten ---------- */

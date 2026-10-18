@@ -200,6 +200,9 @@ document.addEventListener('click', (e) => {
   if (t.dataset.lang) return setLang(t.dataset.lang);
   if (t.dataset.park === 'set') return setParking();
   if (t.dataset.park === 'edit') return parkForm();
+  if (t.dataset.park === 'compass') return parkCompass();
+  if (t.dataset.open === 'story') return openStory(statYear);
+  if (t.dataset.fav) return favTrip(renderFavRoutes.list[t.dataset.fav]);
   if (t.dataset.park === 'clear') { state.parking = null; save(); }
   if (t.dataset.prices === 'load') loadPrices();
   if (t.dataset.open === 'trip') return tripForm();
