@@ -362,6 +362,28 @@
   .card summary { list-style: none; cursor: pointer; }
   .card summary::-webkit-details-marker { display: none; }
 
+  /* Fahrzeugwahl, Hinweise, Erfolge */
+  #carLine {
+    background: none; border: 0; box-shadow: none; padding: 0; margin-top: 3px; border-radius: 8px;
+    color: var(--muted); font-size: 14px; text-align: left; cursor: pointer;
+  }
+  #carLine .chev { color: var(--accent); font-weight: 700; }
+  .notice { display: flex; gap: 12px; align-items: flex-start; }
+  .notice .ico { font-size: 26px; line-height: 1; }
+  .notice .grow { flex: 1; }
+  .notice .maint-btns { margin-top: 8px; }
+  .car-row { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; margin-bottom: 8px; padding: 12px 16px; border-radius: 18px; }
+  .car-row .grow { flex: 1; min-width: 0; }
+  .car-row.active { border-color: color-mix(in srgb, var(--accent) 60%, transparent); box-shadow: inset 0 1px 0 var(--rim), 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
+  .awards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .award { text-align: center; padding: 16px 12px; margin: 0; }
+  .award .ico { font-size: 34px; line-height: 1.1; }
+  .award .title { font-weight: 700; margin-top: 6px; }
+  .award .meta { font-size: 13px; color: var(--muted); margin-top: 2px; min-height: 34px; }
+  .award.locked .ico { filter: grayscale(1); opacity: .45; }
+  .award.locked .title { color: var(--muted); }
+  .tiles { grid-template-columns: repeat(4, 1fr); }
+
   /* Einrichtungs-Assistent */
   dialog.wizard form { padding: 18px 20px 20px; }
   dialog.wizard h3 { text-align: center; font-size: 24px; margin-bottom: 14px; }
@@ -417,18 +439,23 @@
 <body>
 <header>
   <h1 id="viewTitle">Übersicht</h1>
-  <div class="sub" id="carLine"></div>
+  <button class="sub" id="carLine" data-open="cars"></button>
 </header>
 
 <main>
   <!-- Übersicht -->
   <section class="view active" id="view-start">
+    <div id="notices"></div>
     <button class="sos-entry" data-view="help">🚨 Notfall, Unfall &amp; Warnleuchten</button>
     <div class="tiles">
       <button data-view="stats"><span aria-hidden="true">📊</span>Statistik</button>
       <button data-view="checks"><span aria-hidden="true">✅</span>Checklisten</button>
       <button data-view="plan"><span aria-hidden="true">🗺️</span>Reiseplaner</button>
       <button data-view="garages"><span aria-hidden="true">🔧</span>Werkstätten</button>
+      <button data-view="fines"><span aria-hidden="true">🧾</span>Strafzettel</button>
+      <button data-view="value"><span aria-hidden="true">📉</span>Wert</button>
+      <button data-view="logs"><span aria-hidden="true">🛢️</span>Öl &amp; Druck</button>
+      <button data-view="awards"><span aria-hidden="true">🏆</span>Erfolge</button>
     </div>
     <div class="stats">
       <div class="stat"><div class="label">Kilometerstand</div><div class="value" id="sKm">–</div></div>
@@ -579,6 +606,61 @@
     <button class="primary" data-open="garage" style="width:100%">＋ Werkstatt hinzufügen</button>
   </section>
 
+  <!-- Strafzettel & Fristen -->
+  <section class="view" id="view-fines">
+    <button class="back" data-view="start">‹ Zurück</button>
+    <div id="fineList"></div>
+    <button class="primary" data-open="fine" style="width:100%">＋ Strafzettel / Bescheid erfassen</button>
+    <p class="note">Gegen einen Bußgeldbescheid kannst du innerhalb von 2 Wochen nach Zustellung Einspruch einlegen. Erst prüfen, dann zahlen.</p>
+  </section>
+
+  <!-- Wertverlauf -->
+  <section class="view" id="view-value">
+    <button class="back" data-view="start">‹ Zurück</button>
+    <div class="stats">
+      <div class="stat"><div class="label">Aktueller Wert</div><div class="value" id="vNow">–</div></div>
+      <div class="stat"><div class="label">Wertverlust pro Jahr</div><div class="value" id="vYear">–</div></div>
+    </div>
+    <div class="card">
+      <h2>Wertverlauf</h2>
+      <div class="chart" id="valueChart"></div>
+      <div id="valueInfo"></div>
+    </div>
+    <div class="card">
+      <h2>Einträge</h2>
+      <ul class="list" id="valueList"></ul>
+      <button class="primary" data-open="value" style="width:100%;margin-top:12px">＋ Wert eintragen</button>
+    </div>
+    <p class="note">Trag z. B. den Kaufpreis und ab und zu einen Schätzwert ein. Schätzwerte bekommst du kostenlos bei Online-Fahrzeugbörsen oder Bewertungsdiensten.</p>
+  </section>
+
+  <!-- Öl & Reifendruck -->
+  <section class="view" id="view-logs">
+    <button class="back" data-view="start">‹ Zurück</button>
+    <div class="card">
+      <h2>Motoröl</h2>
+      <div id="oilInfo"></div>
+      <button data-open="oil" style="width:100%;margin-top:12px">＋ Öl nachgefüllt</button>
+    </div>
+    <div class="card">
+      <h2>Reifendruck</h2>
+      <div id="pressureInfo"></div>
+      <button data-open="pressure" style="width:100%;margin-top:12px">＋ Reifendruck geprüft</button>
+      <p class="note" style="margin-bottom:0">Empfohlen: einmal im Monat und vor langen Fahrten, bei kalten Reifen. Die Sollwerte stehen innen in der Tankklappe.</p>
+    </div>
+    <div class="card">
+      <h2>Verlauf</h2>
+      <ul class="list" id="logList"></ul>
+    </div>
+  </section>
+
+  <!-- Erfolge -->
+  <section class="view" id="view-awards">
+    <button class="back" data-view="start">‹ Zurück</button>
+    <div class="card"><div id="awardSummary"></div></div>
+    <div class="awards" id="awardList"></div>
+  </section>
+
   <!-- Notfall & Hilfe -->
   <section class="view" id="view-help">
     <div class="sos">
@@ -682,8 +764,15 @@
       <div class="stat"><div class="label">Dieses Jahr gesamt</div><div class="value" id="cYear">–</div></div>
       <div class="stat"><div class="label">davon Kraftstoff</div><div class="value" id="cFuel">–</div></div>
     </div>
-    <div class="actions" style="grid-template-columns:1fr">
+    <div class="actions">
       <button class="primary" data-open="cost">€ Ausgabe eintragen</button>
+      <button id="costCsv">⬇︎ Export (Excel)</button>
+    </div>
+    <div class="card">
+      <h2>Wiederkehrende Kosten</h2>
+      <ul class="list" id="recList"></ul>
+      <button data-open="recurring" style="width:100%;margin-top:12px">🔁 Wiederkehrende Kosten hinzufügen</button>
+      <p class="note" style="margin-bottom:0">Versicherung, Steuer, Leasing oder Garage einmal eintragen: Die App bucht sie automatisch, auch rückwirkend ab dem ersten Zahltag.</p>
     </div>
     <div class="card">
       <h2>Nach Kategorie (dieses Jahr)</h2>
@@ -727,6 +816,7 @@
         </div>
         <button class="primary" style="width:100%">Speichern</button>
       </form>
+      <button data-open="cars" style="width:100%;margin-top:10px">🚗 Fahrzeuge verwalten</button>
     </div>
     <div class="card">
       <h2>Verkaufs-Mappe</h2>
@@ -786,6 +876,7 @@
     </div>
     <div class="card">
       <h2>Datensicherung</h2>
+      <p class="note" id="lastBackup" style="margin-top:0"></p>
       <p class="note" style="margin-top:0">Deine Daten liegen nur auf diesem iPhone. Sichere sie ab und zu, z. B. in iCloud Drive.</p>
       <div class="actions" style="margin:0">
         <button id="exportBtn">Sichern</button>

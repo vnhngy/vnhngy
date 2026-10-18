@@ -5,6 +5,14 @@ Wartungsplaner und Kostenübersicht. Kein Mac, kein App Store, kein Server nöti
 Alle Daten bleiben auf dem iPhone (localStorage).
 
 ## Funktionen
+- **Mehrere Fahrzeuge:** über den Fahrzeugnamen oben umschalten; jedes Auto hat eigene Daten
+- **Wiederkehrende Kosten:** Versicherung, Steuer, Leasing … werden automatisch gebucht
+- **Sicherungs-Erinnerung:** Hinweis auf der Übersicht, wenn die letzte Sicherung > 30 Tage her ist
+- **Strafzettel & Fristen:** mit Zahlungsfrist, Foto, Erinnerung und Kalendereintrag
+- **Kosten-Export:** alle Ausgaben als CSV für Excel
+- **Wertverlauf:** Marktwert, Wertverlust pro Jahr, echte Kosten pro km inkl. Wertverlust
+- **Öl & Reifendruck:** Nachfüllen und Kontrollen protokollieren, Ölverbrauch pro 1.000 km
+- **Erfolge:** 14 Abzeichen zum Freischalten
 - **Einrichtungs-Assistent:** erscheint beim ersten Start (Sprache, Auto, Wartung, Reifen, Notfall);
   jederzeit erneut unter **Mehr → Einrichtungs-Assistent**
 - **Tanken:** Verbrauch (l/100 km) zwischen vollen Tankfüllungen, Ø-Literpreis
