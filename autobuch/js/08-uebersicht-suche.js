@@ -1,5 +1,5 @@
 'use strict';
-// Autobuch – Tank-Prognose, Übersicht anpassen, Suche und große Schrift.
+// Drivo – Tank-Prognose, Übersicht anpassen, Suche und große Schrift.
 // Alle Dateien teilen sich einen gemeinsamen Gültigkeitsbereich und werden in der Reihenfolge der Nummern geladen.
 
 /* ---------- Tank-Prognose ---------- */

@@ -1,5 +1,5 @@
 'use strict';
-// Autobuch – Schäden, Leasing, Pendlerpauschale, Spritspar-Rechner, Steckbrief, Notfall-Sperrbildschirm.
+// Drivo – Schäden, Leasing, Pendlerpauschale, Spritspar-Rechner, Steckbrief, Notfall-Sperrbildschirm.
 // Alle Dateien teilen sich einen gemeinsamen Gültigkeitsbereich und werden in der Reihenfolge der Nummern geladen.
 
 /* ---------- Schäden (Kratzer, Dellen, Steinschläge) ---------- */
@@ -286,7 +286,7 @@ function lockscreenSheet() {
     if (!blob || !$('#lockImg')) return;
     $('#lockImg').src = URL.createObjectURL(blob);
     $('#lockSave').onclick = async () => {
-      const file = new File([blob], 'autobuch-notfall.png', { type: 'image/png' });
+      const file = new File([blob], 'drivo-notfall.png', { type: 'image/png' });
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         try { return await navigator.share({ files: [file] }); } catch (e) { if (e.name === 'AbortError') return; }
       }

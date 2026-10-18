@@ -1,5 +1,5 @@
 'use strict';
-// Autobuch – Dokumente, Siri-Links, Verkaufs-Mappe und Kalender-Export.
+// Drivo – Dokumente, Siri-Links, Verkaufs-Mappe und Kalender-Export.
 // Alle Dateien teilen sich einen gemeinsamen Gültigkeitsbereich und werden in der Reihenfolge der Nummern geladen.
 
 /* ---------- Dokumente ---------- */
@@ -168,7 +168,7 @@ async function buildReport(opt) {
       }
     }
   }
-  html += `<p class="fine">${tr('Die Angaben wurden vom Halter selbst erfasst (Autobuch).')}</p></div>`;
+  html += `<p class="fine">${tr('Die Angaben wurden vom Halter selbst erfasst (Drivo).')}</p></div>`;
 
   $('#reportBody').innerHTML = html;
   $('#reportBack').dataset.view = 'more';
@@ -183,7 +183,7 @@ function calendarFile() {
   const icsText = (t) => String(t).replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/[,;]/g, (c) => '\\' + c);
   const plain = (h) => h.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
   const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
-  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Autobuch//DE', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH'];
+  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Drivo//DE', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH'];
   let count = 0;
   state.maint.forEach((m) => {
     const st = maintStatus(m);
@@ -197,7 +197,7 @@ function calendarFile() {
       `DTSTART;VALUE=DATE:${ymd(date)}`,
       `DTEND;VALUE=DATE:${ymd(addDays(1, date))}`,
       `SUMMARY:${icsText(title)}`,
-      `DESCRIPTION:${icsText(plain(st.text) + ' (Autobuch)')}`,
+      `DESCRIPTION:${icsText(plain(st.text) + ' (Drivo)')}`,
       'BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${icsText(title)}`, 'TRIGGER:-P7D', 'END:VALARM',
       'BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${icsText(title)}`, 'TRIGGER:PT9H', 'END:VALARM',
       'END:VEVENT'
@@ -207,14 +207,14 @@ function calendarFile() {
   state.fines.filter((f) => !f.paid && f.due).forEach((f) => {
     const title = tr('Zahlen bis heute: {type} ({eur})', { type: tr(f.type), eur: fmtEUR(f.amount || 0) });
     lines.push('BEGIN:VEVENT', `UID:fine-${f.id}@autobuch`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${ymd(f.due)}`, `DTEND;VALUE=DATE:${ymd(addDays(1, f.due))}`,
-      `SUMMARY:${icsText(title)}`, `DESCRIPTION:${icsText([f.authority, f.ref].filter(Boolean).join(' · ') + ' (Autobuch)')}`,
+      `SUMMARY:${icsText(title)}`, `DESCRIPTION:${icsText([f.authority, f.ref].filter(Boolean).join(' · ') + ' (Drivo)')}`,
       'BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${icsText(title)}`, 'TRIGGER:-P3D', 'END:VALARM', 'END:VEVENT');
     count++;
   });
   state.documents.filter((d) => d.expires && d.expires >= today()).forEach((d) => {
     const title = tr('{doc} läuft ab', { doc: d.title || tr(d.type) });
     lines.push('BEGIN:VEVENT', `UID:doc-${d.id}-${ymd(d.expires)}@autobuch`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${ymd(d.expires)}`, `DTEND;VALUE=DATE:${ymd(addDays(1, d.expires))}`,
-      `SUMMARY:${icsText(title)}`, 'DESCRIPTION:Autobuch', 'BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${icsText(title)}`, 'TRIGGER:-P30D', 'END:VALARM', 'END:VEVENT');
+      `SUMMARY:${icsText(title)}`, 'DESCRIPTION:Drivo', 'BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${icsText(title)}`, 'TRIGGER:-P30D', 'END:VALARM', 'END:VEVENT');
     count++;
   });
   lines.push('END:VCALENDAR');

@@ -1,5 +1,5 @@
 'use strict';
-// Autobuch – Statistik, Checklisten, Reiseplaner und Werkstätten.
+// Drivo – Statistik, Checklisten, Reiseplaner und Werkstätten.
 // Alle Dateien teilen sich einen gemeinsamen Gültigkeitsbereich und werden in der Reihenfolge der Nummern geladen.
 
 /* ---------- Statistik ---------- */
@@ -123,7 +123,7 @@ const CHECKLISTS = [
     'Wischerblätter tauschen', 'Lack waschen und versiegeln', 'Innenraumfilter prüfen'] },
   { id: 'workshop', icon: '🔧', name: 'Werkstattbesuch', items: [
     'Warnmeldungen und Geräusche notieren', 'Serviceheft mitnehmen', 'Kostenvoranschlag geben lassen', 'Wertsachen aus dem Auto nehmen',
-    'Kilometerstand bei der Abgabe notieren', 'Rechnung prüfen und in Autobuch fotografieren'] },
+    'Kilometerstand bei der Abgabe notieren', 'Rechnung prüfen und in Drivo fotografieren'] },
   { id: 'sale', icon: '🏷️', name: 'Auto verkaufen', items: [
     'Verkaufs-Mappe erstellen (Tab „Mehr“)', 'Serviceheft, Rechnungen und TÜV-Bericht bereitlegen', 'Beide Schlüssel bereitlegen',
     'Auto innen und außen reinigen', 'Fotos bei Tageslicht machen', 'Marktwert recherchieren', 'Schriftlichen Kaufvertrag verwenden',

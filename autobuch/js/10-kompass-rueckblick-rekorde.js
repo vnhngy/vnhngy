@@ -1,5 +1,5 @@
 'use strict';
-// Autobuch – Parkplatz-Kompass, Jahresrückblick, Rekorde, CO₂-Bilanz, Tankstellen-Ranking, Lieblingsstrecken.
+// Drivo – Parkplatz-Kompass, Jahresrückblick, Rekorde, CO₂-Bilanz, Tankstellen-Ranking, Lieblingsstrecken.
 // Alle Dateien teilen sich einen gemeinsamen Gültigkeitsbereich und werden in der Reihenfolge der Nummern geladen.
 
 /* ---------- Parkplatz-Kompass ---------- */

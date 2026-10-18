@@ -1,6 +1,6 @@
 {
-  "name": "Autobuch",
-  "short_name": "Autobuch",
+  "name": "Drivo",
+  "short_name": "Drivo",
   "description": "Tankbuch, Wartungsplaner und Kostenübersicht für dein Auto",
   "lang": "de",
   "start_url": "./",
@@ -9,7 +9,7 @@
   "background_color": "#101318",
   "theme_color": "#101318",
   "icons": [
-    { "src": "icon-192.png?v=27", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon-512.png?v=27", "sizes": "512x512", "type": "image/png" }
+    { "src": "icon-192.png?v=drivo", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png?v=drivo", "sizes": "512x512", "type": "image/png" }
   ]
 }

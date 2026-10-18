@@ -1,5 +1,5 @@
 'use strict';
-// Autobuch – km-Stand schnell eintragen, E5/E10-Rechner, Fahrtkosten teilen, echte Monatskosten,
+// Drivo – km-Stand schnell eintragen, E5/E10-Rechner, Fahrtkosten teilen, echte Monatskosten,
 // monatliche Prüf-Erinnerung, Fahrzeugvergleich, Hinweis bei Safari statt Home-Bildschirm-App.
 // Alle Dateien teilen sich einen gemeinsamen Gültigkeitsbereich und werden in der Reihenfolge der Nummern geladen.
 
@@ -160,9 +160,9 @@ function checkReminderFile() {
   const ymd = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
   const esc2 = (t) => String(t).replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/[,;]/g, (c) => '\\' + c);
   const title = tr('{car}: Monats-Check', { car: state.car.name || tr('Auto') });
-  const desc = tr('Reifendruck (kalte Reifen), Ölstand, Kühlwasser, Scheibenwaschwasser, Licht und Blinker prüfen. Danach in Autobuch unter „Öl & Druck“ eintragen.');
+  const desc = tr('Reifendruck (kalte Reifen), Ölstand, Kühlwasser, Scheibenwaschwasser, Licht und Blinker prüfen. Danach in Drivo unter „Öl & Druck“ eintragen.');
   const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
-  return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Autobuch//DE', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
+  return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Drivo//DE', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
     'BEGIN:VEVENT', `UID:monthly-check-${state.carId}@autobuch`, `DTSTAMP:${stamp}`, `DTSTART:${ymd}T100000`, `DTEND:${ymd}T101500`,
     'RRULE:FREQ=MONTHLY;BYDAY=1SA', `SUMMARY:${esc2(title)}`, `DESCRIPTION:${esc2(desc)}`,
     'BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${esc2(title)}`, 'TRIGGER:PT0M', 'END:VALARM', 'END:VEVENT', 'END:VCALENDAR'].join('\r\n') + '\r\n';
@@ -204,8 +204,8 @@ const inSafariOnIos = () => /iPhone|iPad|iPod/.test(navigator.userAgent) && !nav
 function safariNotice() {
   if (!inSafariOnIos() || !hasNoData()) return '';
   return `<div class="card notice"><span class="ico">⚠</span><div class="grow">
-    <div class="title">${tr('Du bist in Safari, nicht in der Autobuch-App')}</div>
-    <div class="meta">${tr('Safari speichert getrennt von der App auf deinem Home-Bildschirm. Öffne Autobuch über das Symbol auf dem Home-Bildschirm, dann siehst du deine Daten.')}</div></div></div>`;
+    <div class="title">${tr('Du bist in Safari, nicht in der Drivo-App')}</div>
+    <div class="meta">${tr('Safari speichert getrennt von der App auf deinem Home-Bildschirm. Öffne Drivo über das Symbol auf dem Home-Bildschirm, dann siehst du deine Daten.')}</div></div></div>`;
 }
 
 function renderExtras3() {

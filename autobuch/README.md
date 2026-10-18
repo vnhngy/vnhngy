@@ -1,8 +1,10 @@
-# Autobuch
+# Drivo
 
 Web-App für das iPhone (PWA) für eine Mercedes A 180 (W176, 2015): Tankbuch,
 Wartungsplaner und Kostenübersicht. Kein Mac, kein App Store, kein Server nötig.
 Alle Daten bleiben auf dem iPhone (localStorage).
+
+Die App hieß früher **Autobuch**. Der Ordner, die Web-Adresse und der interne Speicher (`autobuch-v1`) heißen weiter so, damit vorhandene Daten erhalten bleiben.
 
 ## Funktionen
 - **Suche** (Lupe oben rechts): durchsucht Tankbuch, Kosten, Fahrten, Wartung, Reifen, Dokumente, Unfälle, Strafzettel, Werkstätten

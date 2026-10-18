@@ -1,5 +1,5 @@
 'use strict';
-// Autobuch – Fotos (IndexedDB), Notfall & Unfall, GPS-Fahrtaufzeichnung.
+// Drivo – Fotos (IndexedDB), Notfall & Unfall, GPS-Fahrtaufzeichnung.
 // Alle Dateien teilen sich einen gemeinsamen Gültigkeitsbereich und werden in der Reihenfolge der Nummern geladen.
 
 /* ---------- Fotos (IndexedDB, damit der normale Speicher nicht vollläuft) ---------- */

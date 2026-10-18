@@ -1,5 +1,5 @@
 'use strict';
-// Autobuch – Mehrere Fahrzeuge, Hinweise, Fixkosten, Strafzettel, Wert, Öl & Druck, Erfolge.
+// Drivo – Mehrere Fahrzeuge, Hinweise, Fixkosten, Strafzettel, Wert, Öl & Druck, Erfolge.
 // Alle Dateien teilen sich einen gemeinsamen Gültigkeitsbereich und werden in der Reihenfolge der Nummern geladen.
 
 /* ---------- Mehrere Fahrzeuge ---------- */

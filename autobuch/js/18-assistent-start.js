@@ -1,5 +1,5 @@
 'use strict';
-// Autobuch – Einrichtungs-Assistent, Symbole statt Emojis, Sprache und App-Start.
+// Drivo – Einrichtungs-Assistent, Symbole statt Emojis, Sprache und App-Start.
 // Alle Dateien teilen sich einen gemeinsamen Gültigkeitsbereich und werden in der Reihenfolge der Nummern geladen.
 
 /* ---------- Einrichtungs-Assistent ---------- */
@@ -18,7 +18,7 @@ const mt = (id) => state.maint.find((m) => m.id === id) || {};
 // Jeder Schritt: Symbol, Titel, Inhalt, und was beim „Weiter“ übernommen wird
 const WIZ_STEPS = [
   {
-    icon: '👋', title: 'Willkommen bei Autobuch',
+    icon: '👋', title: 'Willkommen bei Drivo',
     body: () => `<p>${tr('In ein paar kurzen Schritten richten wir die App für dein Auto ein. Jeder Schritt lässt sich überspringen und später ändern.')}</p>
       <p class="note">${tr('Sprache wählen:')}</p>
       <div class="seg" style="margin-bottom:6px">${[['de', 'Deutsch'], ['en', 'English'], ['vi', 'Tiếng Việt']].map(([l, n]) =>
@@ -245,7 +245,7 @@ if (window.visualViewport) {
     if (visualViewport.scale > 1.01) { vp.content = base + ', minimum-scale=1'; setTimeout(() => { vp.content = base; }, 300); }
   });
 }
-$('#appVersion').textContent = `Autobuch · Version ${APP_VERSION}`;
+$('#appVersion').textContent = `Drivo · Version ${APP_VERSION}`;
 
 // Manuell: neueste Version vom Server holen und alles Zwischengespeicherte verwerfen
 $('#updateBtn').addEventListener('click', async () => {

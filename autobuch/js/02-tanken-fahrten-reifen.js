@@ -1,5 +1,5 @@
 'use strict';
-// Autobuch – Parkplatz, Spritpreise, Fahrtenbuch und Reifen.
+// Drivo – Parkplatz, Spritpreise, Fahrtenbuch und Reifen.
 // Alle Dateien teilen sich einen gemeinsamen Gültigkeitsbereich und werden in der Reihenfolge der Nummern geladen.
 
 /* ---------- Parkplatz ---------- */
@@ -97,7 +97,7 @@ function renderPrices() {
   if (!cfg.key) {
     body.innerHTML = `<p class="note" style="margin:0 0 10px">${tr('Ohne Schlüssel: Öffne die Preise direkt auf clever-tanken.de (dort „Standort verwenden“) oder such Tankstellen in Apple Karten.')}</p>
       ${priceLinks()}
-      <p class="note">${tr('Mit einem kostenlosen Schlüssel von Tankerkönig zeigt Autobuch die günstigsten Tankstellen direkt hier an, inklusive Wunschpreis.')}</p>
+      <p class="note">${tr('Mit einem kostenlosen Schlüssel von Tankerkönig zeigt Drivo die günstigsten Tankstellen direkt hier an, inklusive Wunschpreis.')}</p>
       <button data-view="more" style="width:100%">${tr('Schlüssel einrichten')}</button>`;
     return;
   }

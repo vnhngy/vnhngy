@@ -1,5 +1,5 @@
 'use strict';
-// Automatische Tests für Autobuch: startet die App in einem echten Browser (Chromium über Playwright)
+// Automatische Tests für Drivo: startet die App in einem echten Browser (Chromium über Playwright)
 // und prüft die wichtigsten Abläufe. Aufruf: npm test (im Ordner autobuch)
 const http = require('http');
 const fs = require('fs');

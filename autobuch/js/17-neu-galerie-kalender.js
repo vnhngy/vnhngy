@@ -1,11 +1,12 @@
 'use strict';
-// Autobuch – „Neu in dieser Version“, Belege-Galerie, Monatskalender, Ersatzteile, Spritpreis-Verlauf.
+// Drivo – „Neu in dieser Version“, Belege-Galerie, Monatskalender, Ersatzteile, Spritpreis-Verlauf.
 // (Parkplatz-Foto steckt beim Parkplatz, die Gebrauchtwagen-Checkliste bei den Checklisten.)
 // Alle Dateien teilen sich einen gemeinsamen Gültigkeitsbereich und werden in der Reihenfolge der Nummern geladen.
 
 /* ---------- Neu in dieser Version ---------- */
 
 const CHANGELOG = [
+  ['1.2.0', ['Neuer Name: Autobuch heißt jetzt Drivo', 'Neues Logo']],
   ['1.1.2', ['Übersicht aufgeräumt: Termine und Chronik findest du jetzt im Kalender (oben umschalten)']],
   ['1.1.1', ['Fahrzeugfoto wird schärfer gespeichert']],
   ['1.1.0', ['Spritpreise auch ohne Tankerkönig-Schlüssel: direkt zu clever-tanken.de oder Apple Karten']],
@@ -19,7 +20,7 @@ const CHANGELOG = [
 function whatsNewSheet(all = false) {
   const seen = state.seenVersion;
   const list = CHANGELOG.filter(([v]) => all || !seen || cmpVer(v, seen) > 0).slice(0, all ? 4 : 2);
-  openSheet('Neu in Autobuch', list.map(([v, items]) => `
+  openSheet('Neu in Drivo', list.map(([v, items]) => `
     <h4 style="margin:12px 0 6px">${tr('Version {v}', { v })}</h4>
     <ul class="tips">${items.map((x) => `<li>${tr(x)}</li>`).join('')}</ul>`).join(''), () => {}, { submitLabel: 'Alles klar' });
 }

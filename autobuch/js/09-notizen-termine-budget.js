@@ -1,5 +1,5 @@
 'use strict';
-// Autobuch – Monatsbudget, Notizbuch, Termine-Zeitstrahl, Jahresbericht.
+// Drivo – Monatsbudget, Notizbuch, Termine-Zeitstrahl, Jahresbericht.
 // Alle Dateien teilen sich einen gemeinsamen Gültigkeitsbereich und werden in der Reihenfolge der Nummern geladen.
 
 /* ---------- Monatsbudget ---------- */
@@ -184,7 +184,7 @@ async function buildYearReport(y) {
     <h2>${tr('Ausgaben')}</h2>
     ${costs.length ? `<table><tr><th>${tr('Datum')}</th><th>${tr('Kategorie')}</th><th>${tr('Notiz')}</th><th class="r">${tr('Betrag')}</th></tr>
       ${costs.map((x) => row([fmtDate(x.date), esc(tr(x.cat)), esc(x.note || ''), R(fmtEUR(x.amount))])).join('')}</table>` : `<p>${tr('Keine Ausgaben.')}</p>`}
-    <p class="fine">${tr('Die Angaben wurden vom Halter selbst erfasst (Autobuch).')}</p></div>`;
+    <p class="fine">${tr('Die Angaben wurden vom Halter selbst erfasst (Drivo).')}</p></div>`;
 
   $('#reportBody').innerHTML = html;
   $('#reportBack').dataset.view = 'stats';

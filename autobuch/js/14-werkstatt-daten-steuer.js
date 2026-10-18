@@ -1,5 +1,5 @@
 'use strict';
-// Autobuch – Mängelliste für die Werkstatt, Datencheck, Tankdaten-Import/-Export, Kfz-Steuer-Rechner,
+// Drivo – Mängelliste für die Werkstatt, Datencheck, Tankdaten-Import/-Export, Kfz-Steuer-Rechner,
 // Fahrmodus, Spritpreis-Ziel, „Dein Autojahr“ als Bild.
 // Alle Dateien teilen sich einen gemeinsamen Gültigkeitsbereich und werden in der Reihenfolge der Nummern geladen.
 
@@ -307,13 +307,13 @@ function storyImage(y) {
     text(String(value), W - 120 - wv, yy + 20, 64, 800);
     yy += 185;
   });
-  text(tr('Erstellt mit Autobuch'), 90, H - 110, 36, 500, 'rgba(255,255,255,.55)');
+  text(tr('Erstellt mit Drivo'), 90, H - 110, 36, 500, 'rgba(255,255,255,.55)');
   return cv;
 }
 
 function shareStoryImage(y) {
   storyImage(y).toBlob(async (blob) => {
-    const file = new File([blob], `autobuch-${y}.png`, { type: 'image/png' });
+    const file = new File([blob], `drivo-${y}.png`, { type: 'image/png' });
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       try { return await navigator.share({ files: [file] }); } catch (e) { if (e.name === 'AbortError') return; }
     }

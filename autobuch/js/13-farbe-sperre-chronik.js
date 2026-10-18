@@ -1,5 +1,5 @@
 'use strict';
-// Autobuch – Akzentfarbe, App-Sperre (Face ID/PIN), Chronik, Saison- und Versicherungs-Hinweise,
+// Drivo – Akzentfarbe, App-Sperre (Face ID/PIN), Chronik, Saison- und Versicherungs-Hinweise,
 // Rettungskarte & Rückrufe, Übergabe-Protokoll mit Unterschrift, Reisekosten-Abrechnung.
 // Alle Dateien teilen sich einen gemeinsamen Gültigkeitsbereich und werden in der Reihenfolge der Nummern geladen.
 
@@ -44,7 +44,7 @@ async function pinHash(pin, salt) {
 function renderLock() {
   const l = state.lock;
   $('#lockBody').innerHTML = l
-    ? `<p class="note" style="margin-top:0">${tr(l.credId ? '✓ Aktiv: Autobuch fragt beim Öffnen nach Face ID (oder deiner Ersatz-PIN).' : '✓ Aktiv: Autobuch fragt beim Öffnen nach deiner PIN.')}</p>
+    ? `<p class="note" style="margin-top:0">${tr(l.credId ? '✓ Aktiv: Drivo fragt beim Öffnen nach Face ID (oder deiner Ersatz-PIN).' : '✓ Aktiv: Drivo fragt beim Öffnen nach deiner PIN.')}</p>
        <button data-lock="off" style="width:100%">${tr('Sperre ausschalten')}</button>`
     : `<p class="note" style="margin-top:0">${tr('Schützt Kennzeichen, FIN, Versicherung und Fotos vor neugierigen Blicken, wenn jemand dein entsperrtes iPhone in der Hand hat.')}</p>
        <button class="primary" data-lock="setup" style="width:100%">${tr('🔒 Sperre mit Face ID einrichten')}</button>`;
@@ -55,14 +55,14 @@ function lockSetup() {
     <p class="note" style="margin-top:0">${tr('Lege zuerst eine Ersatz-PIN fest. Mit ihr kommst du immer rein, auch wenn Face ID einmal nicht klappt.')}</p>
     ${field('Ersatz-PIN (4–8 Ziffern)', 'pin', '', 'type="password" inputmode="numeric" autocomplete="new-password" required')}
     ${field('PIN wiederholen', 'pin2', '', 'type="password" inputmode="numeric" autocomplete="new-password" required')}
-    <p class="hint">${tr('Danach fragt das iPhone, ob es für Autobuch einen Passkey sichern darf. Bestätige mit Face ID.')}</p>
+    <p class="hint">${tr('Danach fragt das iPhone, ob es für Drivo einen Passkey sichern darf. Bestätige mit Face ID.')}</p>
   `, (d) => {
     if (!/^\d{4,8}$/.test(d.pin)) return tr('Die PIN muss 4 bis 8 Ziffern haben.');
     if (d.pin !== d.pin2) return tr('Die beiden PINs stimmen nicht überein.');
     // Passkey direkt beim Tippen anlegen: iOS verlangt dafür eine Nutzeraktion
     const created = window.PublicKeyCredential && navigator.credentials?.create ? navigator.credentials.create({ publicKey: {
-      challenge: randomBytes(32), rp: { name: 'Autobuch', id: location.hostname },
-      user: { id: randomBytes(16), name: 'Autobuch', displayName: 'Autobuch' },
+      challenge: randomBytes(32), rp: { name: 'Drivo', id: location.hostname },
+      user: { id: randomBytes(16), name: 'Drivo', displayName: 'Drivo' },
       pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
       authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', residentKey: 'preferred' }, timeout: 60000,
     } }) : Promise.reject(new Error('unsupported'));
@@ -82,7 +82,7 @@ function showLock(auto = true) {
   appLocked = true;
   if (sheet.open) sheet.close();
   $('#lockFace').hidden = !state.lock.credId;
-  $('#lockDlg h3').textContent = tr('Autobuch ist gesperrt');
+  $('#lockDlg h3').textContent = tr('Drivo ist gesperrt');
   $('#lockFace').textContent = tr('Mit Face ID entsperren');
   $('#lockPin').value = '';
   $('#lockErr').textContent = '';
@@ -312,7 +312,7 @@ async function handoverReport(h) {
     const blob = await photoGet(id).catch(() => null);
     if (blob) html += `<div class="receipt"><img src="${URL.createObjectURL(blob)}" alt="${tr('Foto')}"></div>`;
   }
-  html += `<p class="fine">${tr('Erstellt mit Autobuch.')}</p></div>
+  html += `<p class="fine">${tr('Erstellt mit Drivo.')}</p></div>
     <button class="link danger no-print" data-del-handover="${h.id}" style="width:100%;margin-top:12px">${tr('Protokoll löschen')}</button>`;
   $('#reportBody').innerHTML = html;
   $('#reportBack').dataset.view = 'handover';
@@ -364,7 +364,7 @@ function travelReport(trips, from, to, rate, name) {
     </table>
     <p>${tr('Erstattung mit {rate} pro gefahrenem Kilometer mit dem privaten Fahrzeug.', { rate: fmtEUR(rate) })}</p>
     <div class="sig-row"><div><div class="sig-empty"></div><div class="sig-line">${tr('Datum, Unterschrift')}</div></div><div><div class="sig-empty"></div><div class="sig-line">${tr('Geprüft')}</div></div></div>
-    <p class="fine">${tr('Erstellt mit Autobuch aus dem Fahrtenbuch.')}</p></div>`;
+    <p class="fine">${tr('Erstellt mit Drivo aus dem Fahrtenbuch.')}</p></div>`;
   $('#reportBack').dataset.view = 'trips';
   showView('report');
   $('#viewTitle').textContent = tr('Reisekosten-Abrechnung');

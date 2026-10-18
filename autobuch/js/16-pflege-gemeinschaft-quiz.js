@@ -1,5 +1,5 @@
 'use strict';
-// Autobuch – Pflege-Plan, Fahrgemeinschaft, Zuladungs-Rechner, Warnleuchten-Quiz, Tanken per Sprache, Garantien.
+// Drivo – Pflege-Plan, Fahrgemeinschaft, Zuladungs-Rechner, Warnleuchten-Quiz, Tanken per Sprache, Garantien.
 // Alle Dateien teilen sich einen gemeinsamen Gültigkeitsbereich und werden in der Reihenfolge der Nummern geladen.
 
 /* ---------- Pflege-Plan ---------- */

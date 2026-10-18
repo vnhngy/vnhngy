@@ -1,5 +1,5 @@
 'use strict';
-// Autobuch – Formulare (Eingabe-Blätter) und Klick-/Formular-Ereignisse.
+// Drivo – Formulare (Eingabe-Blätter) und Klick-/Formular-Ereignisse.
 // Alle Dateien teilen sich einen gemeinsamen Gültigkeitsbereich und werden in der Reihenfolge der Nummern geladen.
 
 /* ---------- Formulare ---------- */
@@ -233,7 +233,7 @@ document.addEventListener('click', (e) => {
   if (t.dataset.open === 'travel') return travelForm();
   if (t.dataset.open === 'km') return kmForm();
   if (t.dataset.shareTrip) return shareTripCost(state.trips.find((x) => x.id === t.dataset.shareTrip));
-  if (t.dataset.open === 'checkIcs') return downloadFile(new File([checkReminderFile()], 'autobuch-monats-check.ics', { type: 'text/calendar' }));
+  if (t.dataset.open === 'checkIcs') return downloadFile(new File([checkReminderFile()], 'drivo-monats-check.ics', { type: 'text/calendar' }));
   if (t.dataset.dmgZone) return damageForm(null, t.dataset.dmgZone);
   if (t.dataset.open === 'damage') return damageForm();
   if (t.dataset.editDmg) return damageForm(state.damages.find((x) => x.id === t.dataset.editDmg));
@@ -355,11 +355,11 @@ $('#tripCsv').addEventListener('click', () => {
 $('#calBtn').addEventListener('click', () => {
   const ics = calendarFile();
   if (!ics) return alert(tr('Trag zuerst bei mindestens einem Termin ein, wann er zuletzt erledigt wurde.'));
-  downloadFile(new File([ics], 'autobuch-termine.ics', { type: 'text/calendar' }));
+  downloadFile(new File([ics], 'drivo-termine.ics', { type: 'text/calendar' }));
 });
 
 $('#exportBtn').addEventListener('click', async () => {
-  const name = `autobuch-${today()}.json`;
+  const name = `drivo-${today()}.json`;
   const photos = {};
   for (const id of allPhotoIds()) {
     const blob = await photoGet(id).catch(() => null);
@@ -368,7 +368,7 @@ $('#exportBtn').addEventListener('click', async () => {
   const file = new File([JSON.stringify({ ...state, photos }, null, 2)], name, { type: 'application/json' });
   const done = () => { state.lastBackup = today(); state.backupSnooze = null; save(); };
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
-    try { await navigator.share({ files: [file], title: tr('Autobuch-Sicherung') }); return done(); } catch (e) { if (e.name === 'AbortError') return; }
+    try { await navigator.share({ files: [file], title: tr('Drivo-Sicherung') }); return done(); } catch (e) { if (e.name === 'AbortError') return; }
   }
   downloadFile(file);
   done();
@@ -389,7 +389,7 @@ $('#importFile').addEventListener('change', async (e) => {
     save();
     alert(tr('Sicherung wiederhergestellt'));
   } catch (err) {
-    alert(tr('Diese Datei ist keine gültige Autobuch-Sicherung.'));
+    alert(tr('Diese Datei ist keine gültige Drivo-Sicherung.'));
   } finally { e.target.value = ''; }
 });
 $('#resetBtn').addEventListener('click', () => {
