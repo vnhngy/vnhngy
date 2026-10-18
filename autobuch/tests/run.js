@@ -300,7 +300,7 @@ test('Neue Formulare sind übersetzt', async ({ page }) => {
   const missing = await page.evaluate(async () => {
     setLang('en'); MISSING.clear();
     state.trips.push({ id: 't1', date: today(), type: 'Privat', from: 'A', to: 'B', startKm: 1, endKm: 2, purpose: '', partner: '' });
-    fuelForm(); sheet.close(); budgetForm(); sheet.close(); noteForm(); sheet.close(); tripForm(state.trips[0]); sheet.close(); damageForm(); sheet.close(); leasingForm(); sheet.close(); commuteForm(); sheet.close(); specsForm(); sheet.close(); lockscreenSheet(); sheet.close(); handoverForm(); sheet.close(); travelForm(); sheet.close(); lockSetup(); sheet.close(); taxForm(); sheet.close(); priceTargetForm(); sheet.close(); csvImportSheet(); sheet.close(); dataCheckSheet(); sheet.close(); openDriveMode(); document.querySelector('#driveMode').close(); insKmForm(); sheet.close(); supplyForm(); sheet.close(); repairForm(); sheet.close(); state.garages.push({ id: 'g', name: 'X' }); garageForm(state.garages[0]); sheet.close(); costForm(); sheet.close(); state.leasing = { start: addDays(-400), end: addDays(400), kmStart: 1, kmPerYear: 10, rate: 5 };
+    fuelForm(); sheet.close(); budgetForm(); sheet.close(); noteForm(); sheet.close(); tripForm(state.trips[0]); sheet.close(); damageForm(); sheet.close(); leasingForm(); sheet.close(); commuteForm(); sheet.close(); specsForm(); sheet.close(); lockscreenSheet(); sheet.close(); handoverForm(); sheet.close(); travelForm(); sheet.close(); lockSetup(); sheet.close(); taxForm(); sheet.close(); priceTargetForm(); sheet.close(); csvImportSheet(); sheet.close(); dataCheckSheet(); sheet.close(); openDriveMode(); document.querySelector('#driveMode').close(); insKmForm(); sheet.close(); supplyForm(); sheet.close(); repairForm(); sheet.close(); state.garages.push({ id: 'g', name: 'X' }); garageForm(state.garages[0]); sheet.close(); costForm(); sheet.close(); careForm('wash'); sheet.close(); poolForm(); sheet.close(); loadForm(); sheet.close(); quizSheet(); sheet.close(); state.pool = { people: ['A'], rate: null }; save(); state.leasing = { start: addDays(-400), end: addDays(400), kmStart: 1, kmPerYear: 10, rate: 5 };
     state.budget = { monthly: 10 }; save();
     await buildYearReport(String(new Date().getFullYear()));
     openStory(String(new Date().getFullYear())); for (let i = 0; i < story.cards.length; i++) { story.i = i; drawStory(); } document.querySelector('#story').close();
@@ -739,6 +739,72 @@ test('Fahrgewohnheiten und Reparatur-Rechner', async ({ page }) => {
   assert.equal(await page.inputValue('#sheetForm [name=value]'), '9000');
   await page.fill('#sheetForm [name=cost]', '1800');
   assert.match(await page.innerText('#repairOut'), /20 %[\s\S]*lohnt sich meistens/);
+});
+
+test('Pflege-Plan und Garantie-Tracker', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => showView('care'));
+  await page.click('#careList button[data-care="wash"]');
+  assert.equal(await page.evaluate(() => state.care.wash === today()), true);
+  await page.click('#careList [data-care-edit="wax"]');
+  await page.fill('#sheetForm [name=cost]', '29,90');
+  await page.click('#sheetForm button.primary');
+  assert.ok(await page.evaluate(() => state.costs.some((c) => c.cat === 'Pflege' && c.amount === 29.9)));
+
+  await page.evaluate(() => showView('costs'));
+  await page.click('#view-costs button[data-open="cost"]');
+  await page.fill('#sheetForm [name=amount]', '180');
+  await page.fill('#sheetForm [name=note]', 'Neue Batterie');
+  await page.evaluate(() => { sheetForm.warranty.value = addDays(20); });
+  await page.click('#sheetForm button.primary');
+  assert.match(await page.innerText('#warrantyList'), /Neue Batterie/);
+  assert.match(await page.innerText('#notices'), /Garantie endet bald/);
+  assert.ok(await page.evaluate(() => agendaItems().some((x) => /Neue Batterie/.test(x.title))));
+});
+
+test('Fahrgemeinschaft: Mitfahrer anhaken und abrechnen', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => { state.pool = { people: ['Anna', 'Ben'], rate: 0.2 }; save(); showView('trips'); });
+  await page.click('#view-trips button[data-open="trip"]');
+  await page.fill('#sheetForm [name=to]', 'Büro');
+  await page.fill('#sheetForm [name=startKm]', '97800');
+  await page.fill('#sheetForm [name=endKm]', '97830');
+  await page.check('#sheetForm [name=rider0]');
+  await page.click('#sheetForm button.primary');
+  const st = await page.evaluate(() => poolStatement(today().slice(0, 7)));
+  assert.deepEqual(st, { Anna: { trips: 1, km: 30, owed: 3 }, Ben: { trips: 0, km: 0, owed: 0 } }); // 30 km × 0,20 € / 2 Personen
+  assert.match(await page.innerText('#poolBody'), /Anna[\s\S]*3,00/);
+});
+
+test('Zuladung, Quiz und Tanken per Sprache', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => showView('specs'));
+  await page.click('#view-specs button[data-open="load"]');
+  await page.fill('#sheetForm [name=gross]', '1915');
+  await page.fill('#sheetForm [name=empty]', '1395');
+  await page.fill('#sheetForm [name=riders]', '3');
+  await page.fill('#sheetForm [name=perKg]', '80');
+  await page.fill('#sheetForm [name=luggage]', '100');
+  assert.match(await page.innerText('#loadOut'), /noch 180 kg frei/);
+  await page.click('#sheetForm button.primary');
+
+  await page.evaluate(() => showView('help'));
+  await page.click('#view-help button[data-open="quiz"]');
+  for (let i = 0; i < 5; i++) {
+    await page.click('#quizBox .quiz-a[data-ok="true"]');
+    await page.click('#quizNext');
+  }
+  assert.match(await page.innerText('#quizBox'), /5 \/ 5/);
+  assert.equal(await page.evaluate(() => state.quizBest), 5);
+
+  const p = await page.evaluate(() => [
+    parseSpokenFuel('42,5 Liter für 75,30 € bei 98.500 Kilometer'),
+    parseSpokenFuel('Kilometerstand 98 500 km, 40 Liter, 70 Euro'),
+    parseSpokenFuel('35 litres 61.20 euros'),
+  ]);
+  assert.deepEqual(p[0], { liters: 42.5, total: 75.3, km: 98500 });
+  assert.deepEqual(p[1], { liters: 40, total: 70, km: 98500 });
+  assert.deepEqual([p[2].liters, p[2].total], [35, 61.2]);
 });
 
 test('Keine bunten Emojis auf dem Bildschirm', async ({ page }) => {

@@ -50,6 +50,7 @@ function fuelForm(entry, prefill = {}) {
     <p class="hint">${tr('Zwei der drei Felder reichen, das dritte rechnet die App aus.')}</p>
     <label class="check"><input type="checkbox" name="full" ${e.full ? 'checked' : ''}> ${tr('Vollgetankt')}</label>
     ${field('Tankstelle (optional)', 'station', e.station)}
+    ${Recognition ? `<button type="button" data-open="voice" id="voiceBtn" style="width:100%">${tr('🎤 Sprechen')}</button><p class="hint" id="voiceHint">${tr('Sag z. B.: „42 Liter für 75 Euro bei 98.500 Kilometer“')}</p>` : ''}
     ${photoField(e.photos, 'Tankbeleg (optional)')}
   `, (d) => {
     const km = num(d.km), liters = num(d.liters), total = num(d.total);
@@ -106,11 +107,12 @@ function costForm(entry) {
     ${field('Notiz (optional)', 'note', e.note, 'placeholder="z. B. Service B, Bremsbeläge vorne"')}
     ${field('Kilometerstand (optional)', 'km', e.km ?? '', 'inputmode="numeric"')}
     ${state.garages.length ? `<label class="field"><span>${tr('Werkstatt (optional)')}</span><select name="garageId"><option value="">–</option>${state.garages.map((g) => `<option value="${g.id}" ${g.id === e.garageId ? 'selected' : ''}>${esc(g.name)}</option>`).join('')}</select></label>` : ''}
+    ${field('Garantie / Gewährleistung bis (optional)', 'warranty', e.warranty || '', 'type="date"')}
     ${photoField(e.photos, 'Belege / Rechnungen')}
   `, (d) => {
     const amount = num(d.amount);
     if (amount == null) return tr('Bitte einen Betrag eingeben.');
-    const rec = { id: entry?.id || uid(), date: d.date, cat: d.cat, amount, note: d.note.trim(), km: num(d.km), photos: commitPhotos(), garageId: d.garageId || '' };
+    const rec = { id: entry?.id || uid(), date: d.date, cat: d.cat, amount, note: d.note.trim(), km: num(d.km), photos: commitPhotos(), garageId: d.garageId || '', warranty: d.warranty || '' };
     if (entry) Object.assign(entry, rec); else state.costs.push(rec);
   }, { deleteFn: entry && (() => { (entry.photos || []).forEach(photoDel); state.costs = state.costs.filter((x) => x !== entry); }) });
   wirePhotos();
@@ -164,7 +166,7 @@ function maintForm(m) {
 
 /* ---------- Ereignisse ---------- */
 
-const TITLES = { search: 'Suchen', history: 'Chronik', handover: 'Übergabe-Protokoll', damages: 'Schäden', leasing: 'Leasing', specs: 'Steckbrief', notes: 'Notizbuch', agenda: 'Termine', yearReport: 'Jahresbericht', fines: 'Strafzettel & Fristen', value: 'Wertverlauf', logs: 'Öl & Reifendruck', awards: 'Erfolge', stats: 'Statistik', checks: 'Checklisten', plan: 'Reiseplaner', garages: 'Werkstätten', report: 'Verkaufs-Mappe', drive: 'Fahrt läuft', help: 'Notfall & Hilfe', start: 'Übersicht', fuel: 'Tanken', trips: 'Fahrtenbuch', maint: 'Wartung', costs: 'Kosten', more: 'Mehr' };
+const TITLES = { search: 'Suchen', care: 'Pflege', history: 'Chronik', handover: 'Übergabe-Protokoll', damages: 'Schäden', leasing: 'Leasing', specs: 'Steckbrief', notes: 'Notizbuch', agenda: 'Termine', yearReport: 'Jahresbericht', fines: 'Strafzettel & Fristen', value: 'Wertverlauf', logs: 'Öl & Reifendruck', awards: 'Erfolge', stats: 'Statistik', checks: 'Checklisten', plan: 'Reiseplaner', garages: 'Werkstätten', report: 'Verkaufs-Mappe', drive: 'Fahrt läuft', help: 'Notfall & Hilfe', start: 'Übersicht', fuel: 'Tanken', trips: 'Fahrtenbuch', maint: 'Wartung', costs: 'Kosten', more: 'Mehr' };
 
 function showSub(sub) {
   $('#sub-termine').hidden = sub !== 'termine';
@@ -182,12 +184,19 @@ function showView(v) {
 }
 
 document.addEventListener('click', (e) => {
-  const t = e.target.closest('button, li[data-edit-fuel], li[data-edit-cost], li[data-edit-trip], [data-edit-acc], li[data-drive], li[data-edit-doc], li[data-edit-rec], li[data-edit-value], li[data-edit-log], li[data-edit-note], li[data-agenda], li[data-edit-dmg], .stat[data-open], li[data-hist-item], li[data-handover], li[data-edit-supply]');
+  const t = e.target.closest('button, li[data-edit-fuel], li[data-edit-cost], li[data-edit-trip], [data-edit-acc], li[data-drive], li[data-edit-doc], li[data-edit-rec], li[data-edit-value], li[data-edit-log], li[data-edit-note], li[data-agenda], li[data-edit-dmg], .stat[data-open], li[data-hist-item], li[data-handover], li[data-edit-supply], [data-care-edit]');
   if (!t) return;
   if (t.dataset.view) { showView(t.dataset.view); if (t.dataset.sub) showSub(t.dataset.sub); return; }
   if (t.dataset.open === 'fuel') return fuelForm();
   if (t.dataset.open === 'cost') return costForm();
   if (t.dataset.open === 'budget') return budgetForm();
+  if (t.dataset.care) { state.care = { ...state.care, [t.dataset.care]: today() }; return save(); }
+  if (t.dataset.careEdit) return careForm(t.dataset.careEdit);
+  if (t.dataset.open === 'pool') return poolForm();
+  if (t.dataset.open === 'poolShare') return sharePool();
+  if (t.dataset.open === 'load') return loadForm();
+  if (t.dataset.open === 'quiz') return quizSheet();
+  if (t.dataset.open === 'voice') return voiceFuel();
   if (t.dataset.open === 'insKm') return insKmForm();
   if (t.dataset.open === 'supply') return supplyForm();
   if (t.dataset.editSupply) return supplyForm(state.supplies.find((x) => x.id === t.dataset.editSupply));

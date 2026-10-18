@@ -111,7 +111,7 @@ function renderNotices() {
   if (bn) out.push(bn);
   const ln = leasingNotice();
   if (ln) out.push(ln);
-  out.push(seasonNotices(), insKmNotice(), supplyNotice());
+  out.push(seasonNotices(), insKmNotice(), supplyNotice(), warrantyNotice());
   const open = state.fines.filter((f) => !f.paid && f.due && daysUntil(f.due) <= 7);
   if (open.length) {
     out.push(`<div class="card notice"><span class="ico">🧾</span><div class="grow">

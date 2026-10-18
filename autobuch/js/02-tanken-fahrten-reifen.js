@@ -198,13 +198,14 @@ function tripForm(entry, prefill = {}) {
     </div>
     ${field('Zweck', 'purpose', e.purpose, 'placeholder="bei Geschäftsfahrten Pflicht, z. B. Kundentermin"')}
     ${field('Geschäftspartner (optional)', 'partner', e.partner, 'placeholder="z. B. Firma Müller GmbH"')}
+    ${state.pool.people.length ? `<fieldset><legend>${tr('Mitfahrer')}</legend>${state.pool.people.map((p, i) => `<label class="check"><input type="checkbox" name="rider${i}" ${(e.riders || []).includes(p) ? 'checked' : ''}> ${esc(p)}</label>`).join('')}</fieldset>` : ''}
     ${entry ? `<div class="actions" style="margin-bottom:0"><button type="button" data-return-trip="${entry.id}">${tr('🔁 Rückfahrt eintragen')}</button><button type="button" data-share-trip="${entry.id}">${tr('€ Kosten teilen')}</button></div>` : ''}
   `, (d) => {
     const startKm = num(d.startKm), endKm = num(d.endKm);
     if (startKm == null || endKm == null) return tr('Bitte km-Stand Start und Ende eingeben.');
     if (endKm <= startKm) return tr('Der km-Stand am Ende muss größer sein als am Start.');
     if (d.type === 'Geschäftlich' && !d.purpose.trim()) return tr('Bei Geschäftsfahrten ist der Zweck Pflicht (z. B. „Kundentermin“).');
-    const rec = { id: entry?.id || uid(), date: d.date, type: d.type, from: d.from.trim(), to: d.to.trim(), startKm, endKm, purpose: d.purpose.trim(), partner: d.partner.trim() };
+    const rec = { id: entry?.id || uid(), date: d.date, type: d.type, from: d.from.trim(), to: d.to.trim(), startKm, endKm, purpose: d.purpose.trim(), partner: d.partner.trim(), riders: state.pool.people.filter((_, i) => d['rider' + i]) };
     if (entry) Object.assign(entry, rec); else state.trips.push(rec);
     tripYear = d.date.slice(0, 4);
     const drive = !entry && prefill.driveId && state.drives.find((x) => x.id === prefill.driveId);

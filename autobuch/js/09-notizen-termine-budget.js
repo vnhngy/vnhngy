@@ -97,6 +97,7 @@ function agendaItems() {
     }
   });
   state.supplies.filter((x) => x.expires).forEach((x) => add(x.expires + '-01', '🧳', tr('{item} läuft ab', { item: tr(x.name) }), x.note || '', 'specs'));
+  state.costs.filter((c) => c.warranty && c.warranty >= today()).forEach((c) => add(c.warranty, '🛡', tr('Garantie endet: {what}', { what: c.note || tr(c.cat) }), fmtEUR(c.amount), 'costs'));
   // Stichtag für den Wechsel der Kfz-Versicherung (Verträge mit Hauptfälligkeit 1. Januar)
   const nov30 = `${new Date().getFullYear()}-11-30`;
   add(nov30 >= today() ? nov30 : addMonths(nov30, 12), '🛡', tr('Stichtag Kfz-Versicherung'), tr('letzter Tag zum Kündigen und Wechseln'), 'start');
