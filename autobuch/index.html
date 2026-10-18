@@ -157,7 +157,7 @@
   /* Tab-Leiste */
   nav.tabs {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
-    display: grid; grid-template-columns: repeat(5, 1fr);
+    display: grid; grid-template-columns: repeat(6, 1fr);
     background: color-mix(in srgb, var(--surface) 92%, transparent);
     -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
     border-top: 1px solid var(--line);
@@ -195,6 +195,12 @@
   .note { font-size: 13px; color: var(--muted); }
   .seg { display: flex; background: var(--surface-2); border-radius: 10px; padding: 3px; gap: 3px; }
   .seg button { flex: 1; padding: 8px; font-size: 14px; background: none; border-radius: 8px; }
+  .seg-wrap { margin-bottom: 12px; }
+  .warn-text { color: var(--warn); }
+  .bad-text { color: var(--bad); }
+  .tread { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; text-align: center; }
+  .tread div { background: var(--surface-2); border-radius: 8px; padding: 6px 2px; font-size: 12px; color: var(--muted); }
+  .tread b { display: block; font-size: 16px; color: var(--text); font-variant-numeric: tabular-nums; }
   .seg button[aria-pressed="true"] { background: var(--surface); box-shadow: var(--shadow); font-weight: 600; }
 
   @media (min-width: 560px) { .stats { grid-template-columns: repeat(4, 1fr); } }
@@ -259,6 +265,11 @@
 
   <!-- Wartung -->
   <section class="view" id="view-maint">
+    <div class="seg seg-wrap" id="maintSeg">
+      <button type="button" data-sub="termine" aria-pressed="true">Termine</button>
+      <button type="button" data-sub="reifen" aria-pressed="false">Reifen</button>
+    </div>
+    <div id="sub-termine">
     <div class="card">
       <h2>Wartung &amp; Termine</h2>
       <ul class="list" id="maintList"></ul>
@@ -269,6 +280,41 @@
     </div>
     <p class="note">„In den Kalender“ trägt alle Fälligkeiten in deinen iPhone-Kalender ein, mit Erinnerung 7 Tage vorher. Bei km-Intervallen schätzt die App das Datum anhand deines Tankbuchs.</p>
     <p class="note">Die Intervalle sind Richtwerte für die A-Klasse (W176). Maßgeblich sind dein Serviceheft und die Service-Anzeige im Kombiinstrument. Du kannst jedes Intervall über „Bearbeiten“ anpassen.</p>
+    </div>
+
+    <div id="sub-reifen" hidden>
+      <div class="card" id="tireMounted"></div>
+      <div class="card">
+        <h2>Reifensätze</h2>
+        <ul class="list" id="tireList"></ul>
+      </div>
+      <div class="actions" style="grid-template-columns:1fr">
+        <button data-open="tireNew">＋ Reifensatz hinzufügen</button>
+      </div>
+      <p class="note">Gesetzlich vorgeschrieben sind mindestens 1,6 mm Profil. Empfohlen werden 3 mm bei Sommer- und 4 mm bei Winterreifen. Winterreifen brauchen seit 1.10.2024 das Schneeflocken-Symbol (Alpine-Symbol); „M+S“ allein reicht nicht mehr.</p>
+    </div>
+  </section>
+
+  <!-- Fahrtenbuch -->
+  <section class="view" id="view-trips">
+    <label class="field"><span>Jahr</span><select id="tripYear"></select></label>
+    <div class="stats">
+      <div class="stat"><div class="label">Gefahren</div><div class="value" id="tKm">–</div></div>
+      <div class="stat"><div class="label">davon geschäftlich</div><div class="value" id="tBiz">–</div></div>
+    </div>
+    <div class="actions">
+      <button class="primary" data-open="trip">＋ Fahrt eintragen</button>
+      <button id="tripCsv">⬇︎ Export (Excel)</button>
+    </div>
+    <div class="card">
+      <h2>Nach Art</h2>
+      <ul class="list" id="tripTypes"></ul>
+    </div>
+    <div class="card">
+      <h2>Fahrten</h2>
+      <ul class="list" id="tripList"></ul>
+    </div>
+    <p class="note">Hinweis zum Finanzamt: Ein Fahrtenbuch muss zeitnah und lückenlos geführt werden. Weil Einträge hier nachträglich änderbar sind, erkennt das Finanzamt es nicht als elektronisches Fahrtenbuch an, wenn du die 1-%-Regelung vermeiden willst. Für Reisekosten, Werbungskosten und deinen Überblick taugt es gut. Im Zweifel frag deine Steuerberatung.</p>
   </section>
 
   <!-- Kosten -->
@@ -357,6 +403,8 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18a8 8 0 1 1 16 0"/><path d="M12 18l4-6"/><circle cx="12" cy="18" r="1.2" fill="currentColor"/></svg>Übersicht</button>
   <button role="tab" data-view="fuel" aria-selected="false">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16"/><path d="M3 21h14"/><path d="M7 8h6"/><path d="M15 10h2a2 2 0 0 1 2 2v4a1.5 1.5 0 0 0 3 0V8l-3-3"/></svg>Tanken</button>
+  <button role="tab" data-view="trips" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21 9 3"/><path d="M19 21 15 3"/><path d="M12 5v2"/><path d="M12 11v2"/><path d="M12 17v2"/></svg>Fahrten</button>
   <button role="tab" data-view="maint" aria-selected="false">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/></svg>Wartung</button>
   <button role="tab" data-view="costs" aria-selected="false">
@@ -396,6 +444,7 @@ function freshState() {
     car: { name: 'Mercedes A 180', variant: 'AMG Line', year: '2015', fuel: 'Benzin', km: null, tank: 50 },
     fuel: [], costs: [], maint: defaultMaint('Benzin'), theme: 'auto',
     prices: { key: '', type: 'e5', rad: 5 }, parking: null,
+    trips: [], tires: [], mounted: null,
   };
 }
 
@@ -451,7 +500,7 @@ const daysUntil = (dateStr) => Math.round((new Date(dateStr + 'T12:00:00') - new
 /* ---------- Berechnungen ---------- */
 
 function currentKm() {
-  const all = [state.car.km, ...state.fuel.map((f) => f.km), ...state.costs.map((c) => c.km), ...state.maint.map((m) => m.lastKm)];
+  const all = [state.car.km, ...state.fuel.map((f) => f.km), ...state.costs.map((c) => c.km), ...state.maint.map((m) => m.lastKm), ...state.trips.map((t) => t.endKm)];
   const vals = all.filter((v) => typeof v === 'number' && isFinite(v));
   return vals.length ? Math.max(...vals) : null;
 }
@@ -561,6 +610,8 @@ function render() {
   renderConsChart(cons);
   renderPark();
   renderPrices();
+  renderTrips();
+  renderTires();
 
   // Tanken
   $('#fCons').innerHTML = $('#sCons').innerHTML;
@@ -830,6 +881,256 @@ function loadPrices() {
   }, { timeout: 15000, maximumAge: 60000 });
 }
 
+/* ---------- Fahrtenbuch ---------- */
+
+const TRIP_TYPES = ['Privat', 'Geschäftlich', 'Arbeitsweg'];
+const TRIP_LABEL = { Privat: 'Privat', 'Geschäftlich': 'Geschäftlich', Arbeitsweg: 'Wohnung ↔ Arbeit' };
+const BIZ_RATE = 0.30; // Pauschale für Dienstreisen mit dem eigenen Auto, € pro km
+let tripYear = String(new Date().getFullYear());
+
+function renderTrips() {
+  const years = [...new Set([String(new Date().getFullYear()), ...state.trips.map((t) => t.date.slice(0, 4))])].sort().reverse();
+  if (!years.includes(tripYear)) tripYear = years[0];
+  $('#tripYear').innerHTML = years.map((y) => `<option ${y === tripYear ? 'selected' : ''}>${y}</option>`).join('');
+
+  const trips = state.trips.filter((t) => t.date.startsWith(tripYear));
+  const dist = (t) => t.endKm - t.startKm;
+  const total = trips.reduce((s, t) => s + dist(t), 0);
+  const byType = Object.fromEntries(TRIP_TYPES.map((k) => [k, trips.filter((t) => t.type === k).reduce((s, t) => s + dist(t), 0)]));
+  $('#tKm').innerHTML = total ? `${fmtNum(total)} <small>km</small>` : '–';
+  $('#tBiz').innerHTML = total ? `${fmtNum(byType['Geschäftlich'] / total * 100, 0)} <small>%</small>` : '–';
+  $('#tripTypes').innerHTML = total ? TRIP_TYPES.map((k) => `
+    <li><div class="grow"><div class="title">${TRIP_LABEL[k]}</div>
+      <div class="meta">${fmtNum(byType[k] / total * 100, 0)} %${k === 'Geschäftlich' && byType[k] ? ` · ≈ ${fmtEUR(byType[k] * BIZ_RATE, 0)} Reisekosten (0,30 €/km)` : ''}</div></div>
+    <div class="amount">${fmtNum(byType[k])} km</div></li>`).join('')
+    : '<li class="empty">Noch keine Fahrten in diesem Jahr</li>';
+
+  // Lücken: Start-km passt nicht zum Ende der vorherigen Fahrt
+  const byKm = [...state.trips].sort((a, b) => a.startKm - b.startKm);
+  const gap = {};
+  byKm.forEach((t, i) => { if (i && t.startKm !== byKm[i - 1].endKm) gap[t.id] = t.startKm - byKm[i - 1].endKm; });
+
+  const sorted = [...trips].sort((a, b) => b.date.localeCompare(a.date) || b.startKm - a.startKm);
+  $('#tripList').innerHTML = sorted.map((t) => `
+    <li data-edit-trip="${t.id}">
+      <div class="grow">
+        <div class="title">${esc(t.from || '?')} → ${esc(t.to || '?')}</div>
+        <div class="meta">${fmtDate(t.date)} · ${TRIP_LABEL[t.type]}${t.purpose ? ' · ' + esc(t.purpose) : ''}${t.partner ? ' · ' + esc(t.partner) : ''}</div>
+        <div class="meta">${fmtNum(t.startKm)} – ${fmtNum(t.endKm)} km</div>
+        ${gap[t.id] ? `<div class="meta ${gap[t.id] < 0 ? 'bad-text' : 'warn-text'}">${gap[t.id] < 0 ? `⚠︎ Überschneidet sich um ${fmtNum(-gap[t.id])} km mit der vorherigen Fahrt` : `⚠︎ Lücke von ${fmtNum(gap[t.id])} km vor dieser Fahrt`}</div>` : ''}
+      </div>
+      <div class="amount">${fmtNum(dist(t))} km</div>
+    </li>`).join('') || '<li class="empty">Tipp oben auf „Fahrt eintragen“.</li>';
+}
+
+function tripForm(entry) {
+  const last = [...state.trips].sort((a, b) => b.endKm - a.endKm)[0];
+  const e = entry || { date: today(), type: last?.type || 'Privat', from: last?.to || '', to: '', startKm: last?.endKm ?? currentKm() ?? '', endKm: '', purpose: '', partner: '' };
+  const places = [...new Set(state.trips.flatMap((t) => [t.from, t.to]).filter(Boolean))];
+  openSheet(entry ? 'Fahrt bearbeiten' : 'Fahrt eintragen', `
+    <div class="row2">
+      ${field('Datum', 'date', e.date, 'type="date" required')}
+      <label class="field"><span>Art</span><select name="type">${TRIP_TYPES.map((k) => `<option value="${k}" ${k === e.type ? 'selected' : ''}>${TRIP_LABEL[k]}</option>`).join('')}</select></label>
+    </div>
+    <div class="row2">
+      ${field('Von', 'from', e.from, 'list="placeList" placeholder="z. B. Zuhause"')}
+      ${field('Nach', 'to', e.to, 'list="placeList" required placeholder="z. B. Stuttgart"')}
+    </div>
+    <datalist id="placeList">${places.map((pl) => `<option value="${esc(pl)}">`).join('')}</datalist>
+    <div class="row2">
+      ${field('km-Stand Start', 'startKm', e.startKm, 'inputmode="numeric" required')}
+      ${field('km-Stand Ende', 'endKm', e.endKm, 'inputmode="numeric" required')}
+    </div>
+    ${field('Zweck', 'purpose', e.purpose, 'placeholder="bei Geschäftsfahrten Pflicht, z. B. Kundentermin"')}
+    ${field('Geschäftspartner (optional)', 'partner', e.partner, 'placeholder="z. B. Firma Müller GmbH"')}
+  `, (d) => {
+    const startKm = num(d.startKm), endKm = num(d.endKm);
+    if (startKm == null || endKm == null) return 'Bitte km-Stand Start und Ende eingeben.';
+    if (endKm <= startKm) return 'Der km-Stand am Ende muss größer sein als am Start.';
+    if (d.type === 'Geschäftlich' && !d.purpose.trim()) return 'Bei Geschäftsfahrten ist der Zweck Pflicht (z. B. „Kundentermin“).';
+    const rec = { id: entry?.id || uid(), date: d.date, type: d.type, from: d.from.trim(), to: d.to.trim(), startKm, endKm, purpose: d.purpose.trim(), partner: d.partner.trim() };
+    if (entry) Object.assign(entry, rec); else state.trips.push(rec);
+    tripYear = d.date.slice(0, 4);
+  }, { deleteFn: entry && (() => { state.trips = state.trips.filter((x) => x !== entry); }) });
+}
+
+function tripsCsv() {
+  const q = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const rows = [['Datum', 'Art', 'Von', 'Nach', 'Zweck', 'Geschäftspartner', 'km Start', 'km Ende', 'km gefahren']];
+  state.trips.filter((t) => t.date.startsWith(tripYear)).sort((a, b) => a.date.localeCompare(b.date) || a.startKm - b.startKm)
+    .forEach((t) => rows.push([fmtDate(t.date), TRIP_LABEL[t.type], t.from, t.to, t.purpose, t.partner, t.startKm, t.endKm, t.endKm - t.startKm]));
+  // Semikolon und BOM, damit Excel (deutsch) die Datei direkt richtig öffnet
+  return '﻿' + rows.map((r) => r.map(q).join(';')).join('\r\n') + '\r\n';
+}
+
+/* ---------- Reifen ---------- */
+
+const SEASONS = ['Sommer', 'Winter', 'Ganzjahr'];
+const POS = [['vl', 'VL'], ['vr', 'VR'], ['hl', 'HL'], ['hr', 'HR']];
+
+// DOT "2321" = Kalenderwoche 23 im Jahr 2021
+function tireAge(dot) {
+  const m = /^(\d{2})(\d{2})$/.exec(String(dot || '').trim());
+  if (!m || +m[1] < 1 || +m[1] > 53) return null;
+  const made = new Date(2000 + +m[2], 0, 1 + (+m[1] - 1) * 7);
+  return (Date.now() - made) / (365.25 * 86400000);
+}
+
+function tireKm(t) {
+  const cur = currentKm();
+  return t.km + (state.mounted?.id === t.id && cur != null ? Math.max(0, cur - state.mounted.km) : 0);
+}
+
+function tireStatus(t) {
+  const issues = [];
+  let level = 0;
+  const flag = (lvl, text) => { issues.push({ lvl, text }); level = Math.max(level, lvl); };
+  if (t.tread) {
+    const min = Math.min(...POS.map(([k]) => t.tread[k]).filter((v) => v != null));
+    const rec = t.season === 'Sommer' ? 3 : 4;
+    if (min < 1.6) flag(2, `Profil ${fmtNum(min, 1)} mm: unter dem gesetzlichen Minimum von 1,6 mm`);
+    else if (min < rec) flag(1, `Profil ${fmtNum(min, 1)} mm: unter den empfohlenen ${rec} mm, bald erneuern`);
+  }
+  const age = tireAge(t.dot);
+  if (age != null && age >= 10) flag(2, `${fmtNum(Math.floor(age))} Jahre alt: zu alt, bitte ersetzen`);
+  else if (age != null && age >= 6) flag(1, `${fmtNum(Math.floor(age))} Jahre alt: Gummi härtet aus, jährlich prüfen lassen`);
+  if (t.season !== 'Sommer' && !t.alpine) flag(2, 'Ohne Schneeflocken-Symbol nicht als Winterreifen zulässig');
+  if (!t.tread && !level) return { cls: 'unknown', label: 'Profil nicht gemessen', issues };
+  return {
+    cls: ['ok', 'soon', 'over'][level],
+    label: ['✓ In Ordnung', '⏱ Prüfen', '⚠︎ Handeln'][level],
+    issues,
+  };
+}
+
+function renderTires() {
+  const mounted = state.tires.find((t) => t.id === state.mounted?.id);
+  const box = $('#tireMounted');
+  if (!state.tires.length) {
+    box.innerHTML = `<h2>Am Auto</h2><p class="note" style="margin:0">Leg zuerst deine Reifensätze an, z. B. Sommer- und Winterreifen.</p>`;
+  } else if (!mounted) {
+    box.innerHTML = `<h2>Am Auto</h2><p class="note" style="margin:0 0 10px">Welcher Satz ist gerade montiert?</p>
+      <button class="primary" data-open="tireSwap" style="width:100%">Montierten Satz festlegen</button>`;
+  } else {
+    box.innerHTML = `<h2>Am Auto</h2>
+      <div class="title">${esc(mounted.name)}</div>
+      <div class="meta">Montiert seit ${fmtDate(state.mounted.date)}${state.mounted.km != null ? ` bei ${fmtNum(state.mounted.km)} km` : ''}</div>
+      <button class="primary" data-open="tireSwap" style="width:100%;margin-top:12px">🔄 Reifen wechseln</button>`;
+  }
+
+  $('#tireList').innerHTML = state.tires.map((t) => {
+    const st = tireStatus(t);
+    const age = tireAge(t.dot);
+    const isOn = mounted === t;
+    return `
+    <li class="maint-item">
+      <div class="maint-head"><span class="title">${esc(t.name)}${isOn ? ' <span class="pill ok">Montiert</span>' : ''}</span><span class="pill ${st.cls}">${st.label}</span></div>
+      <div class="maint-body">
+        ${[t.season + 'reifen', t.brand, t.size].filter(Boolean).map(esc).join(' · ')}
+        ${t.dot ? `<br>DOT ${esc(t.dot)}${age != null ? ` (${fmtNum(age, 1)} Jahre alt)` : ''}` : ''}${t.season !== 'Sommer' ? ` · ${t.alpine ? '❄︎ Schneeflocken-Symbol' : 'kein Schneeflocken-Symbol'}` : ''}
+        <br>Gefahren: <b>${fmtNum(tireKm(t))} km</b>${!isOn && t.location ? ` · Lager: ${esc(t.location)}` : ''}
+        ${t.note ? `<br>${esc(t.note)}` : ''}
+        ${st.issues.map((i) => `<br><span class="${i.lvl > 1 ? 'bad-text' : 'warn-text'}">⚠︎ ${esc(i.text)}</span>`).join('')}
+      </div>
+      ${t.tread ? `<div class="tread">${POS.map(([k, l]) => `<div>${l}<b>${t.tread[k] != null ? fmtNum(t.tread[k], 1) : '–'}</b></div>`).join('')}</div>
+        <div class="meta" style="margin-top:4px">Profil in mm, gemessen am ${fmtDate(t.tread.date)}</div>` : ''}
+      <div class="maint-btns">
+        <button class="small primary" data-tread="${t.id}">Profil messen</button>
+        <button class="small" data-edit-tire="${t.id}">Bearbeiten</button>
+      </div>
+    </li>`;
+  }).join('') || '<li class="empty">Noch keine Reifensätze</li>';
+}
+
+function tireForm(entry) {
+  const e = entry || { name: '', season: 'Sommer', brand: '', size: '', dot: '', alpine: false, location: '', km: 0, note: '' };
+  openSheet(entry ? 'Reifensatz bearbeiten' : 'Reifensatz hinzufügen', `
+    <div class="row2">
+      ${field('Name', 'name', e.name, 'placeholder="z. B. Winterreifen"')}
+      <label class="field"><span>Saison</span><select name="season">${SEASONS.map((x) => `<option ${x === e.season ? 'selected' : ''}>${x}</option>`).join('')}</select></label>
+    </div>
+    ${field('Marke & Modell', 'brand', e.brand, 'placeholder="z. B. Michelin Alpin 6"')}
+    <div class="row2">
+      ${field('Größe', 'size', e.size, 'placeholder="z. B. 225/40 R18"')}
+      ${field('DOT (4 Ziffern)', 'dot', e.dot, 'inputmode="numeric" maxlength="4" placeholder="z. B. 2321"')}
+    </div>
+    <p class="hint">Größe und DOT stehen auf der Reifenflanke. Die letzten 4 Ziffern der DOT-Nummer sind das Herstelldatum: 2321 = Woche 23 im Jahr 2021.</p>
+    <label class="check"><input type="checkbox" name="alpine" ${e.alpine ? 'checked' : ''}> Schneeflocken-Symbol (Berg mit Schneeflocke)</label>
+    ${field('Lagerort', 'location', e.location, 'placeholder="z. B. Keller oder Reifenhotel, Nr. 4711"')}
+    ${field('Bisher gefahren (km)', 'km', entry ? tireKm(e) : '', 'inputmode="numeric" placeholder="falls bekannt"')}
+    ${field('Notiz', 'note', e.note, 'placeholder="z. B. Felgen: Alu 18 Zoll"')}
+  `, (d) => {
+    if (d.dot && tireAge(d.dot) == null) return 'Die DOT-Angabe muss 4 Ziffern haben, z. B. 2321.';
+    const kmIn = num(d.km) || 0;
+    const rec = {
+      id: entry?.id || uid(), name: d.name.trim() || `${d.season}reifen`, season: d.season, brand: d.brand.trim(), size: d.size.trim(),
+      dot: d.dot.trim(), alpine: d.alpine === 'on', location: d.location.trim(), note: d.note.trim(), tread: entry?.tread || null,
+      km: 0,
+    };
+    rec.km = Math.max(0, kmIn - (entry ? tireKm(e) - e.km : 0));
+    if (entry) Object.assign(entry, rec); else state.tires.push(rec);
+  }, { deleteFn: entry && (() => {
+    state.tires = state.tires.filter((x) => x !== entry);
+    if (state.mounted?.id === entry.id) state.mounted = null;
+  }) });
+}
+
+function treadForm(t) {
+  const e = t.tread || {};
+  openSheet(`Profil messen: ${esc(t.name)}`, `
+    ${field('Datum', 'date', today(), 'type="date" required')}
+    <div class="row2">
+      ${field('Vorne links (mm)', 'vl', e.vl != null ? fmtNum(e.vl, 1) : '', 'inputmode="decimal"')}
+      ${field('Vorne rechts (mm)', 'vr', e.vr != null ? fmtNum(e.vr, 1) : '', 'inputmode="decimal"')}
+    </div>
+    <div class="row2">
+      ${field('Hinten links (mm)', 'hl', e.hl != null ? fmtNum(e.hl, 1) : '', 'inputmode="decimal"')}
+      ${field('Hinten rechts (mm)', 'hr', e.hr != null ? fmtNum(e.hr, 1) : '', 'inputmode="decimal"')}
+    </div>
+    <p class="hint">Am besten mit einem Profiltiefenmesser (ca. 3 € im Baumarkt). Schnelltest: Steck eine 1-Euro-Münze ins Profil. Verschwindet der goldene Rand (ca. 3 mm) nicht ganz, ist das Profil dünner als 3 mm.</p>
+  `, (d) => {
+    const vals = Object.fromEntries(POS.map(([k]) => [k, num(d[k])]));
+    if (POS.every(([k]) => vals[k] == null)) return 'Bitte mindestens einen Wert eingeben.';
+    if (POS.some(([k]) => vals[k] != null && (vals[k] < 0 || vals[k] > 15))) return 'Profiltiefe bitte in Millimetern (0–15) eingeben.';
+    t.tread = { date: d.date, ...vals };
+  });
+}
+
+function swapForm() {
+  const cur = state.tires.find((t) => t.id === state.mounted?.id);
+  const options = state.tires.filter((t) => t !== cur);
+  if (!options.length) return alert('Leg zuerst einen weiteren Reifensatz an.');
+  const month = new Date().getMonth();
+  const wanted = month >= 8 || month <= 1 ? 'Winter' : 'Sommer';
+  const pick = options.find((t) => t.season === wanted) || options[0];
+  openSheet(cur ? 'Reifen wechseln' : 'Montierten Satz festlegen', `
+    <label class="field"><span>${cur ? 'Neu montiert wird' : 'Montiert ist'}</span><select name="tire">
+      ${options.map((t) => `<option value="${t.id}" ${t === pick ? 'selected' : ''}>${esc(t.name)}</option>`).join('')}</select></label>
+    <div class="row2">
+      ${field('Datum', 'date', today(), 'type="date" required')}
+      ${field('Kilometerstand', 'km', currentKm() ?? '', 'inputmode="numeric"')}
+    </div>
+    ${cur ? field(`Lagerort für „${esc(cur.name)}“`, 'loc', pick.location || cur.location, 'placeholder="z. B. Keller"') : ''}
+    ${cur ? field('Kosten (€, optional)', 'cost', '', 'inputmode="decimal" placeholder="wird bei den Kosten eingetragen"') : ''}
+  `, (d) => {
+    const next = state.tires.find((t) => t.id === d.tire);
+    const km = num(d.km);
+    if (cur) {
+      if (km != null && state.mounted.km != null) cur.km += Math.max(0, km - state.mounted.km);
+      cur.location = (d.loc || '').trim();
+      const cost = num(d.cost);
+      if (cost) state.costs.push({ id: uid(), date: d.date, cat: 'Reifen', amount: cost, note: `Reifenwechsel auf ${next.name}`, km });
+      // Termin „Reifenwechsel“ in der Wartung mitführen
+      const m = state.maint.find((x) => x.id === 'tires');
+      if (m) {
+        m.lastDate = d.date; m.lastKm = km;
+        if (next.season !== 'Ganzjahr') m.lastAlt = next.season + 'reifen';
+      }
+    }
+    state.mounted = { id: next.id, date: d.date, km };
+  }, { submitLabel: cur ? 'Wechseln' : 'Speichern' });
+}
+
 /* ---------- Kalender ---------- */
 
 function calendarFile() {
@@ -987,7 +1288,13 @@ function maintForm(m) {
 
 /* ---------- Ereignisse ---------- */
 
-const TITLES = { start: 'Übersicht', fuel: 'Tanken', maint: 'Wartung', costs: 'Kosten', more: 'Mehr' };
+const TITLES = { start: 'Übersicht', fuel: 'Tanken', trips: 'Fahrtenbuch', maint: 'Wartung', costs: 'Kosten', more: 'Mehr' };
+
+function showSub(sub) {
+  $('#sub-termine').hidden = sub !== 'termine';
+  $('#sub-reifen').hidden = sub !== 'reifen';
+  document.querySelectorAll('#maintSeg button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.sub === sub)));
+}
 function showView(v) {
   document.querySelectorAll('.view').forEach((s) => s.classList.toggle('active', s.id === 'view-' + v));
   document.querySelectorAll('nav.tabs button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.view === v)));
@@ -997,7 +1304,7 @@ function showView(v) {
 }
 
 document.addEventListener('click', (e) => {
-  const t = e.target.closest('button, li[data-edit-fuel], li[data-edit-cost]');
+  const t = e.target.closest('button, li[data-edit-fuel], li[data-edit-cost], li[data-edit-trip]');
   if (!t) return;
   if (t.dataset.view) return showView(t.dataset.view);
   if (t.dataset.open === 'fuel') return fuelForm();
@@ -1012,6 +1319,13 @@ document.addEventListener('click', (e) => {
   if (t.dataset.park === 'edit') return parkForm();
   if (t.dataset.park === 'clear') { state.parking = null; save(); }
   if (t.dataset.prices === 'load') loadPrices();
+  if (t.dataset.open === 'trip') return tripForm();
+  if (t.dataset.editTrip) return tripForm(state.trips.find((x) => x.id === t.dataset.editTrip));
+  if (t.dataset.open === 'tireNew') return tireForm();
+  if (t.dataset.open === 'tireSwap') return swapForm();
+  if (t.dataset.editTire) return tireForm(state.tires.find((x) => x.id === t.dataset.editTire));
+  if (t.dataset.tread) return treadForm(state.tires.find((x) => x.id === t.dataset.tread));
+  if (t.dataset.sub) showSub(t.dataset.sub);
 });
 
 $('#carForm').addEventListener('submit', (e) => {
@@ -1038,6 +1352,12 @@ $('#priceForm').addEventListener('submit', (e) => {
   f.querySelector('button').blur();
   save();
   alert('Gespeichert');
+});
+
+$('#tripYear').addEventListener('change', (e) => { tripYear = e.target.value; render(); });
+$('#tripCsv').addEventListener('click', () => {
+  if (!state.trips.some((t) => t.date.startsWith(tripYear))) return alert(`Für ${tripYear} gibt es noch keine Fahrten.`);
+  downloadFile(new File([tripsCsv()], `fahrtenbuch-${tripYear}.csv`, { type: 'text/csv' }));
 });
 
 $('#calBtn').addEventListener('click', () => {

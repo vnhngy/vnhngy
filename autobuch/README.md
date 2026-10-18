@@ -8,6 +8,10 @@ Alle Daten bleiben auf dem iPhone (localStorage).
 - **Tanken:** Verbrauch (l/100 km) zwischen vollen Tankfüllungen, Ø-Literpreis
 - **Wartung:** Service A/B (ASSYST), HU, Bremsflüssigkeit, Reifenwechsel, Zündkerzen
   und eigene Termine. Die App zeigt, was überfällig oder bald fällig ist
+- **Fahrtenbuch:** Fahrten mit Art (privat/geschäftlich/Arbeitsweg), Zweck und km-Stand,
+  Jahresauswertung, Hinweis auf Lücken, Export als CSV für Excel
+- **Reifen:** Reifensätze mit Größe, DOT/Alter, Profiltiefe je Rad, Lagerort und gefahrenen km;
+  Warnungen bei wenig Profil, alten Reifen oder fehlendem Schneeflocken-Symbol
 - **Kosten:** Ausgaben nach Kategorie, Kosten pro km, Verlauf der letzten 12 Monate
 - **Spritpreise:** günstigste geöffnete Tankstellen im Umkreis, mit Route in Apple Karten
   (kostenloser API-Schlüssel von [Tankerkönig](https://creativecommons.tankerkoenig.de/) nötig)
