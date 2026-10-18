@@ -1,5 +1,5 @@
 // Offline-Cache für die App-Dateien. Bei Änderungen an der App VERSION erhöhen.
-const VERSION = 'autobuch-v1';
+const VERSION = 'autobuch-v2';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', (e) => {
@@ -16,7 +16,8 @@ self.addEventListener('activate', (e) => {
 
 // Erst Netzwerk (damit Updates ankommen), bei Offline aus dem Cache.
 self.addEventListener('fetch', (e) => {
-  if (e.request.method !== 'GET') return;
+  // Nur eigene Dateien cachen, keine Spritpreis-Abfragen
+  if (e.request.method !== 'GET' || new URL(e.request.url).origin !== location.origin) return;
   e.respondWith(
     fetch(e.request)
       .then((res) => {

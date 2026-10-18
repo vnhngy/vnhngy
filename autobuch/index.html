@@ -100,6 +100,13 @@
   button.small { padding: 7px 12px; font-size: 14px; border-radius: 10px; }
   button.danger { color: var(--bad); }
   button.link { background: none; color: var(--accent); padding: 4px 0; }
+  button:disabled { opacity: .6; }
+  a { color: var(--accent); }
+  a.btn {
+    display: inline-block; text-decoration: none; border-radius: 10px; padding: 7px 12px; font-size: 14px;
+    background: var(--surface-2); color: var(--text); margin-top: 4px; white-space: nowrap;
+  }
+  a.btn.primary { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
 
   .list { list-style: none; margin: 0; padding: 0; }
   .list li { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
@@ -213,6 +220,10 @@
       <button class="primary" data-open="cost">€ Ausgabe</button>
     </div>
     <div class="card">
+      <h2>Parkplatz</h2>
+      <div id="parkBody"></div>
+    </div>
+    <div class="card">
       <h2>Als Nächstes fällig</h2>
       <ul class="list" id="startMaint"></ul>
     </div>
@@ -224,6 +235,10 @@
 
   <!-- Tanken -->
   <section class="view" id="view-fuel">
+    <div class="card">
+      <h2>Spritpreise in der Nähe</h2>
+      <div id="priceBody"></div>
+    </div>
     <div class="stats">
       <div class="stat"><div class="label">Ø Verbrauch</div><div class="value" id="fCons">–</div></div>
       <div class="stat"><div class="label">Ø Literpreis</div><div class="value" id="fPrice">–</div></div>
@@ -235,6 +250,10 @@
       <h2>Tankfüllungen</h2>
       <ul class="list" id="fuelList"></ul>
     </div>
+    <div class="card">
+      <h2>Verbrauch je Tankfüllung (l/100 km)</h2>
+      <div class="chart" id="consChart"></div>
+    </div>
     <p class="note">Der Verbrauch wird zwischen zwei <b>vollen</b> Tankfüllungen berechnet. Teilbetankungen werden mitgezählt.</p>
   </section>
 
@@ -244,9 +263,11 @@
       <h2>Wartung &amp; Termine</h2>
       <ul class="list" id="maintList"></ul>
     </div>
-    <div class="actions" style="grid-template-columns:1fr">
-      <button data-open="maintNew">＋ Eigenen Termin hinzufügen</button>
+    <div class="actions">
+      <button data-open="maintNew">＋ Eigener Termin</button>
+      <button id="calBtn">📅 In den Kalender</button>
     </div>
+    <p class="note">„In den Kalender“ trägt alle Fälligkeiten in deinen iPhone-Kalender ein, mit Erinnerung 7 Tage vorher. Bei km-Intervallen schätzt die App das Datum anhand deines Tankbuchs.</p>
     <p class="note">Die Intervalle sind Richtwerte für die A-Klasse (W176). Maßgeblich sind dein Serviceheft und die Service-Anzeige im Kombiinstrument. Du kannst jedes Intervall über „Bearbeiten“ anpassen.</p>
   </section>
 
@@ -286,6 +307,23 @@
           <label class="field"><span>Kilometerstand</span><input name="km" inputmode="numeric" placeholder="z. B. 98500"></label>
           <label class="field"><span>Tankgröße (Liter)</span><input name="tank" inputmode="decimal"></label>
         </div>
+        <button class="primary" style="width:100%">Speichern</button>
+      </form>
+    </div>
+    <div class="card">
+      <h2>Spritpreise (Tankerkönig)</h2>
+      <form id="priceForm">
+        <label class="field"><span>API-Schlüssel</span><input name="key" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"></label>
+        <p class="hint">Kostenlos beantragen auf <a href="https://creativecommons.tankerkoenig.de/" target="_blank" rel="noopener">creativecommons.tankerkoenig.de</a> unter „API-Key“. Der Schlüssel kommt per E-Mail.</p>
+        <div class="row2">
+          <label class="field"><span>Kraftstoff</span>
+            <select name="type"><option value="e5">Super E5</option><option value="e10">Super E10</option><option value="diesel">Diesel</option></select>
+          </label>
+          <label class="field"><span>Umkreis</span>
+            <select name="rad"><option value="2">2 km</option><option value="5">5 km</option><option value="10">10 km</option><option value="25">25 km</option></select>
+          </label>
+        </div>
+        <p class="hint">Ob dein Auto E10 verträgt, steht innen auf der Tankklappe.</p>
         <button class="primary" style="width:100%">Speichern</button>
       </form>
     </div>
@@ -357,6 +395,7 @@ function freshState() {
   return {
     car: { name: 'Mercedes A 180', variant: 'AMG Line', year: '2015', fuel: 'Benzin', km: null, tank: 50 },
     fuel: [], costs: [], maint: defaultMaint('Benzin'), theme: 'auto',
+    prices: { key: '', type: 'e5', rad: 5 }, parking: null,
   };
 }
 
@@ -402,6 +441,11 @@ function addMonths(dateStr, months) {
   d.setDate(Math.min(day, new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()));
   return d.toISOString().slice(0, 10);
 }
+const addDays = (n, from = today()) => {
+  const d = new Date(from + 'T12:00:00');
+  d.setDate(d.getDate() + Math.round(n));
+  return d.toISOString().slice(0, 10);
+};
 const daysUntil = (dateStr) => Math.round((new Date(dateStr + 'T12:00:00') - new Date(today() + 'T12:00:00')) / 86400000);
 
 /* ---------- Berechnungen ---------- */
@@ -437,29 +481,44 @@ function allExpenses() {
   ];
 }
 
+// Ø gefahrene km pro Tag laut Tankbuch, für Schätzungen bei km-Intervallen
+function kmPerDay() {
+  const f = [...state.fuel].sort((a, b) => a.date.localeCompare(b.date));
+  if (f.length < 2) return null;
+  const days = daysUntil(f[f.length - 1].date) - daysUntil(f[0].date);
+  const km = Math.max(...f.map((x) => x.km)) - Math.min(...f.map((x) => x.km));
+  return days >= 14 && km > 0 ? km / days : null;
+}
+
+function nextAlt(m) {
+  if (!m.alt) return '';
+  const i = m.alt.indexOf(m.lastAlt);
+  return m.alt[(i + 1) % m.alt.length];
+}
+
 function maintStatus(m) {
   const cur = currentKm();
-  if (!m.lastDate && m.lastKm == null) return { cls: 'unknown', label: 'Unbekannt', text: 'Trag ein, wann es zuletzt gemacht wurde.', score: 1e9 - 1 };
-  let dueDate = null, days = null, dueKm = null, kmLeft = null;
+  const next = m.alt ? (m.altLabel ? m.altLabel + ' ' : '') + nextAlt(m) : '';
+  if (!m.lastDate && m.lastKm == null) return { cls: 'unknown', label: 'Unbekannt', text: 'Trag ein, wann es zuletzt gemacht wurde.', score: 1e9 - 1, next };
+  let dueDate = null, days = null, dueKm = null, kmLeft = null, estDate = null;
   if (m.months && m.lastDate) { dueDate = addMonths(m.lastDate, m.months); days = daysUntil(dueDate); }
   if (m.km && m.lastKm != null) { dueKm = m.lastKm + m.km; kmLeft = cur != null ? dueKm - cur : null; }
+  const kpd = kmPerDay();
+  if (kmLeft != null && kpd) estDate = addDays(Math.max(0, kmLeft) / kpd);
   const over = (days != null && days < 0) || (kmLeft != null && kmLeft < 0);
   const soon = (days != null && days <= 30) || (kmLeft != null && kmLeft <= 1500);
   const parts = [];
   if (dueDate) parts.push(`am <b>${fmtDate(dueDate)}</b>${days != null ? ` (${days < 0 ? `seit ${-days} Tagen` : days === 0 ? 'heute' : `in ${days} Tagen`})` : ''}`);
-  if (dueKm != null) parts.push(`bei <b>${fmtNum(dueKm)} km</b>${kmLeft != null ? ` (${kmLeft < 0 ? `${fmtNum(-kmLeft)} km drüber` : `noch ${fmtNum(kmLeft)} km`})` : ''}`);
-  // Sortier-Wert: je kleiner, desto dringender (km grob in Tage umgerechnet, ~40 km/Tag)
-  const score = Math.min(days ?? Infinity, kmLeft != null ? kmLeft / 40 : Infinity);
-  let next = '';
-  if (m.alt) {
-    const i = m.alt.indexOf(m.lastAlt);
-    next = `${m.altLabel ? m.altLabel + ' ' : ''}${m.alt[(i + 1) % m.alt.length]}`;
-  }
+  if (dueKm != null) parts.push(`bei <b>${fmtNum(dueKm)} km</b>${kmLeft != null ? ` (${kmLeft < 0 ? `${fmtNum(-kmLeft)} km drüber` : `noch ${fmtNum(kmLeft)} km${estDate ? ', ca. ' + fmtMonth(estDate) : ''}`})` : ''}`);
+  // Sortier-Wert: je kleiner, desto dringender (km in Tage umgerechnet)
+  const score = Math.min(days ?? Infinity, kmLeft != null ? kmLeft / (kpd || 40) : Infinity);
   return {
     cls: over ? 'over' : soon ? 'soon' : 'ok',
     label: over ? '⚠︎ Überfällig' : soon ? '⏱ Bald fällig' : '✓ In Ordnung',
     text: (next ? `Als Nächstes: <b>${esc(next)}</b>. ` : '') + (parts.length ? 'Fällig ' + parts.join(' oder ') + '.' : 'Kein Intervall gesetzt.'),
-    score,
+    score, next,
+    // Datum für den Kalender: was zuerst eintritt
+    calDate: [dueDate, estDate].filter(Boolean).sort()[0] || null,
   };
 }
 
@@ -498,7 +557,10 @@ function render() {
     <li><div class="grow"><div class="title">${esc(m.name)}</div><div class="meta">${st.text}</div></div>
     <span class="pill ${st.cls}">${st.label}</span></li>`).join('') || '<li class="empty">Keine Termine</li>';
 
-  renderChart(exp);
+  renderCostChart(exp);
+  renderConsChart(cons);
+  renderPark();
+  renderPrices();
 
   // Tanken
   $('#fCons').innerHTML = $('#sCons').innerHTML;
@@ -550,40 +612,36 @@ function render() {
     f.name.value = c.name || ''; f.variant.value = c.variant || ''; f.year.value = c.year || '';
     f.fuel.value = c.fuel || 'Benzin'; f.km.value = c.km ?? ''; f.tank.value = c.tank ?? '';
   }
+  const pf = $('#priceForm');
+  if (document.activeElement?.form !== pf) {
+    pf.key.value = state.prices.key || ''; pf.type.value = state.prices.type; pf.rad.value = String(state.prices.rad);
+  }
   document.querySelectorAll('#themeSeg button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.theme === state.theme)));
 }
 
-// Tippen außerhalb des Diagramms blendet den Tooltip aus
-let chartHide = null;
-document.addEventListener('pointerdown', (e) => { if (chartHide && !$('#costChart').contains(e.target)) chartHide(); });
+// Tippen außerhalb eines Diagramms blendet dessen Tooltip aus
+const chartHides = new Map();
+document.addEventListener('pointerdown', (e) => { chartHides.forEach((hide, box) => { if (!box.contains(e.target)) hide(); }); });
 
-function renderChart(exp) {
-  const box = $('#costChart');
-  const now = new Date();
-  const months = [];
-  for (let i = 11; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-    months.push({ key, label: d.toLocaleDateString('de-DE', { month: 'narrow' }), full: d.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' }), sum: 0 });
-  }
-  exp.forEach((e) => { const m = months.find((x) => e.date && e.date.startsWith(x.key)); if (m) m.sum += e.amount; });
-  const max = Math.max(...months.map((m) => m.sum));
-  if (!max) { box.innerHTML = '<p class="empty" style="margin:0">Noch keine Daten. Sobald du tankst oder Ausgaben einträgst, erscheint hier dein Verlauf.</p>'; return; }
+// Balkendiagramm mit einer Reihe. items: [{ label, full, value }]
+function barChart(box, items, { aria, tip: fmtTip, axis, empty }) {
+  const max = Math.max(0, ...items.map((m) => m.value));
+  if (!max) { box.innerHTML = `<p class="empty" style="margin:0">${empty}</p>`; chartHides.delete(box); return; }
 
   // "schöne" Obergrenze für die Achse
   const step = Math.pow(10, Math.floor(Math.log10(max)));
   const top = Math.ceil(max / step) * step;
   const W = 340, H = 170, L = 40, B = 20, T = 8, R = 4;
-  const cw = (W - L - R) / months.length, bw = Math.max(cw - 6, 4);
+  const cw = (W - L - R) / items.length, bw = Math.max(Math.min(cw - 6, 28), 4);
   const y = (v) => T + (H - T - B) * (1 - v / top);
-  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Kosten pro Monat, letzte 12 Monate">`;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${aria}">`;
   [0, top / 2, top].forEach((g) => {
     svg += `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(g)}" y2="${y(g)}"/>`;
-    svg += `<text class="axis" x="${L - 6}" y="${y(g) + 4}" text-anchor="end">${fmtNum(g)} €</text>`;
+    svg += `<text class="axis" x="${L - 6}" y="${y(g) + 4}" text-anchor="end">${axis(g)}</text>`;
   });
-  months.forEach((m, i) => {
-    const x = L + i * cw + (cw - bw) / 2, yy = y(m.sum), h = H - B - yy, r = Math.min(4, h, bw / 2);
-    if (m.sum > 0) {
+  items.forEach((m, i) => {
+    const x = L + i * cw + (cw - bw) / 2, yy = y(m.value), h = H - B - yy, r = Math.min(4, h, bw / 2);
+    if (m.value > 0) {
       svg += `<path class="bar" data-i="${i}" d="M${x},${H - B} V${yy + r} Q${x},${yy} ${x + r},${yy} H${x + bw - r} Q${x + bw},${yy} ${x + bw},${yy + r} V${H - B} Z"/>`;
     }
     svg += `<text class="axis" x="${x + bw / 2}" y="${H - 5}" text-anchor="middle">${m.label}</text>`;
@@ -591,19 +649,19 @@ function renderChart(exp) {
   });
   svg += '</svg>';
   box.innerHTML = svg + '<div class="tip"></div>' +
-    `<details class="table-view"><summary>Als Tabelle anzeigen</summary><table>${months.map((m) => `<tr><td>${m.full}</td><td>${fmtEUR(m.sum)}</td></tr>`).join('')}</table></details>`;
+    `<details class="table-view"><summary>Als Tabelle anzeigen</summary><table>${items.map((m) => `<tr><td>${m.full}</td><td>${fmtTip(m.value)}</td></tr>`).join('')}</table></details>`;
 
   const tip = $('.tip', box), svgEl = $('svg', box);
   const show = (i) => {
-    const m = months[i];
+    const m = items[i];
     box.querySelectorAll('.bar').forEach((b) => b.classList.toggle('dim', +b.dataset.i !== i));
     const scale = svgEl.getBoundingClientRect().width / W;
-    tip.innerHTML = `${m.full}: <b>${fmtEUR(m.sum)}</b>`;
+    tip.innerHTML = `${m.full}: <b>${fmtTip(m.value)}</b>`;
     tip.style.display = 'block';
     const px = (L + i * cw + cw / 2) * scale;
     const half = tip.offsetWidth / 2;
     tip.style.left = Math.max(half, Math.min(box.clientWidth - half, px)) + 'px';
-    tip.style.top = (y(m.sum) * scale - 6) + 'px';
+    tip.style.top = (y(m.value) * scale - 6) + 'px';
   };
   const hide = () => { tip.style.display = 'none'; box.querySelectorAll('.bar').forEach((b) => b.classList.remove('dim')); };
   box.querySelectorAll('.hit').forEach((h) => {
@@ -611,7 +669,205 @@ function renderChart(exp) {
     h.addEventListener('pointerdown', () => show(+h.dataset.i));
   });
   svgEl.addEventListener('pointerleave', hide);
-  chartHide = hide;
+  chartHides.set(box, hide);
+}
+
+function renderCostChart(exp) {
+  const now = new Date();
+  const months = [];
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    months.push({ key, label: d.toLocaleDateString('de-DE', { month: 'narrow' }), full: d.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' }), value: 0 });
+  }
+  exp.forEach((e) => { const m = months.find((x) => e.date && e.date.startsWith(x.key)); if (m) m.value += e.amount; });
+  barChart($('#costChart'), months, {
+    aria: 'Kosten pro Monat, letzte 12 Monate',
+    tip: (v) => fmtEUR(v),
+    axis: (g) => fmtNum(g) + ' €',
+    empty: 'Noch keine Daten. Sobald du tankst oder Ausgaben einträgst, erscheint hier dein Verlauf.',
+  });
+}
+
+function renderConsChart(cons) {
+  const fills = state.fuel.filter((f) => cons.per[f.id] != null).sort((a, b) => a.km - b.km).slice(-12);
+  barChart($('#consChart'), fills.map((f) => {
+    const d = new Date(f.date + 'T12:00:00');
+    return { label: `${d.getDate()}.${d.getMonth() + 1}.`, full: fmtDate(f.date), value: cons.per[f.id] };
+  }), {
+    aria: 'Verbrauch je Tankfüllung',
+    tip: (v) => fmtNum(v, 1) + ' l/100 km',
+    axis: (g) => fmtNum(g, g % 1 ? 1 : 0) + ' l',
+    empty: 'Ab der zweiten vollen Tankfüllung siehst du hier deinen Verbrauch.',
+  });
+}
+
+/* ---------- Parkplatz ---------- */
+
+function renderPark() {
+  const p = state.parking, body = $('#parkBody');
+  if (!p) {
+    body.innerHTML = `<p class="note" style="margin:0 0 10px">Speichere, wo dein Auto steht, und finde später wieder hin.</p>
+      <button class="primary" data-park="set" style="width:100%">📍 Hier geparkt</button>`;
+    return;
+  }
+  const mins = Math.max(0, Math.round((Date.now() - p.time) / 60000));
+  const ago = mins < 1 ? 'gerade eben' : mins < 60 ? `vor ${mins} Min` : mins < 1440 ? `vor ${Math.floor(mins / 60)} Std ${mins % 60} Min` : `vor ${Math.floor(mins / 1440)} Tagen`;
+  let meter = '';
+  if (p.until) {
+    const left = Math.round((p.until - Date.now()) / 60000);
+    meter = left >= 0
+      ? `<span class="pill ${left <= 10 ? 'soon' : 'ok'}">⏱ Parkuhr: noch ${left} Min</span>`
+      : `<span class="pill over">⚠︎ Parkuhr abgelaufen seit ${-left} Min</span>`;
+  }
+  body.innerHTML = `
+    <div class="title">Seit ${new Date(p.time).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })} Uhr <span class="meta">(${ago})</span></div>
+    ${p.note ? `<div class="meta">${esc(p.note)}</div>` : ''}
+    ${p.lat == null ? '<div class="meta">Ohne Standort gespeichert</div>' : ''}
+    ${meter ? `<div style="margin-top:6px">${meter}</div>` : ''}
+    <div class="maint-btns">
+      ${p.lat != null ? `<a class="btn primary" href="https://maps.apple.com/?daddr=${p.lat},${p.lng}&dirflg=w" target="_blank" rel="noopener">🚶 Zum Auto</a>` : ''}
+      <button class="small" data-park="edit">Notiz &amp; Parkuhr</button>
+      <button class="small" data-park="clear">Weggefahren</button>
+    </div>`;
+}
+
+function setParking() {
+  const done = (lat, lng) => {
+    state.parking = { lat, lng, time: Date.now(), note: '', until: null };
+    save();
+    parkForm();
+  };
+  if (!navigator.geolocation) return done(null, null);
+  navigator.geolocation.getCurrentPosition(
+    (pos) => done(+pos.coords.latitude.toFixed(6), +pos.coords.longitude.toFixed(6)),
+    () => {
+      alert('Standort nicht verfügbar. Erlaube den Zugriff unter Einstellungen → Datenschutz & Sicherheit → Ortungsdienste → Safari-Websites. Der Parkplatz wird jetzt ohne Standort gespeichert.');
+      done(null, null);
+    },
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+  );
+}
+
+function parkForm() {
+  const p = state.parking;
+  const until = p.until ? new Date(p.until).toTimeString().slice(0, 5) : '';
+  openSheet('Parkplatz', `
+    ${field('Notiz', 'note', p.note, 'placeholder="z. B. Parkhaus Ebene 2, Platz 117"')}
+    ${field('Parkuhr läuft bis (optional)', 'until', until, 'type="time"')}
+  `, (d) => {
+    p.note = d.note.trim();
+    if (d.until) {
+      const [h, mi] = d.until.split(':').map(Number);
+      const t = new Date();
+      t.setHours(h, mi, 0, 0);
+      if (t.getTime() < Date.now() - 3600000) t.setDate(t.getDate() + 1);
+      p.until = t.getTime();
+    } else {
+      p.until = null;
+    }
+  });
+}
+
+setInterval(() => { if (state.parking) renderPark(); }, 30000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
+
+/* ---------- Spritpreise (Tankerkönig) ---------- */
+
+let prices = { loading: false, error: '', list: null, time: null };
+const FUEL_NAMES = { e5: 'Super E5', e10: 'Super E10', diesel: 'Diesel' };
+
+function renderPrices() {
+  const cfg = state.prices, body = $('#priceBody');
+  if (!cfg.key) {
+    body.innerHTML = `<p class="note" style="margin:0 0 10px">Zeigt die günstigsten Tankstellen in deiner Nähe. Dafür brauchst du einmalig einen kostenlosen Schlüssel von Tankerkönig.</p>
+      <button data-view="more" style="width:100%">Einrichten</button>`;
+    return;
+  }
+  let html = `<button class="primary" data-prices="load" style="width:100%" ${prices.loading ? 'disabled' : ''}>
+    ${prices.loading ? 'Lade …' : `🔄 ${FUEL_NAMES[cfg.type]} im Umkreis von ${cfg.rad} km`}</button>`;
+  if (prices.error) html += `<p class="note" style="color:var(--bad)">${esc(prices.error)}</p>`;
+  if (prices.list) {
+    html += prices.list.length ? `<ul class="list" style="margin-top:12px">${prices.list.map((s, i) => `
+      <li>
+        <div class="grow">
+          <div class="title">${esc(s.brand || s.name)}${i === 0 ? ' <span class="pill ok">Am günstigsten</span>' : ''}</div>
+          <div class="meta">${esc(s.street)} ${esc(s.houseNumber || '')}, ${esc(s.place)} · ${fmtNum(s.dist, 1)} km</div>
+        </div>
+        <div class="amount">${fmtEUR(s.price, 3)}<br><a class="btn" href="https://maps.apple.com/?daddr=${s.lat},${s.lng}&dirflg=d" target="_blank" rel="noopener">Route</a></div>
+      </li>`).join('')}</ul>`
+      : '<p class="empty">Keine geöffnete Tankstelle mit diesem Kraftstoff im Umkreis.</p>';
+    html += `<p class="note" style="margin-bottom:0">Stand ${prices.time} Uhr · Daten: MTS-K über Tankerkönig (CC BY 4.0)</p>`;
+  }
+  body.innerHTML = html;
+}
+
+function loadPrices() {
+  const cfg = state.prices;
+  if (!navigator.geolocation) { prices.error = 'Dieses Gerät kann den Standort nicht bestimmen.'; return renderPrices(); }
+  prices = { ...prices, loading: true, error: '' };
+  renderPrices();
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    try {
+      const url = 'https://creativecommons.tankerkoenig.de/json/list.php'
+        + `?lat=${pos.coords.latitude}&lng=${pos.coords.longitude}&rad=${cfg.rad}&sort=dist&type=all&apikey=${encodeURIComponent(cfg.key)}`;
+      const data = await (await fetch(url)).json();
+      if (!data.ok) throw new Error(data.message || 'Unbekannter Fehler');
+      prices.list = data.stations
+        .filter((s) => s.isOpen && typeof s[cfg.type] === 'number' && s[cfg.type] > 0)
+        .map((s) => ({ ...s, price: s[cfg.type] }))
+        .sort((a, b) => a.price - b.price || a.dist - b.dist)
+        .slice(0, 10);
+      prices.time = new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    } catch (e) {
+      prices.error = e instanceof TypeError ? 'Keine Verbindung zu Tankerkönig. Bist du online?' : `Tankerkönig meldet: ${e.message}`;
+    }
+    prices.loading = false;
+    renderPrices();
+  }, () => {
+    prices = { ...prices, loading: false, error: 'Standort nicht verfügbar. Erlaube den Zugriff unter Einstellungen → Datenschutz & Sicherheit → Ortungsdienste → Safari-Websites.' };
+    renderPrices();
+  }, { timeout: 15000, maximumAge: 60000 });
+}
+
+/* ---------- Kalender ---------- */
+
+function calendarFile() {
+  const ymd = (s) => s.replace(/-/g, '');
+  const icsText = (t) => String(t).replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/[,;]/g, (c) => '\\' + c);
+  const plain = (h) => h.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+  const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
+  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Autobuch//DE', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH'];
+  let count = 0;
+  state.maint.forEach((m) => {
+    const st = maintStatus(m);
+    if (!st.calDate) return;
+    const date = st.calDate < today() ? today() : st.calDate;
+    const title = `${state.car.name || 'Auto'}: ${m.name}${st.next ? ` (${st.next})` : ''}`;
+    lines.push(
+      'BEGIN:VEVENT',
+      `UID:${m.id}-${ymd(m.lastDate || String(m.lastKm))}@autobuch`,
+      `DTSTAMP:${stamp}`,
+      `DTSTART;VALUE=DATE:${ymd(date)}`,
+      `DTEND;VALUE=DATE:${ymd(addDays(1, date))}`,
+      `SUMMARY:${icsText(title)}`,
+      `DESCRIPTION:${icsText(plain(st.text) + ' (Autobuch)')}`,
+      'BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${icsText(title)}`, 'TRIGGER:-P7D', 'END:VALARM',
+      'BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${icsText(title)}`, 'TRIGGER:PT9H', 'END:VALARM',
+      'END:VEVENT'
+    );
+    count++;
+  });
+  lines.push('END:VCALENDAR');
+  return count ? lines.join('\r\n') + '\r\n' : null;
+}
+
+function downloadFile(file) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(file);
+  a.download = file.name;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 60000);
 }
 
 function applyTheme() {
@@ -690,12 +946,10 @@ function altField(m, selected) {
 }
 
 function doneForm(m) {
-  let nextAlt = '';
-  if (m.alt) { const i = m.alt.indexOf(m.lastAlt); nextAlt = m.alt[(i + 1) % m.alt.length]; }
   openSheet(`${esc(m.name)}: erledigt`, `
     ${field('Datum', 'date', today(), 'type="date" required')}
     ${field('Kilometerstand', 'km', m.km ? currentKm() ?? '' : '', 'inputmode="numeric"')}
-    ${altField(m, nextAlt)}
+    ${altField(m, nextAlt(m))}
     ${field('Kosten (€, optional)', 'cost', '', 'inputmode="decimal" placeholder="wird bei den Kosten eingetragen"')}
   `, (d) => {
     m.lastDate = d.date; m.lastKm = num(d.km);
@@ -754,6 +1008,10 @@ document.addEventListener('click', (e) => {
   if (t.dataset.editFuel) return fuelForm(state.fuel.find((f) => f.id === t.dataset.editFuel));
   if (t.dataset.editCost) return costForm(state.costs.find((c) => c.id === t.dataset.editCost));
   if (t.dataset.theme) { state.theme = t.dataset.theme; save(); }
+  if (t.dataset.park === 'set') return setParking();
+  if (t.dataset.park === 'edit') return parkForm();
+  if (t.dataset.park === 'clear') { state.parking = null; save(); }
+  if (t.dataset.prices === 'load') loadPrices();
 });
 
 $('#carForm').addEventListener('submit', (e) => {
@@ -765,10 +1023,27 @@ $('#carForm').addEventListener('submit', (e) => {
   if (oldFuel !== state.car.fuel) {
     if (state.car.fuel === 'Diesel') state.maint = state.maint.filter((m) => m.id !== 'plugs');
     else if (!state.maint.some((m) => m.id === 'plugs')) state.maint.push(defaultMaint('Benzin').find((m) => m.id === 'plugs'));
+    state.prices.type = state.car.fuel === 'Diesel' ? 'diesel' : 'e5';
   }
   f.querySelector('button').blur();
   save();
   alert('Gespeichert');
+});
+
+$('#priceForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const f = e.target;
+  state.prices = { key: f.key.value.trim(), type: f.type.value, rad: Number(f.rad.value) };
+  prices = { loading: false, error: '', list: null, time: null };
+  f.querySelector('button').blur();
+  save();
+  alert('Gespeichert');
+});
+
+$('#calBtn').addEventListener('click', () => {
+  const ics = calendarFile();
+  if (!ics) return alert('Trag zuerst bei mindestens einem Termin ein, wann er zuletzt erledigt wurde.');
+  downloadFile(new File([ics], 'autobuch-termine.ics', { type: 'text/calendar' }));
 });
 
 $('#exportBtn').addEventListener('click', async () => {
@@ -777,9 +1052,7 @@ $('#exportBtn').addEventListener('click', async () => {
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
     try { await navigator.share({ files: [file], title: 'Autobuch-Sicherung' }); return; } catch (e) { if (e.name === 'AbortError') return; }
   }
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(file); a.download = name; a.click();
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  downloadFile(file);
 });
 $('#importBtn').addEventListener('click', () => $('#importFile').click());
 $('#importFile').addEventListener('change', async (e) => {

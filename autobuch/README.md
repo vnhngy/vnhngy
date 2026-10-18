@@ -9,6 +9,10 @@ Alle Daten bleiben auf dem iPhone (localStorage).
 - **Wartung:** Service A/B (ASSYST), HU, Bremsflüssigkeit, Reifenwechsel, Zündkerzen
   und eigene Termine. Die App zeigt, was überfällig oder bald fällig ist
 - **Kosten:** Ausgaben nach Kategorie, Kosten pro km, Verlauf der letzten 12 Monate
+- **Spritpreise:** günstigste geöffnete Tankstellen im Umkreis, mit Route in Apple Karten
+  (kostenloser API-Schlüssel von [Tankerkönig](https://creativecommons.tankerkoenig.de/) nötig)
+- **Parkplatz:** Standort merken, Notiz, Parkuhr-Countdown, Fußweg zurück zum Auto
+- **Kalender:** Fälligkeiten als .ics-Datei mit Erinnerung 7 Tage vorher in den iPhone-Kalender
 - **Sicherung:** Export/Import als JSON-Datei (z. B. in iCloud Drive)
 
 ## Online stellen (GitHub Pages)
