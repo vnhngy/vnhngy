@@ -33,7 +33,7 @@ function carsSheet() {
   openSheet('Fahrzeuge', `
     ${cars.map(({ id, car, active }) => `<div style="display:flex;gap:8px;align-items:center">
       <button type="button" class="car-row${active ? ' active' : ''}" ${active ? '' : `data-car="${id}"`}>
-        <span style="font-size:22px">🚗</span>
+        ${car.photo ? `<img class="car-thumb" data-photo="${car.photo}" alt="">` : '<span style="font-size:22px">🚗</span>'}
         <span class="grow"><span class="title" style="display:block">${esc(car.name || tr('Auto'))}</span>
         <span class="meta">${esc([car.variant, car.year, tr(car.fuel)].filter(Boolean).join(' · '))}</span></span>
         ${active ? `<span class="pill ok">${tr('Aktiv')}</span>` : ''}
@@ -54,12 +54,47 @@ function carsSheet() {
     state.carId = uid();
     setTimeout(() => { showView('start'); openWizard(1); }, 50);
   }, { submitLabel: 'Fahrzeug hinzufügen' });
+  sheetForm.querySelectorAll('img[data-photo]').forEach(async (img) => { img.src = await photoUrl(img.dataset.photo) || ''; });
+}
+
+/* ---------- Fahrzeugfoto ---------- */
+
+async function renderCarHero() {
+  const box = $('#carHero'), c = state.car;
+  const caption = `<span class="title">${esc(c.name || tr('Auto'))}</span><span class="meta">${esc([c.variant, c.year, tr(c.fuel), state.docs.plate].filter(Boolean).join(' · '))}</span>`;
+  if (!c.photo) {
+    box.innerHTML = `<button class="hero-btn hero-empty" data-open="carphoto">
+      <span class="ico" aria-hidden="true">📷</span>
+      <span class="grow"><span class="title" style="display:block">${esc(c.name || tr('Auto'))}</span>
+      <span class="meta">${tr('Foto deines Autos hinzufügen, damit du immer siehst, welches Fahrzeug ausgewählt ist.')}</span></span></button>`;
+    return;
+  }
+  const url = await photoUrl(c.photo);
+  if (state.car !== c) return; // inzwischen anderes Auto gewählt
+  box.innerHTML = `<button class="hero-btn" data-open="cars" aria-label="${esc(tr('Fahrzeug wechseln'))}">
+      <img src="${url || ''}" alt="${esc(c.name || tr('Auto'))}"><span class="hero-cap">${caption}</span></button>
+    <button class="hero-cam" data-open="carphoto" aria-label="${esc(tr('Fahrzeugfoto ändern'))}">📷</button>`;
+}
+
+function carPhotoForm() {
+  const c = state.car;
+  openSheet('Fahrzeugfoto', `
+    <p class="note" style="margin-top:0">${tr('Am schönsten wirkt ein Foto von schräg vorne im Querformat.')}</p>
+    ${photoField(c.photo ? [c.photo] : [], 'Foto')}
+  `, () => {
+    const ids = commitPhotos();
+    // nur ein Foto pro Auto: das zuletzt hinzugefügte behalten
+    ids.slice(0, -1).forEach(photoDel);
+    c.photo = ids[ids.length - 1] || null;
+  });
+  wirePhotos();
 }
 
 function deleteCar(id) {
   const d = state.otherCars[id];
   if (!d || !confirm(tr('„{name}“ mit allen Einträgen löschen? Das kann nicht rückgängig gemacht werden.', { name: d.car.name || tr('Auto') }))) return;
   [...(d.costs || []), ...(d.accidents || []), ...(d.fines || [])].flatMap((x) => x.photos || []).forEach(photoDel);
+  if (d.car.photo) photoDel(d.car.photo);
   delete state.otherCars[id];
   sheet.close();
   save();

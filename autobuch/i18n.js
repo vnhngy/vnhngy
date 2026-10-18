@@ -974,6 +974,16 @@ const T = {
   'Kilogramm': ['Kilograms', 'Kilôgam'],
   'Ob dein Auto E10 verträgt, steht innen auf der Tankklappe. Tankerkönig liefert nur Preise für Super E5, Super E10 und Diesel.': ['Whether your car can take E10 is written inside the fuel flap. Tankerkönig only provides prices for Super E5, Super E10 and diesel.', 'Xe có dùng được E10 hay không được ghi ở mặt trong nắp bình xăng. Tankerkönig chỉ cung cấp giá Super E5, Super E10 và diesel.'],
 
+  // ---- Fahrzeugfoto ----
+  'Fahrzeugbild': ['Vehicle photo', 'Ảnh xe'],
+  '📷 Fahrzeugfoto ändern': ['📷 Change vehicle photo', '📷 Đổi ảnh xe'],
+  'Fahrzeugfoto ändern': ['Change vehicle photo', 'Đổi ảnh xe'],
+  'Fahrzeugfoto': ['Vehicle photo', 'Ảnh xe'],
+  'Fahrzeug wechseln': ['Switch vehicle', 'Đổi xe'],
+  'Foto': ['Photo', 'Ảnh'],
+  'Foto deines Autos hinzufügen, damit du immer siehst, welches Fahrzeug ausgewählt ist.': ['Add a photo of your car so you always see which vehicle is selected.', 'Thêm ảnh xe để luôn biết xe nào đang được chọn.'],
+  'Am schönsten wirkt ein Foto von schräg vorne im Querformat.': ['A landscape photo taken diagonally from the front looks best.', 'Ảnh chụp chéo từ phía trước, khổ ngang, trông đẹp nhất.'],
+
   // ---- Allgemein ----
   'Abbrechen': ['Cancel', 'Hủy'],
   'Eintrag löschen': ['Delete entry', 'Xóa mục này'],

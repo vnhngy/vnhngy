@@ -39,14 +39,16 @@ function renderForecast() {
 /* ---------- Übersicht anpassen ---------- */
 
 const HOME_SECTIONS = [
-  ['sos', 'Notfall-Knopf'], ['tiles', 'Werkzeug-Kacheln'], ['stats', 'Kennzahlen'], ['actions', 'Tanken & Ausgabe'],
+  ['car', 'Fahrzeugbild'], ['sos', 'Notfall-Knopf'], ['tiles', 'Werkzeug-Kacheln'], ['stats', 'Kennzahlen'], ['actions', 'Tanken & Ausgabe'],
   ['forecast', 'Tank-Prognose'], ['parking', 'Parkplatz'], ['due', 'Als Nächstes fällig'], ['chart', 'Kosten der letzten 12 Monate'],
 ];
 const homeCfg = () => {
   const h = state.home || {};
   const known = HOME_SECTIONS.map(([k]) => k);
   const order = (h.order || []).filter((k) => known.includes(k));
-  return { order: [...order, ...known.filter((k) => !order.includes(k))], hidden: h.hidden || [], tiles: h.tiles || [] };
+  // neue Bereiche an ihrer Standardposition einfügen, nicht ans Ende
+  known.forEach((k, i) => { if (!order.includes(k)) order.splice(Math.min(i, order.length), 0, k); });
+  return { order, hidden: h.hidden || [], tiles: h.tiles || [] };
 };
 
 function applyHome() {

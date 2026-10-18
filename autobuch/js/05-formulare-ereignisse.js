@@ -176,6 +176,7 @@ document.addEventListener('click', (e) => {
   if (t.dataset.open === 'wizard') return openWizard();
   if (t.dataset.open === 'garage') return garageForm();
   if (t.dataset.open === 'cars') return carsSheet();
+  if (t.dataset.open === 'carphoto') return carPhotoForm();
   if (t.dataset.open === 'search') return searchSheet();
   if (t.dataset.open === 'home') return homeForm();
   if (t.dataset.car) { sheet.close(); return switchCar(t.dataset.car); }

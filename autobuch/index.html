@@ -390,6 +390,22 @@
   .tiles button span { color: var(--accent); }
   .award.locked .ico { filter: none; opacity: .35; }
 
+  /* Fahrzeugbild auf der Übersicht */
+  #carHero { position: relative; margin-bottom: 14px; }
+  .hero-btn { display: block; width: 100%; padding: 0; border-radius: 26px; overflow: hidden; position: relative; text-align: left; background: var(--glass); }
+  .hero-btn img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+  .hero-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 28px 18px 14px; color: #fff; background: linear-gradient(transparent, rgba(0, 0, 0, .6)); }
+  .hero-cap .title { font-size: 20px; font-weight: 700; display: block; }
+  .hero-cap .meta { font-size: 14px; opacity: .9; }
+  .hero-cam { position: absolute; top: 10px; right: 10px; width: 40px; height: 40px; padding: 0; display: grid; place-items: center; font-size: 18px;
+    background: rgba(0, 0, 0, .35); color: #fff; border-color: rgba(255, 255, 255, .35); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+  .hero-empty { display: flex; gap: 14px; align-items: center; padding: 16px 18px; }
+  .hero-empty .ico { width: 56px; height: 56px; border-radius: 18px; display: grid; place-items: center; font-size: 28px; background: var(--surface-2); border: 1px solid var(--edge); color: var(--accent); flex: none; }
+  .hero-empty .grow { flex: 1; min-width: 0; }
+  .hero-empty .title { font-weight: 700; font-size: 17px; }
+  .hero-empty .meta { font-size: 14px; color: var(--muted); }
+  .car-thumb { width: 44px; height: 44px; border-radius: 12px; object-fit: cover; flex: none; }
+
   /* Suche, Startseite, Tank-Prognose, große Schrift */
   [hidden] { display: none !important; }
   .sr-only { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -526,6 +542,7 @@
   <!-- Übersicht -->
   <section class="view active" id="view-start">
     <div id="notices" role="status" aria-live="polite"></div>
+    <div data-sec="car" id="carHero"></div>
     <button class="sos-entry" data-sec="sos" data-view="help">🚨 Notfall, Unfall &amp; Warnleuchten</button>
     <div class="tiles" data-sec="tiles">
       <button data-view="stats"><span aria-hidden="true">📊</span>Statistik</button>
@@ -906,6 +923,7 @@
         <button class="primary" style="width:100%">Speichern</button>
       </form>
       <button data-open="cars" style="width:100%;margin-top:10px">🚗 Fahrzeuge verwalten</button>
+      <button data-open="carphoto" style="width:100%;margin-top:10px">📷 Fahrzeugfoto ändern</button>
     </div>
     <div class="card">
       <h2>Verkaufs-Mappe</h2>

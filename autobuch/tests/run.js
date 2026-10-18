@@ -105,6 +105,19 @@ test('Autogas-Auto: Benzin wird nicht in den Verbrauch gerechnet', async ({ page
   assert.equal(await page.evaluate(() => consumption().avg), 9); // 45 l LPG auf 500 km
 });
 
+test('Fahrzeugfoto auf der Übersicht, auch in der Sicherung', async ({ page }) => {
+  await page.evaluate(() => closeWizard());
+  assert.match(await page.innerText('#carHero'), /Foto deines Autos/);
+  await page.click('#carHero .hero-btn');
+  const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', 'base64');
+  await page.setInputFiles('#photoInput', { name: 'auto.png', mimeType: 'image/png', buffer: png });
+  await page.waitForSelector('#thumbs img');
+  await page.click('#sheetForm button.primary');
+  await page.waitForSelector('#carHero img');
+  const r = await page.evaluate(() => ({ photo: !!state.car.photo, inBackup: allPhotoIds().includes(state.car.photo), order: homeCfg().order[0] }));
+  assert.deepEqual(r, { photo: true, inBackup: true, order: 'car' });
+});
+
 test('Zahlen-Eingabe versteht deutsche und englische Schreibweise', async ({ page }) => {
   const r = await page.evaluate(() => [num('1.234,56'), num('98.500'), num('42,5'), num('7')]);
   assert.deepEqual(r, [1234.56, 98500, 42.5, 7]);
@@ -167,7 +180,7 @@ test('Suche findet Einträge über alle Bereiche', async ({ page }) => {
 });
 
 test('Übersicht anpassen bleibt nach Neustart erhalten', async ({ page }) => {
-  await page.evaluate(() => { closeWizard(); state.home = { order: ['chart', 'sos'], hidden: ['tiles'], tiles: [] }; save(); });
+  await page.evaluate(() => { closeWizard(); state.home = { order: ['chart', 'car', 'sos'], hidden: ['tiles'], tiles: [] }; save(); });
   await page.reload();
   const r = await page.evaluate(() => ({
     first: document.querySelector('#view-start [data-sec]').dataset.sec,
