@@ -145,4 +145,10 @@ npm test
 Die Tests laufen außerdem automatisch bei jeder Änderung über GitHub Actions (`.github/workflows/autobuch-tests.yml`).
 
 ## Neue Version veröffentlichen
-`APP_VERSION` in `js/01-grundlagen.js` und `VERSION` in `sw.js` erhöhen, damit die iPhones das Update laden.
+Versionsnummern nach dem Schema **Haupt.Funktion.Korrektur**:
+- neue Funktionen: zweite Zahl erhöhen (1.0.0 → 1.1.0)
+- nur Fehlerkorrekturen: dritte Zahl erhöhen (1.1.0 → 1.1.1)
+- großer Umbau: erste Zahl erhöhen (1.4.2 → 2.0.0)
+
+Dann `APP_VERSION` in `js/01-grundlagen.js` und `VERSION` in `sw.js` auf die neue Nummer setzen und `CHANGELOG` in `js/17-…` ergänzen, damit die iPhones das Update laden und „Was ist neu“ zeigen.
+Ältere Versionen hießen 1 bis 32; sie gelten intern als 0.1 bis 0.32.

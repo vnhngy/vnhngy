@@ -5,7 +5,12 @@
 /* ---------- Daten ---------- */
 
 const STORE_KEY = 'autobuch-v1';
-const APP_VERSION = '32'; // bei jedem Update zusammen mit VERSION in sw.js erhöhen
+// Versionsnummer nach dem Schema Haupt.Funktion.Korrektur: neue Funktionen 1.1.0, nur Fehlerkorrekturen 1.1.1.
+// Bei jedem Update zusammen mit VERSION in sw.js erhöhen und CHANGELOG in js/17-… ergänzen.
+const APP_VERSION = '1.0.0';
+// Vergleicht zwei Versionen; alte Nummern ohne Punkt („32“) gelten als 0.32.0
+const verParts = (v) => (/^\d+$/.test(String(v)) ? [0, +v, 0] : String(v).split('.').map(Number));
+const cmpVer = (a, b) => { const x = verParts(a), y = verParts(b); for (let i = 0; i < 3; i++) if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) - (y[i] || 0); return 0; };
 const COST_CATS = ['Werkstatt', 'Versicherung', 'Kfz-Steuer', 'Reifen', 'Pflege', 'Parken', 'Leasing/Finanzierung', 'Bußgeld', 'Sonstiges'];
 // Antriebsarten des Fahrzeugs und Spritsorten beim Tanken (Erdgas wird in kg getankt)
 const CAR_FUELS = ['Benzin', 'Super E10', 'Super Plus', 'Diesel', 'Autogas (LPG)', 'Erdgas (CNG)', 'Hybrid', 'Plug-in-Hybrid'];

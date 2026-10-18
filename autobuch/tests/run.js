@@ -809,13 +809,13 @@ test('Zuladung, Quiz und Tanken per Sprache', async ({ page }) => {
 
 test('Neu in dieser Version erscheint einmal nach dem Update', async ({ page }) => {
   await seed(page);
-  await page.evaluate(() => { state.seenVersion = '30'; save(); });
+  await page.evaluate(() => { state.seenVersion = '31'; save(); }); // alte Nummer ohne Punkt
   await page.reload();
   await page.waitForFunction(() => sheet.open);
   const t = await page.innerText('#sheetForm');
   assert.match(t, new RegExp('Version ' + await page.evaluate(() => APP_VERSION)));
-  assert.match(t, /Version 31/);
-  assert.doesNotMatch(t, /Version 30/);
+  assert.match(t, /Version 0\.32/);
+  assert.doesNotMatch(t, /Version 0\.31/);
   await page.click('#sheetForm button.primary');
   await page.reload();
   await page.waitForTimeout(300);
@@ -877,6 +877,13 @@ test('Keine bunten Emojis auf dem Bildschirm', async ({ page }) => {
     return [...out];
   });
   assert.deepEqual(left, []);
+});
+
+test('Versionsnummern werden richtig verglichen', async ({ page }) => {
+  const r = await page.evaluate(() => [cmpVer('1.0.0', '32'), cmpVer('1.1.0', '1.0.9'), cmpVer('1.10.0', '1.9.3'), cmpVer('2.0.0', '1.12.4'), cmpVer('1.0.0', '1.0.0'), cmpVer('0.31', '31')]);
+  assert.deepEqual(r.map(Math.sign), [1, 1, 1, 1, 0, 0]);
+  assert.match(await page.evaluate(() => APP_VERSION), /^\d+\.\d+\.\d+$/);
+  assert.match(await page.innerText('#appVersion'), /Version \d+\.\d+\.\d+/);
 });
 
 test('Update-Knopf erkennt die aktuelle Version', async ({ page }) => {

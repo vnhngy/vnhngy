@@ -253,8 +253,8 @@ $('#updateBtn').addEventListener('click', async () => {
   btn.disabled = true;
   try {
     const src = await (await fetch('js/01-grundlagen.js?t=' + Date.now(), { cache: 'no-store' })).text();
-    const latest = (/APP_VERSION = '(\d+)'/.exec(src) || [])[1];
-    if (latest && +latest <= +APP_VERSION) { alert(tr('Du hast schon die neueste Version ({v}).', { v: APP_VERSION })); return; }
+    const latest = (/APP_VERSION = '([\d.]+)'/.exec(src) || [])[1];
+    if (latest && cmpVer(latest, APP_VERSION) <= 0) { alert(tr('Du hast schon die neueste Version ({v}).', { v: APP_VERSION })); return; }
     for (const k of await caches.keys()) await caches.delete(k);
     for (const r of await navigator.serviceWorker.getRegistrations()) await r.unregister();
     location.replace(location.pathname + '?v=' + (latest || Date.now()));

@@ -6,15 +6,16 @@
 /* ---------- Neu in dieser Version ---------- */
 
 const CHANGELOG = [
-  ['32', ['Belege-Galerie: alle Fotos auf einen Blick', 'Monatskalender mit allen Einträgen', 'Parkplatz mit Foto', 'Ersatzteil-Liste im Steckbrief', 'Spritpreis-Verlauf beim Tanken', 'Checkliste für den Gebrauchtwagenkauf']],
-  ['31', ['Pflege-Plan', 'Fahrgemeinschaft mit Monatsabrechnung', 'Zuladungs-Rechner', 'Warnleuchten-Quiz', 'Tanken per Sprache', 'Garantie-Tracker']],
-  ['30', ['Versicherte Kilometer', 'Haltbarkeit von Verbandkasten & Co.', 'Pannenhilfe zum Nachlesen', 'Werkstatt-Bewertung', 'Fahrgewohnheiten', 'Lohnt sich die Reparatur?']],
-  ['29', ['Mängelliste für die Werkstatt', 'Datencheck', 'Tankdaten importieren und exportieren', 'Kfz-Steuer-Rechner', 'Fahrmodus mit großen Knöpfen', 'Wunschpreis beim Tanken']],
+  ['1.0.0', ['Neue Versionsnummern: ab jetzt 1.0.0, mit neuen Funktionen 1.1.0 und so weiter']],
+  ['0.32', ['Belege-Galerie: alle Fotos auf einen Blick', 'Monatskalender mit allen Einträgen', 'Parkplatz mit Foto', 'Ersatzteil-Liste im Steckbrief', 'Spritpreis-Verlauf beim Tanken', 'Checkliste für den Gebrauchtwagenkauf']],
+  ['0.31', ['Pflege-Plan', 'Fahrgemeinschaft mit Monatsabrechnung', 'Zuladungs-Rechner', 'Warnleuchten-Quiz', 'Tanken per Sprache', 'Garantie-Tracker']],
+  ['0.30', ['Versicherte Kilometer', 'Haltbarkeit von Verbandkasten & Co.', 'Pannenhilfe zum Nachlesen', 'Werkstatt-Bewertung', 'Fahrgewohnheiten', 'Lohnt sich die Reparatur?']],
+  ['0.29', ['Mängelliste für die Werkstatt', 'Datencheck', 'Tankdaten importieren und exportieren', 'Kfz-Steuer-Rechner', 'Fahrmodus mit großen Knöpfen', 'Wunschpreis beim Tanken']],
 ];
 
 function whatsNewSheet(all = false) {
   const seen = state.seenVersion;
-  const list = CHANGELOG.filter(([v]) => all || !seen || +v > +seen).slice(0, all ? 4 : 2);
+  const list = CHANGELOG.filter(([v]) => all || !seen || cmpVer(v, seen) > 0).slice(0, all ? 4 : 2);
   openSheet('Neu in Autobuch', list.map(([v, items]) => `
     <h4 style="margin:12px 0 6px">${tr('Version {v}', { v })}</h4>
     <ul class="tips">${items.map((x) => `<li>${tr(x)}</li>`).join('')}</ul>`).join(''), () => {}, { submitLabel: 'Alles klar' });
@@ -22,7 +23,7 @@ function whatsNewSheet(all = false) {
 
 // Nach einem Update einmal zeigen; beim allerersten Start nicht (da läuft der Assistent)
 function maybeWhatsNew() {
-  if (appLocked || state.seenVersion === APP_VERSION) return;
+  if (appLocked || (state.seenVersion && cmpVer(state.seenVersion, APP_VERSION) >= 0)) return;
   if (!hasNoData()) whatsNewSheet();
   state.seenVersion = APP_VERSION;
   try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* egal */ }
