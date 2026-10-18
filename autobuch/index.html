@@ -196,6 +196,20 @@
   .seg { display: flex; background: var(--surface-2); border-radius: 10px; padding: 3px; gap: 3px; }
   .seg button { flex: 1; padding: 8px; font-size: 14px; background: none; border-radius: 8px; }
   .seg-wrap { margin-bottom: 12px; }
+  .drive-speed { text-align: center; margin: 4px 0 14px; }
+  .drive-speed b { display: block; font-size: 104px; line-height: 1; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+  .drive-speed span { color: var(--muted); font-size: 18px; }
+  button.stop { background: var(--bad); color: #fff; font-weight: 600; width: 100%; padding: 16px; font-size: 18px; }
+  #recBar {
+    position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom) + 72px); z-index: 11;
+    background: var(--bad); color: #fff; border-radius: 999px; padding: 9px 16px; font-weight: 600; font-size: 14px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.25); display: none; white-space: nowrap;
+  }
+  .route { margin: 4px 0 12px; }
+  .route svg { display: block; width: 100%; height: auto; background: var(--surface-2); border-radius: 12px; }
+  .route .line { fill: none; stroke: var(--accent); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+  .route .start { fill: var(--good); stroke: var(--surface-2); stroke-width: 2; }
+  .route .end { fill: var(--bad); stroke: var(--surface-2); stroke-width: 2; }
   .sos-entry { width: 100%; margin-bottom: 12px; background: color-mix(in srgb, var(--bad) 14%, var(--surface)); color: var(--bad); font-weight: 600; }
   .sos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
   .sos a { display: block; text-align: center; text-decoration: none; border-radius: 16px; padding: 14px; font-size: 15px; background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
@@ -360,6 +374,24 @@
     </div>
   </section>
 
+  <!-- Live-Aufzeichnung -->
+  <section class="view" id="view-drive">
+    <div class="drive-speed"><b id="dSpeed">–</b><span>km/h</span></div>
+    <div class="stats">
+      <div class="stat"><div class="label">Strecke</div><div class="value" id="dDist">0 <small>km</small></div></div>
+      <div class="stat"><div class="label">Fahrzeit</div><div class="value" id="dTime">0:00</div></div>
+      <div class="stat"><div class="label">Ø Tempo</div><div class="value" id="dAvg">–</div></div>
+      <div class="stat"><div class="label">Höchsttempo</div><div class="value" id="dMax">–</div></div>
+    </div>
+    <div class="card">
+      <h2>Fahrstil</h2>
+      <div id="dEvents"></div>
+    </div>
+    <p class="note" id="dGps">GPS wird gesucht …</p>
+    <button class="stop" id="dStop">■ Fahrt beenden</button>
+    <p class="note">Lass die App geöffnet, z. B. in der Handyhalterung. Der Bildschirm bleibt an. Wird die App geschlossen oder das iPhone gesperrt, pausiert iOS die Aufzeichnung. Bitte nicht während der Fahrt bedienen.</p>
+  </section>
+
   <!-- Fahrtenbuch -->
   <section class="view" id="view-trips">
     <label class="field"><span>Jahr</span><select id="tripYear"></select></label>
@@ -367,9 +399,14 @@
       <div class="stat"><div class="label">Gefahren</div><div class="value" id="tKm">–</div></div>
       <div class="stat"><div class="label">davon geschäftlich</div><div class="value" id="tBiz">–</div></div>
     </div>
+    <button class="primary" id="driveBtn" style="width:100%;margin-bottom:12px">▶︎ Fahrt aufzeichnen (GPS)</button>
     <div class="actions">
-      <button class="primary" data-open="trip">＋ Fahrt eintragen</button>
+      <button data-open="trip">＋ Fahrt eintragen</button>
       <button id="tripCsv">⬇︎ Export (Excel)</button>
+    </div>
+    <div class="card">
+      <h2>Aufgezeichnete Fahrten</h2>
+      <ul class="list" id="driveList"></ul>
     </div>
     <div class="card">
       <h2>Nach Art</h2>
@@ -478,6 +515,7 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Mehr</button>
 </nav>
 
+<button id="recBar" data-view="drive"></button>
 <dialog id="viewer" class="viewer"><img alt="Foto"></dialog>
 <dialog id="sheet"><form method="dialog" id="sheetForm"></form></dialog>
 
@@ -511,6 +549,7 @@ function freshState() {
     fuel: [], costs: [], maint: defaultMaint('Benzin'), theme: 'auto',
     prices: { key: '', type: 'e5', rad: 5 }, parking: null,
     trips: [], tires: [], mounted: null,
+    drives: [],
     docs: { plate: '', vin: '', insurer: '', policy: '', claimPhone: '', breakdown: '' }, accidents: [],
   };
 }
@@ -680,6 +719,7 @@ function render() {
   renderTrips();
   renderTires();
   renderHelp();
+  renderDrives();
 
   // Tanken
   $('#fCons').innerHTML = $('#sCons').innerHTML;
@@ -991,9 +1031,9 @@ function renderTrips() {
     </li>`).join('') || '<li class="empty">Tipp oben auf „Fahrt eintragen“.</li>';
 }
 
-function tripForm(entry) {
+function tripForm(entry, prefill = {}) {
   const last = [...state.trips].sort((a, b) => b.endKm - a.endKm)[0];
-  const e = entry || { date: today(), type: last?.type || 'Privat', from: last?.to || '', to: '', startKm: last?.endKm ?? currentKm() ?? '', endKm: '', purpose: '', partner: '' };
+  const e = entry || { date: today(), type: last?.type || 'Privat', from: last?.to || '', to: '', startKm: last?.endKm ?? currentKm() ?? '', endKm: '', purpose: '', partner: '', ...prefill };
   const places = [...new Set(state.trips.flatMap((t) => [t.from, t.to]).filter(Boolean))];
   openSheet(entry ? 'Fahrt bearbeiten' : 'Fahrt eintragen', `
     <div class="row2">
@@ -1019,6 +1059,8 @@ function tripForm(entry) {
     const rec = { id: entry?.id || uid(), date: d.date, type: d.type, from: d.from.trim(), to: d.to.trim(), startKm, endKm, purpose: d.purpose.trim(), partner: d.partner.trim() };
     if (entry) Object.assign(entry, rec); else state.trips.push(rec);
     tripYear = d.date.slice(0, 4);
+    const drive = !entry && prefill.driveId && state.drives.find((x) => x.id === prefill.driveId);
+    if (drive) drive.tripId = rec.id;
   }, { deleteFn: entry && (() => { state.trips = state.trips.filter((x) => x !== entry); }) });
 }
 
@@ -1451,6 +1493,198 @@ async function shareAccident(a) {
 
 const blobToDataUrl = (blob) => new Promise((res) => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(blob); });
 
+/* ---------- GPS-Fahrtaufzeichnung ---------- */
+
+let rec = null;
+let currentView = 'start';
+const HARD_BRAKE = -3.5, HARD_ACCEL = 3.0; // m/s², aus der GPS-Geschwindigkeit
+
+function haversine(a, b) {
+  const R = 6371000, rad = Math.PI / 180;
+  const dLat = (b.lat - a.lat) * rad, dLng = (b.lng - a.lng) * rad;
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+
+const fmtDur = (sec) => {
+  sec = Math.round(sec);
+  const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s2 = sec % 60;
+  return h ? `${h}:${String(m).padStart(2, '0')} h` : `${m}:${String(s2).padStart(2, '0')}`;
+};
+
+async function lockScreen() {
+  try { if (rec && navigator.wakeLock) rec.lock = await navigator.wakeLock.request('screen'); } catch (e) { /* nicht unterstützt */ }
+}
+
+function startDrive() {
+  if (rec) return showView('drive');
+  if (!navigator.geolocation) return alert('Dieses Gerät kann den Standort nicht bestimmen.');
+  rec = { start: Date.now(), dist: 0, moving: 0, over130: 0, max: 0, speed: null, acc: null, brakes: 0, accels: 0, anchor: null, prev: null, lastEvent: 0, track: [], lock: null };
+  rec.watch = navigator.geolocation.watchPosition(onFix, (err) => {
+    if (rec) rec.gpsError = err.code === 1
+      ? 'Kein Zugriff auf den Standort. Erlaube ihn unter Einstellungen → Datenschutz & Sicherheit → Ortungsdienste → Safari-Websites.'
+      : 'GPS-Signal schwach …';
+    renderDrive();
+  }, { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 });
+  rec.timer = setInterval(renderDrive, 1000);
+  lockScreen();
+  showView('drive');
+  renderDrive();
+}
+
+function onFix(pos) {
+  if (!rec) return;
+  const c = pos.coords, t = pos.timestamp;
+  rec.acc = c.accuracy; rec.gpsError = '';
+  if (c.accuracy > 50) return renderDrive(); // zu ungenau, ignorieren
+  const pt = { lat: c.latitude, lng: c.longitude, t };
+
+  // Strecke: erst ab einer Bewegung deutlich über der GPS-Ungenauigkeit zählen
+  if (!rec.anchor) rec.anchor = pt;
+  else {
+    const d = haversine(rec.anchor, pt);
+    if (d >= Math.max(5, c.accuracy * 0.5)) {
+      if (c.speed == null || c.speed < 0) rec.calcSpeed = d / Math.max(1, (t - rec.anchor.t) / 1000);
+      rec.dist += d; rec.anchor = pt;
+    }
+  }
+  const speed = c.speed != null && c.speed >= 0 ? c.speed : (rec.calcSpeed ?? null);
+
+  if (speed != null && rec.prev) {
+    const dt = (t - rec.prev.t) / 1000;
+    if (dt > 0 && dt <= 3) {
+      if (speed > 1) rec.moving += dt;
+      if (speed * 3.6 > 130) rec.over130 += dt;
+      // Fahrstil: Änderung der Geschwindigkeit pro Sekunde, höchstens ein Ereignis alle 4 s
+      const a = (speed - rec.prev.speed) / dt;
+      if (t - rec.lastEvent > 4000) {
+        if (a <= HARD_BRAKE) { rec.brakes++; rec.lastEvent = t; }
+        else if (a >= HARD_ACCEL) { rec.accels++; rec.lastEvent = t; }
+      }
+    }
+  }
+  if (speed != null) { rec.prev = { speed, t }; rec.speed = speed; rec.max = Math.max(rec.max, speed); }
+
+  const last = rec.track[rec.track.length - 1];
+  if (!last || haversine(last, pt) > 25) rec.track.push(pt);
+  renderDrive();
+}
+
+function driveScore(d) {
+  const per10 = (x) => x / Math.max(d.km, 5) * 10;
+  const fast = d.movingSec ? d.over130 / d.movingSec : 0;
+  return Math.max(0, Math.min(100, Math.round(100 - per10(d.brakes) * 8 - per10(d.accels) * 5 - fast * 30)));
+}
+
+function renderDrive() {
+  const bar = $('#recBar');
+  bar.style.display = rec && currentView !== 'drive' ? 'block' : 'none';
+  if (!rec) return;
+  const elapsed = (Date.now() - rec.start) / 1000;
+  bar.textContent = `● Aufnahme läuft · ${fmtNum(rec.dist / 1000, 1)} km · ${fmtDur(elapsed)}`;
+  if (currentView !== 'drive') return;
+  $('#dSpeed').textContent = rec.speed != null ? fmtNum(rec.speed * 3.6) : '–';
+  $('#dDist').innerHTML = `${fmtNum(rec.dist / 1000, 1)} <small>km</small>`;
+  $('#dTime').textContent = fmtDur(elapsed);
+  $('#dAvg').innerHTML = rec.moving > 10 ? `${fmtNum(rec.dist / rec.moving * 3.6)} <small>km/h</small>` : '–';
+  $('#dMax').innerHTML = rec.max ? `${fmtNum(rec.max * 3.6)} <small>km/h</small>` : '–';
+  $('#dEvents').innerHTML = `
+    <span class="pill ${rec.brakes ? 'soon' : 'ok'}">Starkes Bremsen: ${rec.brakes}</span>
+    <span class="pill ${rec.accels ? 'soon' : 'ok'}">Starkes Beschleunigen: ${rec.accels}</span>`;
+  $('#dGps').textContent = rec.gpsError || (rec.acc != null ? `GPS-Genauigkeit: ± ${fmtNum(rec.acc)} m` : 'GPS wird gesucht …');
+}
+
+function stopDrive() {
+  if (!rec) return;
+  navigator.geolocation.clearWatch(rec.watch);
+  clearInterval(rec.timer);
+  try { rec.lock?.release(); } catch (e) { /* egal */ }
+  const r = rec;
+  rec = null;
+  renderDrive();
+  const km = r.dist / 1000;
+  if (km < 0.1) { alert('Die Fahrt war kürzer als 100 m und wurde nicht gespeichert.'); return showView('trips'); }
+  // Strecke für die Skizze auf höchstens 400 Punkte ausdünnen
+  const step = Math.ceil(r.track.length / 400);
+  const track = r.track.filter((_, i) => i % step === 0 || i === r.track.length - 1).map((x) => [+x.lat.toFixed(5), +x.lng.toFixed(5)]);
+  const d = {
+    id: uid(), start: r.start, end: Date.now(), km: +km.toFixed(2), movingSec: Math.round(r.moving),
+    maxKmh: Math.round(r.max * 3.6), avgKmh: r.moving > 10 ? Math.round(r.dist / r.moving * 3.6) : null,
+    brakes: r.brakes, accels: r.accels, over130: Math.round(r.over130), track, tripId: null,
+  };
+  d.score = driveScore(d);
+  state.drives.push(d);
+  save();
+  showView('trips');
+  driveDetail(d);
+}
+
+function routeSvg(track) {
+  if (!track || track.length < 2) return '';
+  const lat0 = track[0][0] * Math.PI / 180;
+  const pts = track.map(([la, ln]) => [ln * Math.cos(lat0), -la]);
+  const xs = pts.map((q) => q[0]), ys = pts.map((q) => q[1]);
+  const minX = Math.min(...xs), minY = Math.min(...ys);
+  const span = Math.max(Math.max(...xs) - minX, Math.max(...ys) - minY) || 1;
+  const W = 320, H = 180, pad = 14;
+  const k = Math.min((W - 2 * pad) / ((Math.max(...xs) - minX) || span), (H - 2 * pad) / ((Math.max(...ys) - minY) || span));
+  const offX = (W - (Math.max(...xs) - minX) * k) / 2, offY = (H - (Math.max(...ys) - minY) * k) / 2;
+  const P = pts.map(([x, y]) => [((x - minX) * k + offX).toFixed(1), ((y - minY) * k + offY).toFixed(1)]);
+  return `<div class="route"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Skizze der gefahrenen Strecke">
+    <polyline class="line" points="${P.map((q) => q.join(',')).join(' ')}"/>
+    <circle class="start" cx="${P[0][0]}" cy="${P[0][1]}" r="6"/><circle class="end" cx="${P[P.length - 1][0]}" cy="${P[P.length - 1][1]}" r="6"/>
+  </svg><div class="meta" style="margin-top:4px"><span style="color:var(--good)">●</span> Start · <span style="color:var(--bad)">●</span> Ziel</div></div>`;
+}
+
+function scorePill(score) {
+  return `<span class="pill ${score >= 85 ? 'ok' : score >= 60 ? 'soon' : 'over'}">Fahrstil ${score}</span>`;
+}
+
+function driveDetail(d) {
+  const cons = consumption().avg;
+  const lSum = state.fuel.reduce((s, f) => s + f.liters, 0);
+  const price = lSum ? state.fuel.reduce((s, f) => s + f.total, 0) / lSum : null;
+  const cost = cons && price ? d.km * cons / 100 * price : null;
+  const tips = [];
+  if (d.brakes) tips.push('Mehr Abstand halten und vorausschauend vom Gas gehen spart Bremsen und Sprit.');
+  if (d.accels) tips.push('Sanfter beschleunigen und früh hochschalten senkt den Verbrauch deutlich.');
+  if (d.over130 > 60) tips.push('Über 130 km/h steigt der Verbrauch stark an.');
+  const start = new Date(d.start);
+  openSheet(`Fahrt am ${fmtDate(start.toISOString().slice(0, 10))}`, `
+    ${routeSvg(d.track)}
+    <dl class="kv">
+      <dt>Zeit</dt><dd>${start.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })} – ${new Date(d.end).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })} Uhr</dd>
+      <dt>Strecke</dt><dd>${fmtNum(d.km, 1)} km</dd>
+      <dt>Fahrzeit</dt><dd>${fmtDur(d.movingSec)} in Bewegung</dd>
+      <dt>Tempo</dt><dd>Ø ${d.avgKmh ?? '–'} km/h · max ${d.maxKmh} km/h</dd>
+      <dt>Fahrstil</dt><dd>${scorePill(d.score)} · ${d.brakes}× stark gebremst · ${d.accels}× stark beschleunigt</dd>
+      ${cost ? `<dt>Sprit</dt><dd>≈ ${fmtEUR(cost)} (bei ${fmtNum(cons, 1)} l/100 km)</dd>` : ''}
+    </dl>
+    ${tips.length ? `<p class="note">💡 ${tips.join(' ')}</p>` : '<p class="note">👍 Sehr gleichmäßig gefahren.</p>'}
+    ${d.tripId ? '<p class="note">✓ Im Fahrtenbuch eingetragen.</p>' : ''}
+  `, () => {
+    if (d.tripId) return;
+    const startKm = currentKm();
+    setTimeout(() => tripForm(null, {
+      date: new Date(d.start - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10),
+      startKm: startKm ?? '', endKm: startKm != null ? Math.round(startKm + d.km) : '', from: '', driveId: d.id,
+    }), 50);
+  }, { submitLabel: d.tripId ? 'Schließen' : 'Ins Fahrtenbuch', deleteFn: () => { state.drives = state.drives.filter((x) => x !== d); } });
+}
+
+function renderDrives() {
+  $('#driveBtn').textContent = rec ? '● Aufnahme läuft: anzeigen' : '▶︎ Fahrt aufzeichnen (GPS)';
+  const list = [...state.drives].sort((a, b) => b.start - a.start).slice(0, 20);
+  $('#driveList').innerHTML = list.map((d) => {
+    const st = new Date(d.start);
+    return `<li data-drive="${d.id}" style="cursor:pointer">
+      <div class="grow"><div class="title">${fmtDate(st.toISOString().slice(0, 10))}, ${st.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })} Uhr</div>
+      <div class="meta">${fmtDur(d.movingSec)} · Ø ${d.avgKmh ?? '–'} km/h${d.tripId ? ' · ✓ Fahrtenbuch' : ''}</div></div>
+      <div class="amount">${fmtNum(d.km, 1)} km<div>${scorePill(d.score)}</div></div>
+    </li>`;
+  }).join('') || '<li class="empty">Tipp auf „Fahrt aufzeichnen“, bevor du losfährst. Die App misst Strecke, Tempo und deinen Fahrstil.</li>';
+}
+
 /* ---------- Kalender ---------- */
 
 function calendarFile() {
@@ -1610,7 +1844,7 @@ function maintForm(m) {
 
 /* ---------- Ereignisse ---------- */
 
-const TITLES = { help: 'Notfall & Hilfe', start: 'Übersicht', fuel: 'Tanken', trips: 'Fahrtenbuch', maint: 'Wartung', costs: 'Kosten', more: 'Mehr' };
+const TITLES = { drive: 'Fahrt läuft', help: 'Notfall & Hilfe', start: 'Übersicht', fuel: 'Tanken', trips: 'Fahrtenbuch', maint: 'Wartung', costs: 'Kosten', more: 'Mehr' };
 
 function showSub(sub) {
   $('#sub-termine').hidden = sub !== 'termine';
@@ -1618,6 +1852,8 @@ function showSub(sub) {
   document.querySelectorAll('#maintSeg button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.sub === sub)));
 }
 function showView(v) {
+  currentView = v;
+  renderDrive();
   document.querySelectorAll('.view').forEach((s) => s.classList.toggle('active', s.id === 'view-' + v));
   document.querySelectorAll('nav.tabs button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.view === v)));
   $('#viewTitle').textContent = TITLES[v];
@@ -1626,7 +1862,7 @@ function showView(v) {
 }
 
 document.addEventListener('click', (e) => {
-  const t = e.target.closest('button, li[data-edit-fuel], li[data-edit-cost], li[data-edit-trip], [data-edit-acc]');
+  const t = e.target.closest('button, li[data-edit-fuel], li[data-edit-cost], li[data-edit-trip], [data-edit-acc], li[data-drive]');
   if (!t) return;
   if (t.dataset.view) return showView(t.dataset.view);
   if (t.dataset.open === 'fuel') return fuelForm();
@@ -1649,6 +1885,7 @@ document.addEventListener('click', (e) => {
   if (t.dataset.tread) return treadForm(state.tires.find((x) => x.id === t.dataset.tread));
   if (t.dataset.sub) showSub(t.dataset.sub);
   if (t.dataset.open === 'docs') return docsForm();
+  if (t.dataset.drive) return driveDetail(state.drives.find((x) => x.id === t.dataset.drive));
   if (t.dataset.open === 'accident') return accidentForm();
   if (t.dataset.editAcc) return accidentForm(state.accidents.find((x) => x.id === t.dataset.editAcc));
   if (t.dataset.shareAcc) return shareAccident(state.accidents.find((x) => x.id === t.dataset.shareAcc));
@@ -1679,6 +1916,10 @@ $('#priceForm').addEventListener('submit', (e) => {
   save();
   alert('Gespeichert');
 });
+
+$('#driveBtn').addEventListener('click', startDrive);
+$('#dStop').addEventListener('click', () => { if (confirm('Fahrt beenden und speichern?')) stopDrive(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && rec) lockScreen(); });
 
 $('#lightSearch').addEventListener('input', renderHelp);
 $('#tripYear').addEventListener('change', (e) => { tripYear = e.target.value; render(); });
@@ -1730,7 +1971,7 @@ $('#resetBtn').addEventListener('click', () => {
 let startView = 'start';
 try { startView = sessionStorage.getItem('autobuch-view') || 'start'; } catch (e) { /* egal */ }
 render();
-showView(TITLES[startView] ? startView : 'start');
+showView(TITLES[startView] && startView !== 'drive' ? startView : 'start');
 
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   navigator.serviceWorker.register('sw.js').catch(() => {});

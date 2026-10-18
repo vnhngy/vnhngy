@@ -10,6 +10,8 @@ Alle Daten bleiben auf dem iPhone (localStorage).
   und eigene Termine. Die App zeigt, was überfällig oder bald fällig ist
 - **Fahrtenbuch:** Fahrten mit Art (privat/geschäftlich/Arbeitsweg), Zweck und km-Stand,
   Jahresauswertung, Hinweis auf Lücken, Export als CSV für Excel
+- **Fahrt aufzeichnen (GPS):** Live-Tacho, Strecke, Fahrzeit, Ø-/Höchsttempo, Erkennung von starkem
+  Bremsen/Beschleunigen, Fahrstil-Note, Streckenskizze, Spritkosten-Schätzung, Übernahme ins Fahrtenbuch
 - **Reifen:** Reifensätze mit Größe, DOT/Alter, Profiltiefe je Rad, Lagerort und gefahrenen km;
   Warnungen bei wenig Profil, alten Reifen oder fehlendem Schneeflocken-Symbol
 - **Notfall & Hilfe:** Notruf/Polizei mit einem Tipp, eigene Versicherungs- und Pannennummern,
