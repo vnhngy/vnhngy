@@ -334,6 +334,32 @@
   .tread div { background: var(--surface-2); border: 1px solid var(--edge); border-radius: 14px; padding: 7px 2px; font-size: 12px; color: var(--muted); }
   .tread b { display: block; font-size: 16px; color: var(--text); font-variant-numeric: tabular-nums; }
 
+  /* Kacheln & Unterseiten */
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
+  .tiles button {
+    display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 4px 10px;
+    border-radius: 22px; font-size: 12px; font-weight: 600; background: var(--glass);
+    -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur);
+  }
+  .tiles button span { font-size: 24px; line-height: 1.1; }
+  button.back { background: none; border: 0; box-shadow: none; color: var(--accent); padding: 0 0 12px 4px; font-weight: 600; }
+  .bignum { font-size: 30px; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .split > div { background: var(--surface-2); border: 1px solid var(--edge); border-radius: 18px; padding: 12px 14px; }
+  .split .label { font-size: 13px; color: var(--muted); }
+  .ytable { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .ytable th { text-align: right; font-size: 12px; color: var(--muted); font-weight: 600; padding: 4px 0 6px 8px; }
+  .ytable th:first-child, .ytable td:first-child { text-align: left; padding-left: 0; }
+  .ytable td { text-align: right; padding: 7px 0 7px 8px; border-top: 1px solid var(--line); }
+  .checkitem { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-top: 1px solid var(--line); cursor: pointer; }
+  .checkitem:first-of-type { border-top: 0; }
+  .checkitem input { width: 22px; height: 22px; flex: none; margin: 1px 0 0; accent-color: var(--good); }
+  .checkitem.done span { color: var(--muted); text-decoration: line-through; }
+  .progress { height: 6px; border-radius: 999px; background: var(--surface-2); overflow: hidden; margin: 4px 0 8px; border: 1px solid var(--edge); }
+  .progress i { display: block; height: 100%; background: var(--good); border-radius: 999px; transition: width .3s; }
+  .card summary { list-style: none; cursor: pointer; }
+  .card summary::-webkit-details-marker { display: none; }
+
   /* Einrichtungs-Assistent */
   dialog.wizard form { padding: 18px 20px 20px; }
   dialog.wizard h3 { text-align: center; font-size: 24px; margin-bottom: 14px; }
@@ -396,6 +422,12 @@
   <!-- Übersicht -->
   <section class="view active" id="view-start">
     <button class="sos-entry" data-view="help">🚨 Notfall, Unfall &amp; Warnleuchten</button>
+    <div class="tiles">
+      <button data-view="stats"><span aria-hidden="true">📊</span>Statistik</button>
+      <button data-view="checks"><span aria-hidden="true">✅</span>Checklisten</button>
+      <button data-view="plan"><span aria-hidden="true">🗺️</span>Reiseplaner</button>
+      <button data-view="garages"><span aria-hidden="true">🔧</span>Werkstätten</button>
+    </div>
     <div class="stats">
       <div class="stat"><div class="label">Kilometerstand</div><div class="value" id="sKm">–</div></div>
       <div class="stat"><div class="label">Ø Verbrauch</div><div class="value" id="sCons">–</div></div>
@@ -474,6 +506,75 @@
       </div>
       <p class="note">Gesetzlich vorgeschrieben sind mindestens 1,6 mm Profil. Empfohlen werden 3 mm bei Sommer- und 4 mm bei Winterreifen. Winterreifen brauchen seit 1.10.2024 das Schneeflocken-Symbol (Alpine-Symbol); „M+S“ allein reicht nicht mehr.</p>
     </div>
+  </section>
+
+  <!-- Statistik -->
+  <section class="view" id="view-stats">
+    <button class="back" data-view="start">‹ Zurück</button>
+    <label class="field"><span>Jahr</span><select id="statYear"></select></label>
+    <div class="stats">
+      <div class="stat"><div class="label">Gefahren</div><div class="value" id="stKm">–</div></div>
+      <div class="stat"><div class="label">Gesamtkosten</div><div class="value" id="stCost">–</div></div>
+      <div class="stat"><div class="label">Ø pro Monat</div><div class="value" id="stMonth">–</div></div>
+      <div class="stat"><div class="label">Kosten pro km</div><div class="value" id="stPerKm">–</div></div>
+    </div>
+    <div class="card">
+      <h2>Kosten pro Monat</h2>
+      <div class="chart" id="statChart"></div>
+    </div>
+    <div class="card">
+      <h2>Verbrauch Sommer / Winter</h2>
+      <div id="statSeason"></div>
+    </div>
+    <div class="card">
+      <h2>Spritpreise</h2>
+      <div id="statPrices"></div>
+    </div>
+    <div class="card">
+      <h2>Jahresvergleich</h2>
+      <div id="statYears"></div>
+    </div>
+    <div class="card">
+      <h2>Prognose</h2>
+      <div id="statForecast"></div>
+    </div>
+  </section>
+
+  <!-- Checklisten -->
+  <section class="view" id="view-checks">
+    <button class="back" data-view="start">‹ Zurück</button>
+    <div id="checkLists"></div>
+  </section>
+
+  <!-- Reiseplaner -->
+  <section class="view" id="view-plan">
+    <button class="back" data-view="start">‹ Zurück</button>
+    <div class="card">
+      <h2>Deine Reise</h2>
+      <form id="planForm" onsubmit="return false">
+        <div class="row2">
+          <label class="field"><span>Strecke (km, einfach)</span><input name="dist" inputmode="decimal" placeholder="z. B. 650"></label>
+          <label class="field"><span>Personen</span><input name="people" inputmode="numeric" value="1"></label>
+        </div>
+        <label class="check"><input type="checkbox" name="back"> Hin- und Rückfahrt</label>
+        <div class="row2">
+          <label class="field"><span>Verbrauch (l/100 km)</span><input name="cons" inputmode="decimal"></label>
+          <label class="field"><span>Spritpreis (€/l)</span><input name="price" inputmode="decimal"></label>
+        </div>
+        <p class="hint">Vorausgefüllt mit deinem Durchschnitt aus dem Tankbuch. Auf der Autobahn ist der Verbrauch oft höher.</p>
+      </form>
+    </div>
+    <div class="card">
+      <h2>Ergebnis</h2>
+      <div id="planResult"></div>
+    </div>
+  </section>
+
+  <!-- Werkstätten -->
+  <section class="view" id="view-garages">
+    <button class="back" data-view="start">‹ Zurück</button>
+    <div id="garageList"></div>
+    <button class="primary" data-open="garage" style="width:100%">＋ Werkstatt hinzufügen</button>
   </section>
 
   <!-- Notfall & Hilfe -->

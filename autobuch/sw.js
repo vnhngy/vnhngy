@@ -1,5 +1,5 @@
 // Offline-Cache für die App-Dateien. Bei Änderungen an der App VERSION erhöhen.
-const VERSION = 'autobuch-v9';
+const VERSION = 'autobuch-v10';
 const FILES = ['./', './index.html', './i18n.js', './app.js', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', (e) => {

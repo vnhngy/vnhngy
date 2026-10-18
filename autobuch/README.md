@@ -24,6 +24,10 @@ Alle Daten bleiben auf dem iPhone (localStorage).
   Reifen, Unfällen und Belegfotos
 - **Siri & Kurzbefehle:** Links mit `?action=fuel|drive|park|cost|trip|help` öffnen direkt eine Funktion;
   `?action=fuel&l=42,5&eur=74,30&km=98500` füllt das Tankformular vor
+- **Statistik:** Jahreswerte, Verbrauch Sommer/Winter, Spritpreis-Extreme, Jahresvergleich, Kostenprognose
+- **Checklisten:** Urlaubsfahrt, Winter, Frühjahr, Werkstattbesuch, Verkauf (zum Abhaken)
+- **Reiseplaner:** Spritkosten, Kosten pro Person, Tankstopps und Fahrzeit für eine Strecke
+- **Werkstätten:** Kontakte mit Anruf- und Routen-Knopf
 - **Kosten:** inkl. Fotos von Belegen und Rechnungen (in IndexedDB, verkleinert)
 - **Kosten (Übersicht):** Ausgaben nach Kategorie, Kosten pro km, Verlauf der letzten 12 Monate
 - **Spritpreise:** günstigste geöffnete Tankstellen im Umkreis, mit Route in Apple Karten
