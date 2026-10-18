@@ -930,6 +930,9 @@ const T = {
   'Geschafft': ['Done', 'Đạt được'],
   'Erfolge freigeschaltet': ['awards unlocked', 'thành tích đã mở khóa'],
 
+  '🔄 Nach Update suchen': ['🔄 Check for updates', '🔄 Kiểm tra cập nhật'],
+  'Du hast schon die neueste Version ({v}).': ['You already have the latest version ({v}).', 'Bạn đang dùng phiên bản mới nhất ({v}).'],
+  'Keine Verbindung. Bist du online?': ['No connection. Are you online?', 'Không có kết nối. Bạn có đang online không?'],
   // ---- Allgemein ----
   'Abbrechen': ['Cancel', 'Hủy'],
   'Eintrag löschen': ['Delete entry', 'Xóa mục này'],

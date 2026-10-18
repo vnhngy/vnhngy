@@ -3,7 +3,7 @@
 /* ---------- Daten ---------- */
 
 const STORE_KEY = 'autobuch-v1';
-const APP_VERSION = '16'; // bei jedem Update zusammen mit VERSION in sw.js erhöhen
+const APP_VERSION = '17'; // bei jedem Update zusammen mit VERSION in sw.js erhöhen
 const COST_CATS = ['Werkstatt', 'Versicherung', 'Kfz-Steuer', 'Reifen', 'Pflege', 'Parken', 'Leasing/Finanzierung', 'Bußgeld', 'Sonstiges'];
 // Daten, die zu einem Fahrzeug gehören. Beim Wechsel des Autos werden genau diese Felder getauscht.
 const CAR_KEYS = ['car', 'fuel', 'costs', 'maint', 'trips', 'tires', 'mounted', 'drives', 'accidents', 'parking', 'docs', 'recurring', 'fines', 'values', 'logs'];
@@ -2511,8 +2511,29 @@ if (window.visualViewport) {
 }
 $('#appVersion').textContent = `Autobuch · Version ${APP_VERSION}`;
 
+// Manuell: neueste Version vom Server holen und alles Zwischengespeicherte verwerfen
+$('#updateBtn').addEventListener('click', async () => {
+  const btn = $('#updateBtn');
+  btn.disabled = true;
+  try {
+    const src = await (await fetch('app.js?t=' + Date.now(), { cache: 'no-store' })).text();
+    const latest = (/APP_VERSION = '(\d+)'/.exec(src) || [])[1];
+    if (latest && +latest <= +APP_VERSION) { alert(tr('Du hast schon die neueste Version ({v}).', { v: APP_VERSION })); return; }
+    for (const k of await caches.keys()) await caches.delete(k);
+    for (const r of await navigator.serviceWorker.getRegistrations()) await r.unregister();
+    location.replace(location.pathname + '?v=' + (latest || Date.now()));
+  } catch (e) {
+    alert(tr('Keine Verbindung. Bist du online?'));
+  } finally { btn.disabled = false; }
+});
+
 // Neue Version sofort übernehmen, sobald der Service Worker sie geladen hat
 if ('serviceWorker' in navigator) {
+  // iOS holt Home-Bildschirm-Apps oft nur aus dem Hintergrund zurück, ohne neu zu laden:
+  // deshalb auch beim Zurückkehren in die App nach einer neuen Version fragen
+  const checkUpdate = () => navigator.serviceWorker.getRegistration().then((r) => r && r.update()).catch(() => {});
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) checkUpdate(); });
+  setInterval(checkUpdate, 30 * 60 * 1000);
   const hadOldVersion = !!navigator.serviceWorker.controller; // beim allerersten Besuch nicht neu laden
   let reloaded = false;
   navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadOldVersion && !reloaded) { reloaded = true; location.reload(); } });
