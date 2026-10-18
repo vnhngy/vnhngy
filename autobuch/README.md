@@ -17,6 +17,11 @@ Alle Daten bleiben auf dem iPhone (localStorage).
 - **Notfall & Hilfe:** Notruf/Polizei mit einem Tipp, eigene Versicherungs- und Pannennummern,
   Unfall-Checkliste, Unfall dokumentieren (Fotos, Standort, Gegner, Zeugen) und als Bericht teilen,
   Warnleuchten-Lexikon mit Suche
+- **Dokumente:** Fotos von Fahrzeugschein, Führerschein, Versicherungskarte usw. mit Ablaufdatum
+- **Verkaufs-Mappe:** druckbarer Bericht (PDF) mit Fahrzeugdaten, Wartung, Rechnungen, km-Verlauf,
+  Reifen, Unfällen und Belegfotos
+- **Siri & Kurzbefehle:** Links mit `?action=fuel|drive|park|cost|trip|help` öffnen direkt eine Funktion;
+  `?action=fuel&l=42,5&eur=74,30&km=98500` füllt das Tankformular vor
 - **Kosten:** inkl. Fotos von Belegen und Rechnungen (in IndexedDB, verkleinert)
 - **Kosten (Übersicht):** Ausgaben nach Kategorie, Kosten pro km, Verlauf der letzten 12 Monate
 - **Spritpreise:** günstigste geöffnete Tankstellen im Umkreis, mit Route in Apple Karten

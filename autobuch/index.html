@@ -246,6 +246,33 @@
   .seg button[aria-pressed="true"] { background: var(--surface); box-shadow: var(--shadow); font-weight: 600; }
 
   @media (min-width: 560px) { .stats { grid-template-columns: repeat(4, 1fr); } }
+
+  /* Verkaufs-Mappe: immer hell, auch im Dark Mode */
+  .report { background: #fff; color: #15181d; border-radius: 12px; padding: 18px 16px; font-size: 13px; line-height: 1.45; }
+  .report h1 { font-size: 22px; margin: 0 0 2px; }
+  .report h2 { font-size: 15px; margin: 22px 0 6px; padding-bottom: 4px; border-bottom: 2px solid #15181d; }
+  .report .sub { color: #5d6573; margin: 0; }
+  .report table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  .report th { text-align: left; font-weight: 600; color: #5d6573; font-size: 12px; }
+  .report th, .report td { padding: 5px 6px 5px 0; border-bottom: 1px solid #e2e5ea; vertical-align: top; }
+  .report td.r, .report th.r { text-align: right; }
+  .report .receipt { break-inside: avoid; page-break-inside: avoid; margin: 12px 0; }
+  .report .receipt img { max-width: 100%; max-height: 520px; display: block; border: 1px solid #e2e5ea; }
+  .report .fine { color: #5d6573; font-size: 11px; margin-top: 20px; }
+  .linkurl { font-size: 12px; color: var(--muted); word-break: break-all; }
+  .howto summary { color: var(--accent); cursor: pointer; margin: 8px 0; }
+  .howto ol { padding-left: 20px; margin: 6px 0 12px; font-size: 14px; }
+  .howto li { margin-bottom: 4px; }
+
+  @media print {
+    @page { margin: 14mm; }
+    body { background: #fff !important; }
+    header, nav.tabs, #recBar, dialog, .no-print { display: none !important; }
+    main { padding: 0 !important; max-width: none !important; }
+    .view { display: none !important; }
+    #view-report { display: block !important; }
+    .report { border-radius: 0; padding: 0; font-size: 11pt; }
+  }
 </style>
 </head>
 <body>
@@ -349,6 +376,12 @@
       <div id="docsBody"></div>
     </div>
     <div class="card">
+      <h2>Dokumente</h2>
+      <ul class="list" id="docList"></ul>
+      <button data-open="doc" style="width:100%;margin-top:12px">📁 Dokument hinzufügen</button>
+      <p class="note" style="margin-bottom:0">Praktisch zum Nachschauen. Bei einer Polizeikontrolle gelten aber nur die Originale.</p>
+    </div>
+    <div class="card">
       <h2>Unfall: was tun?</h2>
       <ol class="steps">
         <li><b>Warnblinker</b> an, <b>Warnweste</b> anziehen, bevor du aussteigst.</li>
@@ -372,6 +405,16 @@
       <label class="field"><input id="lightSearch" type="search" placeholder="Suchen, z. B. Öl, Batterie …"></label>
       <div id="lightList"></div>
     </div>
+  </section>
+
+  <!-- Verkaufs-Mappe -->
+  <section class="view" id="view-report">
+    <div class="actions no-print">
+      <button data-view="more">‹ Zurück</button>
+      <button class="primary" id="printBtn">🖨 Drucken / PDF</button>
+    </div>
+    <p class="note no-print" style="margin-top:0">Als PDF sichern: Im Druckmenü oben auf <b>Teilen</b> tippen und <b>„In Dateien sichern“</b> wählen.</p>
+    <div id="reportBody"></div>
   </section>
 
   <!-- Live-Aufzeichnung -->
@@ -457,6 +500,37 @@
         </div>
         <button class="primary" style="width:100%">Speichern</button>
       </form>
+    </div>
+    <div class="card">
+      <h2>Verkaufs-Mappe</h2>
+      <p class="note" style="margin-top:0">Ein sauberer Bericht über Wartung, Rechnungen, km-Stände und Reifen, ideal beim Verkauf oder für die Werkstatt. Du kannst ihn als PDF sichern.</p>
+      <button class="primary" data-open="report" style="width:100%">📄 Verkaufs-Mappe erstellen</button>
+    </div>
+    <div class="card">
+      <h2>Siri &amp; Kurzbefehle</h2>
+      <p class="note" style="margin-top:0">Diese Links öffnen direkt eine Funktion. Füge sie in der Kurzbefehle-App als Aktion „URL öffnen“ ein.</p>
+      <ul class="list" id="linkList"></ul>
+      <details class="howto">
+        <summary>Per Sprache: „Hey Siri, Tanken eintragen“</summary>
+        <ol>
+          <li>Öffne die App <b>Kurzbefehle</b> und tippe oben rechts auf <b>＋</b>.</li>
+          <li>Tippe auf <b>Aktion hinzufügen</b>, suche <b>„URL öffnen“</b> und wähle sie aus.</li>
+          <li>Tippe hier in Autobuch beim gewünschten Link auf <b>Kopieren</b> und füge ihn in die Aktion ein.</li>
+          <li>Tippe oben auf den Namen und nenne den Kurzbefehl z. B. <b>„Tanken eintragen“</b>.</li>
+          <li>Fertig. Jetzt reicht: <b>„Hey Siri, Tanken eintragen“</b>.</li>
+        </ol>
+      </details>
+      <details class="howto">
+        <summary>Automatisch: Aufzeichnung startet beim Einsteigen</summary>
+        <ol>
+          <li>Kurzbefehle → unten <b>Automation</b> → <b>＋</b> (bzw. „Neue Automation“).</li>
+          <li>Wähle <b>Bluetooth</b>, dann dein Auto (Name wie in den Bluetooth-Einstellungen des iPhones) und <b>„Ist verbunden“</b>.</li>
+          <li>Wähle <b>„Sofort ausführen“</b> und dann <b>Weiter</b>.</li>
+          <li>Aktion <b>„URL öffnen“</b> mit dem Link <b>„Fahrt aufzeichnen“</b> von hier.</li>
+          <li>Sobald dein iPhone sich mit dem Auto verbindet, startet die Aufzeichnung. Beenden musst du sie selbst.</li>
+        </ol>
+      </details>
+      <p class="note" style="margin-bottom:0">Hinweis: Kurzbefehle öffnen Links in Safari. Zeigt Safari dabei leere Daten, trennt dein iOS den Speicher von Safari und der Home-Bildschirm-App. Dann klappt das nur, wenn du Autobuch in Safari nutzt.</p>
     </div>
     <div class="card">
       <h2>Spritpreise (Tankerkönig)</h2>
@@ -549,7 +623,7 @@ function freshState() {
     fuel: [], costs: [], maint: defaultMaint('Benzin'), theme: 'auto',
     prices: { key: '', type: 'e5', rad: 5 }, parking: null,
     trips: [], tires: [], mounted: null,
-    drives: [],
+    drives: [], documents: [],
     docs: { plate: '', vin: '', insurer: '', policy: '', claimPhone: '', breakdown: '' }, accidents: [],
   };
 }
@@ -720,6 +794,7 @@ function render() {
   renderTires();
   renderHelp();
   renderDrives();
+  renderDocs();
 
   // Tanken
   $('#fCons').innerHTML = $('#sCons').innerHTML;
@@ -1261,7 +1336,7 @@ function idb(mode, fn) {
 const photoPut = (id, blob) => idb('readwrite', (st) => st.put(blob, id));
 const photoGet = (id) => idb('readonly', (st) => st.get(id));
 const photoDel = (id) => idb('readwrite', (st) => st.delete(id)).catch(() => {});
-const allPhotoIds = () => [...state.costs, ...state.accidents].flatMap((x) => x.photos || []);
+const allPhotoIds = () => [...state.costs, ...state.accidents, ...state.documents].flatMap((x) => x.photos || []);
 
 // Fotos verkleinern (iPhone-Fotos haben oft 3–5 MB)
 function compressImage(file, max = 1600) {
@@ -1685,6 +1760,174 @@ function renderDrives() {
   }).join('') || '<li class="empty">Tipp auf „Fahrt aufzeichnen“, bevor du losfährst. Die App misst Strecke, Tempo und deinen Fahrstil.</li>';
 }
 
+/* ---------- Dokumente ---------- */
+
+const DOC_TYPES = ['Fahrzeugschein', 'Fahrzeugbrief', 'Führerschein', 'Versicherungskarte', 'Serviceheft', 'TÜV-Bericht', 'Kaufvertrag', 'Sonstiges'];
+
+function docExpiry(doc) {
+  if (!doc.expires) return null;
+  const days = daysUntil(doc.expires);
+  return days < 0 ? { cls: 'over', label: '⚠︎ Abgelaufen' } : days <= 60 ? { cls: 'soon', label: `⏱ Noch ${days} Tage` } : { cls: 'ok', label: `✓ Bis ${fmtDate(doc.expires)}` };
+}
+
+function renderDocs() {
+  const docs = [...state.documents].sort((a, b) => DOC_TYPES.indexOf(a.type) - DOC_TYPES.indexOf(b.type));
+  $('#docList').innerHTML = docs.map((doc) => {
+    const ex = docExpiry(doc);
+    return `<li data-edit-doc="${doc.id}" style="cursor:pointer">
+      <div class="grow"><div class="title">📄 ${esc(doc.title || doc.type)}</div>
+      <div class="meta">${[doc.title ? doc.type : '', doc.photos?.length ? `${doc.photos.length} Foto${doc.photos.length > 1 ? 's' : ''}` : 'kein Foto', doc.note].filter(Boolean).map(esc).join(' · ')}</div></div>
+      ${ex ? `<span class="pill ${ex.cls}">${ex.label}</span>` : ''}
+    </li>`;
+  }).join('') || '<li class="empty">Noch keine Dokumente. Fotografiere z. B. Fahrzeugschein und Versicherungskarte.</li>';
+}
+
+function docForm(entry) {
+  const e = entry || { type: 'Fahrzeugschein', title: '', expires: '', note: '', photos: [] };
+  openSheet(entry ? esc(e.title || e.type) : 'Dokument hinzufügen', `
+    <label class="field"><span>Art</span><select name="type">${DOC_TYPES.map((t) => `<option ${t === e.type ? 'selected' : ''}>${t}</option>`).join('')}</select></label>
+    ${field('Bezeichnung (optional)', 'title', e.title, 'placeholder="z. B. eVB-Nummer, Rechnung Kauf"')}
+    ${field('Gültig bis (optional)', 'expires', e.expires, 'type="date"')}
+    ${field('Notiz', 'note', e.note, 'placeholder="z. B. Original liegt im Ordner zu Hause"')}
+    ${photoField(e.photos, 'Fotos (Vorder- und Rückseite)')}
+  `, (d) => {
+    const rec = { id: entry?.id || uid(), type: d.type, title: d.title.trim(), expires: d.expires, note: d.note.trim(), photos: commitPhotos() };
+    if (!rec.photos.length && !rec.note) return 'Bitte ein Foto hinzufügen oder eine Notiz eintragen.';
+    if (entry) Object.assign(entry, rec); else state.documents.push(rec);
+  }, { deleteFn: entry && (() => { (entry.photos || []).forEach(photoDel); state.documents = state.documents.filter((x) => x !== entry); }) });
+  wirePhotos();
+}
+
+/* ---------- Siri & Kurzbefehle ---------- */
+
+const ACTION_LINKS = [
+  ['fuel', '⛽ Tanken eintragen'],
+  ['drive', '🛰 Fahrt aufzeichnen'],
+  ['park', '📍 Hier geparkt'],
+  ['cost', '€ Ausgabe eintragen'],
+  ['trip', '🚗 Fahrt eintragen'],
+  ['help', '🚨 Notfall & Hilfe'],
+];
+const actionUrl = (a) => location.origin + location.pathname + '?action=' + a;
+
+function renderLinks() {
+  $('#linkList').innerHTML = ACTION_LINKS.map(([a, label]) => `
+    <li><div class="grow"><div class="title">${label}</div><div class="linkurl">${esc(actionUrl(a))}</div></div>
+    <button class="small" data-copy="${a}">Kopieren</button></li>`).join('');
+}
+
+// Wird beim Start mit ?action=… geöffnet (z. B. von einem Kurzbefehl)
+function handleUrlAction() {
+  const q = new URLSearchParams(location.search);
+  const a = q.get('action');
+  if (!a) return;
+  history.replaceState(null, '', location.pathname);
+  if (a === 'fuel') { showView('fuel'); fuelForm(null, { liters: num(q.get('l')) ?? '', total: num(q.get('eur')) ?? '', km: num(q.get('km')) ?? '' }); }
+  else if (a === 'cost') { showView('costs'); costForm(); }
+  else if (a === 'trip') { showView('trips'); tripForm(); }
+  else if (a === 'drive') startDrive();
+  else if (a === 'park') { showView('start'); setParking(); }
+  else if (a === 'help') showView('help');
+}
+
+/* ---------- Verkaufs-Mappe ---------- */
+
+function reportForm() {
+  openSheet('Verkaufs-Mappe erstellen', `
+    <p class="note" style="margin-top:0">Was soll im Bericht stehen?</p>
+    <label class="check"><input type="checkbox" name="amounts" checked> Rechnungsbeträge zeigen</label>
+    <label class="check"><input type="checkbox" name="vin" checked> Fahrgestellnummer (FIN) zeigen</label>
+    <label class="check"><input type="checkbox" name="accidents" checked> Unfälle aufführen</label>
+    <label class="check"><input type="checkbox" name="photos" checked> Fotos der Rechnungen anhängen</label>
+    <p class="hint">Tipp: Bekannte Unfallschäden musst du beim Verkauf ohnehin angeben. Verschweigen kann teuer werden.</p>
+  `, (d) => {
+    const opt = { amounts: d.amounts === 'on', vin: d.vin === 'on', accidents: d.accidents === 'on', photos: d.photos === 'on' };
+    setTimeout(() => buildReport(opt), 50);
+  }, { submitLabel: 'Erstellen' });
+}
+
+async function buildReport(opt) {
+  const c = state.car, d = state.docs, km = currentKm();
+  const byDate = (a, b) => a.date.localeCompare(b.date);
+  const bills = state.costs.filter((x) => ['Werkstatt', 'Reifen'].includes(x.cat)).sort(byDate);
+  const billSum = bills.reduce((s2, x) => s2 + x.amount, 0);
+  const cons = consumption().avg;
+
+  // km-Verlauf: höchster bekannter km-Stand je Jahr
+  const points = [
+    ...state.fuel.map((f) => [f.date, f.km]), ...state.costs.filter((x) => x.km != null).map((x) => [x.date, x.km]),
+    ...state.trips.map((t) => [t.date, t.endKm]), ...state.maint.filter((m) => m.lastDate && m.lastKm != null).map((m) => [m.lastDate, m.lastKm]),
+  ];
+  const perYear = {};
+  points.forEach(([date, k]) => { const y = date.slice(0, 4); perYear[y] = Math.max(perYear[y] || 0, k); });
+  const years = Object.keys(perYear).sort();
+
+  const row = (cells) => `<tr>${cells.map((x) => `<td${x && x.r ? ' class="r"' : ''}>${x && x.r ? x.v : x ?? ''}</td>`).join('')}</tr>`;
+  const R = (v) => ({ r: true, v });
+  const maintDone = state.maint.filter((m) => m.lastDate || m.lastKm != null);
+
+  let html = `<div class="report">
+    <h1>Fahrzeug-Dokumentation</h1>
+    <p class="sub">${esc([c.name, c.variant].filter(Boolean).join(' · '))} · erstellt am ${fmtDate(today())}</p>
+
+    <h2>Fahrzeug</h2>
+    <table>
+      ${row(['Modell', esc(c.name)])}${c.variant ? row(['Ausstattung', esc(c.variant)]) : ''}
+      ${c.year ? row(['Baujahr', esc(c.year)]) : ''}${row(['Kraftstoff', esc(c.fuel)])}
+      ${d.plate ? row(['Kennzeichen', esc(d.plate)]) : ''}${opt.vin && d.vin ? row(['FIN', esc(d.vin)]) : ''}
+      ${km != null ? row(['Kilometerstand', `${fmtNum(km)} km`]) : ''}
+      ${cons ? row(['Ø Verbrauch', `${fmtNum(cons, 1)} l/100 km (aus ${state.fuel.length} Tankfüllungen)`]) : ''}
+    </table>
+
+    <h2>Wartung &amp; Prüfungen</h2>
+    ${maintDone.length ? `<table><tr><th>Leistung</th><th>Zuletzt</th><th class="r">km</th><th>Nächste Fälligkeit</th></tr>
+      ${maintDone.map((m) => {
+        const st = maintStatus(m);
+        const due = st.text.replace(/<[^>]+>/g, '').replace(/^Als Nächstes: [^.]*\.\s*/, '').replace(/^Fällig /, '');
+        return row([esc(m.name) + (m.lastAlt ? ` (${esc(m.lastAlt)})` : ''), m.lastDate ? fmtDate(m.lastDate) : '–', R(m.lastKm != null ? fmtNum(m.lastKm) : '–'), esc(due)]);
+      }).join('')}</table>` : '<p>Keine Einträge.</p>'}
+
+    <h2>Werkstatt- &amp; Reifenrechnungen</h2>
+    ${bills.length ? `<table><tr><th>Datum</th><th class="r">km</th><th>Leistung</th>${opt.amounts ? '<th class="r">Betrag</th>' : ''}</tr>
+      ${bills.map((x) => row([fmtDate(x.date), R(x.km != null ? fmtNum(x.km) : '–'), esc(x.note || x.cat) + (opt.photos && x.photos?.length ? ' 📎' : ''), ...(opt.amounts ? [R(fmtEUR(x.amount))] : [])])).join('')}
+      ${opt.amounts ? row(['', R(''), '<b>Summe</b>', R(`<b>${fmtEUR(billSum)}</b>`)]) : ''}</table>` : '<p>Keine Rechnungen erfasst.</p>'}
+
+    <h2>Kilometer-Verlauf</h2>
+    ${years.length ? `<table><tr><th>Jahr</th><th class="r">Höchster bekannter km-Stand</th></tr>${years.map((y) => row([y, R(fmtNum(perYear[y]) + ' km')])).join('')}</table>` : '<p>Keine Daten.</p>'}
+
+    <h2>Reifen</h2>
+    ${state.tires.length ? `<table><tr><th>Satz</th><th>Marke / Größe</th><th>DOT</th><th class="r">Profil (min.)</th><th class="r">km</th></tr>
+      ${state.tires.map((t) => {
+        const min = t.tread ? Math.min(...POS.map(([k]) => t.tread[k]).filter((v) => v != null)) : null;
+        return row([esc(t.name) + (state.mounted?.id === t.id ? ' (montiert)' : ''), esc([t.brand, t.size].filter(Boolean).join(', ') || '–'), esc(t.dot || '–'),
+          R(min != null ? `${fmtNum(min, 1)} mm` : '–'), R(fmtNum(tireKm(t)))]);
+      }).join('')}</table>` : '<p>Keine Reifen erfasst.</p>'}`;
+
+  if (opt.accidents) {
+    const acc = [...state.accidents].sort(byDate);
+    html += `<h2>Unfälle</h2>${acc.length ? `<table><tr><th>Datum</th><th>Ort</th><th>Hergang</th></tr>
+      ${acc.map((a) => row([fmtDate(a.date.slice(0, 10)), esc(a.place || '–'), esc(a.notes || '–')])).join('')}</table>` : '<p>Keine Unfälle erfasst.</p>'}`;
+  }
+
+  if (opt.photos) {
+    const withPhotos = bills.filter((x) => x.photos?.length);
+    if (withPhotos.length) {
+      html += '<h2>Belege</h2>';
+      for (const x of withPhotos) {
+        for (const id of x.photos) {
+          const blob = await photoGet(id).catch(() => null);
+          if (blob) html += `<div class="receipt"><b>${fmtDate(x.date)}: ${esc(x.note || x.cat)}</b><img src="${URL.createObjectURL(blob)}" alt="Beleg"></div>`;
+        }
+      }
+    }
+  }
+  html += '<p class="fine">Die Angaben wurden vom Halter selbst erfasst (Autobuch).</p></div>';
+
+  $('#reportBody').innerHTML = html;
+  showView('report');
+  await Promise.all([...document.querySelectorAll('#reportBody img')].map((img) => img.decode().catch(() => {})));
+}
+
 /* ---------- Kalender ---------- */
 
 function calendarFile() {
@@ -1757,8 +2000,8 @@ sheetForm.addEventListener('submit', (e) => {
 const field = (label, name, value = '', attrs = '') =>
   `<label class="field"><span>${label}</span><input name="${name}" value="${esc(value)}" ${attrs}></label>`;
 
-function fuelForm(entry) {
-  const e = entry || { date: today(), km: '', liters: '', total: '', full: true, station: '' };
+function fuelForm(entry, prefill = {}) {
+  const e = entry || { date: today(), km: '', liters: '', total: '', full: true, station: '', ...prefill };
   const kmHint = currentKm() != null && !entry ? `<p class="hint">Letzter bekannter Stand: ${fmtNum(currentKm())} km</p>` : '';
   openSheet(entry ? 'Tankfüllung bearbeiten' : 'Tankfüllung eintragen', `
     ${field('Datum', 'date', e.date, 'type="date" required')}
@@ -1844,7 +2087,7 @@ function maintForm(m) {
 
 /* ---------- Ereignisse ---------- */
 
-const TITLES = { drive: 'Fahrt läuft', help: 'Notfall & Hilfe', start: 'Übersicht', fuel: 'Tanken', trips: 'Fahrtenbuch', maint: 'Wartung', costs: 'Kosten', more: 'Mehr' };
+const TITLES = { report: 'Verkaufs-Mappe', drive: 'Fahrt läuft', help: 'Notfall & Hilfe', start: 'Übersicht', fuel: 'Tanken', trips: 'Fahrtenbuch', maint: 'Wartung', costs: 'Kosten', more: 'Mehr' };
 
 function showSub(sub) {
   $('#sub-termine').hidden = sub !== 'termine';
@@ -1862,7 +2105,7 @@ function showView(v) {
 }
 
 document.addEventListener('click', (e) => {
-  const t = e.target.closest('button, li[data-edit-fuel], li[data-edit-cost], li[data-edit-trip], [data-edit-acc], li[data-drive]');
+  const t = e.target.closest('button, li[data-edit-fuel], li[data-edit-cost], li[data-edit-trip], [data-edit-acc], li[data-drive], li[data-edit-doc]');
   if (!t) return;
   if (t.dataset.view) return showView(t.dataset.view);
   if (t.dataset.open === 'fuel') return fuelForm();
@@ -1885,6 +2128,13 @@ document.addEventListener('click', (e) => {
   if (t.dataset.tread) return treadForm(state.tires.find((x) => x.id === t.dataset.tread));
   if (t.dataset.sub) showSub(t.dataset.sub);
   if (t.dataset.open === 'docs') return docsForm();
+  if (t.dataset.open === 'doc') return docForm();
+  if (t.dataset.editDoc) return docForm(state.documents.find((x) => x.id === t.dataset.editDoc));
+  if (t.dataset.open === 'report') return reportForm();
+  if (t.dataset.copy) {
+    const url = actionUrl(t.dataset.copy);
+    return navigator.clipboard.writeText(url).then(() => { t.textContent = '✓ Kopiert'; setTimeout(() => { t.textContent = 'Kopieren'; }, 1500); }, () => prompt('Link kopieren:', url));
+  }
   if (t.dataset.drive) return driveDetail(state.drives.find((x) => x.id === t.dataset.drive));
   if (t.dataset.open === 'accident') return accidentForm();
   if (t.dataset.editAcc) return accidentForm(state.accidents.find((x) => x.id === t.dataset.editAcc));
@@ -1918,6 +2168,7 @@ $('#priceForm').addEventListener('submit', (e) => {
 });
 
 $('#driveBtn').addEventListener('click', startDrive);
+$('#printBtn').addEventListener('click', () => window.print());
 $('#dStop').addEventListener('click', () => { if (confirm('Fahrt beenden und speichern?')) stopDrive(); });
 document.addEventListener('visibilitychange', () => { if (!document.hidden && rec) lockScreen(); });
 
@@ -1971,7 +2222,9 @@ $('#resetBtn').addEventListener('click', () => {
 let startView = 'start';
 try { startView = sessionStorage.getItem('autobuch-view') || 'start'; } catch (e) { /* egal */ }
 render();
-showView(TITLES[startView] && startView !== 'drive' ? startView : 'start');
+showView(TITLES[startView] && !['drive', 'report'].includes(startView) ? startView : 'start');
+renderLinks();
+handleUrlAction();
 
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
