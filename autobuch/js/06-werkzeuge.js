@@ -197,10 +197,21 @@ $('#planForm').addEventListener('input', (e) => { if (e.target.name === 'cons' |
 
 /* ---------- Werkstätten ---------- */
 
+// Ausgaben aller Fahrzeuge, die dieser Werkstatt zugeordnet sind
+function garageSpend(id) {
+  const list = [state, ...Object.values(state.otherCars || {})].flatMap((d) => d.costs || []).filter((c) => c.garageId === id);
+  return { sum: list.reduce((s, c) => s + c.amount, 0), n: list.length, last: list.map((c) => c.date).sort().pop() };
+}
+const stars = (n) => n ? '★'.repeat(n) + '☆'.repeat(5 - n) : '';
+
 function renderGarages() {
-  $('#garageList').innerHTML = state.garages.map((g) => `
+  $('#garageList').innerHTML = state.garages.map((g) => {
+    const sp = garageSpend(g.id);
+    return `
     <div class="card">
       <div class="maint-head"><span class="title" style="font-size:17px">🔧 ${esc(g.name)}</span><button class="small" data-edit-garage="${g.id}">${tr('Bearbeiten')}</button></div>
+      ${g.rating ? `<div class="stars" aria-label="${tr('{n} von 5 Sternen', { n: g.rating })}">${stars(g.rating)}</div>` : ''}
+      ${sp.n ? `<div class="meta">${tr(sp.n === 1 ? '1 Rechnung, zusammen {eur} · zuletzt {date}' : '{n} Rechnungen, zusammen {eur} · zuletzt {date}', { n: sp.n, eur: fmtEUR(sp.sum, 0), date: fmtDate(sp.last) })}</div>` : ''}
       <div class="maint-body">
         ${g.address ? `📍 ${esc(g.address)}<br>` : ''}${g.hours ? `🕘 ${esc(g.hours)}<br>` : ''}${g.contact ? `👤 ${esc(g.contact)}<br>` : ''}${g.note ? esc(g.note) : ''}
       </div>
@@ -208,7 +219,8 @@ function renderGarages() {
         ${g.phone ? `<a class="btn primary" href="${tel(g.phone)}">📞 ${tr('Anrufen')}</a>` : ''}
         ${g.address ? `<a class="btn" href="https://maps.apple.com/?daddr=${encodeURIComponent(g.address)}" target="_blank" rel="noopener">🗺️ ${tr('Route')}</a>` : ''}
       </div>
-    </div>`).join('') || `<div class="card"><p class="empty" style="margin:0">${tr('Speichere deine Werkstatt, den Reifenhändler oder die Waschanlage, dann hast du Telefon und Adresse immer dabei.')}</p></div>`;
+    </div>`;
+  }).join('') || `<div class="card"><p class="empty" style="margin:0">${tr('Speichere deine Werkstatt, den Reifenhändler oder die Waschanlage, dann hast du Telefon und Adresse immer dabei.')}</p></div>`;
 }
 
 function garageForm(entry) {
@@ -220,9 +232,10 @@ function garageForm(entry) {
     ${field('Öffnungszeiten', 'hours', e.hours, 'placeholder="z. B. Mo–Fr 7:30–18 Uhr"')}
     ${field('Ansprechpartner', 'contact', e.contact, 'placeholder="z. B. Herr Schmidt (Serviceannahme)"')}
     ${field('Notiz', 'note', e.note, 'placeholder="z. B. Kundennummer 12345"')}
+    <label class="field"><span>${tr('Bewertung')}</span><select name="rating">${[0, 5, 4, 3, 2, 1].map((n) => `<option value="${n}" ${n === (e.rating || 0) ? 'selected' : ''}>${n ? stars(n) : tr('keine')}</option>`).join('')}</select></label>
   `, (d) => {
     if (!d.name.trim()) return tr('Bitte einen Namen eingeben.');
-    const rec = { id: entry?.id || uid(), name: d.name.trim(), phone: d.phone.trim(), address: d.address.trim(), hours: d.hours.trim(), contact: d.contact.trim(), note: d.note.trim() };
+    const rec = { id: entry?.id || uid(), name: d.name.trim(), phone: d.phone.trim(), address: d.address.trim(), hours: d.hours.trim(), contact: d.contact.trim(), note: d.note.trim(), rating: Number(d.rating) || 0 };
     if (entry) Object.assign(entry, rec); else state.garages.push(rec);
   }, { deleteFn: entry && (() => { state.garages = state.garages.filter((x) => x !== entry); }) });
 }

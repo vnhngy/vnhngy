@@ -300,7 +300,7 @@ test('Neue Formulare sind übersetzt', async ({ page }) => {
   const missing = await page.evaluate(async () => {
     setLang('en'); MISSING.clear();
     state.trips.push({ id: 't1', date: today(), type: 'Privat', from: 'A', to: 'B', startKm: 1, endKm: 2, purpose: '', partner: '' });
-    fuelForm(); sheet.close(); budgetForm(); sheet.close(); noteForm(); sheet.close(); tripForm(state.trips[0]); sheet.close(); damageForm(); sheet.close(); leasingForm(); sheet.close(); commuteForm(); sheet.close(); specsForm(); sheet.close(); lockscreenSheet(); sheet.close(); handoverForm(); sheet.close(); travelForm(); sheet.close(); lockSetup(); sheet.close(); taxForm(); sheet.close(); priceTargetForm(); sheet.close(); csvImportSheet(); sheet.close(); dataCheckSheet(); sheet.close(); openDriveMode(); document.querySelector('#driveMode').close(); state.leasing = { start: addDays(-400), end: addDays(400), kmStart: 1, kmPerYear: 10, rate: 5 };
+    fuelForm(); sheet.close(); budgetForm(); sheet.close(); noteForm(); sheet.close(); tripForm(state.trips[0]); sheet.close(); damageForm(); sheet.close(); leasingForm(); sheet.close(); commuteForm(); sheet.close(); specsForm(); sheet.close(); lockscreenSheet(); sheet.close(); handoverForm(); sheet.close(); travelForm(); sheet.close(); lockSetup(); sheet.close(); taxForm(); sheet.close(); priceTargetForm(); sheet.close(); csvImportSheet(); sheet.close(); dataCheckSheet(); sheet.close(); openDriveMode(); document.querySelector('#driveMode').close(); insKmForm(); sheet.close(); supplyForm(); sheet.close(); repairForm(); sheet.close(); state.garages.push({ id: 'g', name: 'X' }); garageForm(state.garages[0]); sheet.close(); costForm(); sheet.close(); state.leasing = { start: addDays(-400), end: addDays(400), kmStart: 1, kmPerYear: 10, rate: 5 };
     state.budget = { monthly: 10 }; save();
     await buildYearReport(String(new Date().getFullYear()));
     openStory(String(new Date().getFullYear())); for (let i = 0; i < story.cards.length; i++) { story.i = i; drawStory(); } document.querySelector('#story').close();
@@ -682,6 +682,63 @@ test('Fahrmodus, Wunschpreis und Autojahr als Bild', async ({ page }) => {
   const n = await page.evaluate(() => story.cards.length);
   for (let i = 0; i < n - 1; i++) await page.mouse.click(300, 300);
   assert.ok(await page.$('#story [data-story="share"]'), 'Teilen-Knopf auf der letzten Karte');
+});
+
+test('Versicherte Kilometer: Hochrechnung und Warnung', async ({ page }) => {
+  await seed(page);
+  const y = new Date().getFullYear();
+  const r = await page.evaluate((yr) => {
+    state.insKm = { limit: 5000, start: yr + '-01-01' };
+    state.car.km = 97800 + 6000; state.car.kmDate = today(); save();
+    const st = insKmStatus();
+    return { mid: kmAtDate(addDays(-25)), driven: st.driven, over: st.over > 0 };
+  }, y);
+  assert.equal(r.mid, 97400); // genau zwischen 97.000 und 97.800
+  assert.ok(r.driven >= 6000, JSON.stringify(r));
+  assert.equal(r.over, true);
+  assert.match(await page.innerText('#notices'), /Mehr km als versichert/);
+});
+
+test('Haltbarkeit, Pannenhilfe und Werkstatt-Bewertung', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => showView('specs'));
+  await page.click('#view-specs button[data-open="supply"]');
+  const soon = await page.evaluate(() => addDays(20).slice(0, 7));
+  await page.fill('#sheetForm [name=expires]', soon);
+  await page.click('#sheetForm button.primary');
+  assert.match(await page.innerText('#supplyList'), /Verbandkasten/);
+  assert.match(await page.innerText('#notices'), /Haltbarkeit läuft ab/);
+  assert.ok(await page.evaluate(() => agendaItems().some((x) => /Verbandkasten/.test(x.title))));
+
+  await page.evaluate(() => showView('help'));
+  assert.match(await page.innerText('#guideList'), /Starthilfe/);
+
+  await page.evaluate(() => { state.garages.push({ id: 'g1', name: 'Autohaus Süd', phone: '', address: '', hours: '', contact: '', note: '', rating: 4 }); save(); showView('costs'); });
+  await page.click('#view-costs button[data-open="cost"]');
+  await page.fill('#sheetForm [name=amount]', '250');
+  await page.selectOption('#sheetForm [name=garageId]', 'g1');
+  await page.click('#sheetForm button.primary');
+  await page.evaluate(() => showView('garages'));
+  const g = await page.innerText('#garageList');
+  assert.match(g, /★★★★☆/);
+  assert.match(g, /1 Rechnung, zusammen 250/);
+});
+
+test('Fahrgewohnheiten und Reparatur-Rechner', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => {
+    state.trips.push({ id: 'm1', date: '2026-10-12', type: 'Arbeitsweg', from: 'A', to: 'B', startKm: 1, endKm: 31, purpose: '', partner: '' },
+      { id: 'm2', date: '2026-10-17', type: 'Privat', from: 'A', to: 'C', startKm: 31, endKm: 41, purpose: '', partner: '' });
+    state.values.push({ id: 'v1', date: today(), value: 9000, note: '' });
+    save(); showView('stats');
+  });
+  assert.equal(await page.isHidden('#habitsCard'), false);
+  assert.match(await page.innerText('#habitText'), /am Mo.*Wochenende: 25 %/);
+  await page.evaluate(() => showView('value'));
+  await page.click('#view-value button[data-open="repair"]');
+  assert.equal(await page.inputValue('#sheetForm [name=value]'), '9000');
+  await page.fill('#sheetForm [name=cost]', '1800');
+  assert.match(await page.innerText('#repairOut'), /20 %[\s\S]*lohnt sich meistens/);
 });
 
 test('Keine bunten Emojis auf dem Bildschirm', async ({ page }) => {

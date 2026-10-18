@@ -105,11 +105,12 @@ function costForm(entry) {
     ${field('Betrag (€)', 'amount', fmtIn(e.amount, 2), 'inputmode="decimal" required placeholder="z. B. 389,00"')}
     ${field('Notiz (optional)', 'note', e.note, 'placeholder="z. B. Service B, Bremsbeläge vorne"')}
     ${field('Kilometerstand (optional)', 'km', e.km ?? '', 'inputmode="numeric"')}
+    ${state.garages.length ? `<label class="field"><span>${tr('Werkstatt (optional)')}</span><select name="garageId"><option value="">–</option>${state.garages.map((g) => `<option value="${g.id}" ${g.id === e.garageId ? 'selected' : ''}>${esc(g.name)}</option>`).join('')}</select></label>` : ''}
     ${photoField(e.photos, 'Belege / Rechnungen')}
   `, (d) => {
     const amount = num(d.amount);
     if (amount == null) return tr('Bitte einen Betrag eingeben.');
-    const rec = { id: entry?.id || uid(), date: d.date, cat: d.cat, amount, note: d.note.trim(), km: num(d.km), photos: commitPhotos() };
+    const rec = { id: entry?.id || uid(), date: d.date, cat: d.cat, amount, note: d.note.trim(), km: num(d.km), photos: commitPhotos(), garageId: d.garageId || '' };
     if (entry) Object.assign(entry, rec); else state.costs.push(rec);
   }, { deleteFn: entry && (() => { (entry.photos || []).forEach(photoDel); state.costs = state.costs.filter((x) => x !== entry); }) });
   wirePhotos();
@@ -181,12 +182,16 @@ function showView(v) {
 }
 
 document.addEventListener('click', (e) => {
-  const t = e.target.closest('button, li[data-edit-fuel], li[data-edit-cost], li[data-edit-trip], [data-edit-acc], li[data-drive], li[data-edit-doc], li[data-edit-rec], li[data-edit-value], li[data-edit-log], li[data-edit-note], li[data-agenda], li[data-edit-dmg], .stat[data-open], li[data-hist-item], li[data-handover]');
+  const t = e.target.closest('button, li[data-edit-fuel], li[data-edit-cost], li[data-edit-trip], [data-edit-acc], li[data-drive], li[data-edit-doc], li[data-edit-rec], li[data-edit-value], li[data-edit-log], li[data-edit-note], li[data-agenda], li[data-edit-dmg], .stat[data-open], li[data-hist-item], li[data-handover], li[data-edit-supply]');
   if (!t) return;
   if (t.dataset.view) { showView(t.dataset.view); if (t.dataset.sub) showSub(t.dataset.sub); return; }
   if (t.dataset.open === 'fuel') return fuelForm();
   if (t.dataset.open === 'cost') return costForm();
   if (t.dataset.open === 'budget') return budgetForm();
+  if (t.dataset.open === 'insKm') return insKmForm();
+  if (t.dataset.open === 'supply') return supplyForm();
+  if (t.dataset.editSupply) return supplyForm(state.supplies.find((x) => x.id === t.dataset.editSupply));
+  if (t.dataset.open === 'repair') return repairForm();
   if (t.dataset.open === 'issuesShare') return shareIssues();
   if (t.dataset.delIssue) { state.issues = state.issues.filter((x) => x.id !== t.dataset.delIssue); return save(); }
   if (t.dataset.open === 'datacheck') return dataCheckSheet();

@@ -56,6 +56,12 @@ Alle Daten bleiben auf dem iPhone (localStorage).
 - **Fahrmodus:** sechs große Knöpfe für unterwegs
 - **Wunschpreis:** markiert Tankstellen unter deinem Zielpreis
 - **Autojahr als Bild:** Story-Bild 1080 × 1920 zum Teilen
+- **Versicherte Kilometer:** Hochrechnung der Jahresfahrleistung, Warnung bei Überschreitung (km-Stand zum Stichtag wird geschätzt)
+- **Haltbarkeit im Auto:** Verbandkasten, Reifen-Dichtmittel, Feuerlöscher, Kindersitz – mit Hinweis und Termin
+- **Pannenhilfe zum Nachlesen:** Starthilfe, Reifenpanne, Autobahn, Überhitzung, Abschleppen (offline)
+- **Werkstatt-Bewertung:** Sterne und Ausgaben je Werkstatt (Werkstatt im Ausgaben-Formular wählbar)
+- **Fahrgewohnheiten:** km nach Wochentag, häufigste Uhrzeit, Wochenend-Anteil
+- **Reparatur-Rechner:** Reparaturkosten im Verhältnis zum Fahrzeugwert
 - **Einrichtungs-Assistent:** erscheint beim ersten Start (Sprache, Auto, Wartung, Reifen, Notfall);
   jederzeit erneut unter **Mehr → Einrichtungs-Assistent**
 - **Tanken:** Verbrauch (l/100 km) zwischen vollen Tankfüllungen, Ø-Literpreis
@@ -93,7 +99,7 @@ wird die Sprache des iPhones übernommen. Zahlen- und Datumsformate folgen der S
 
 Dateien:
 - `index.html`: Aufbau, Design und Symbole
-- `js/01-…` bis `js/15-…`: Programmlogik, nach Bereichen aufgeteilt und in dieser Reihenfolge geladen;
+- `js/01-…` bis `js/16-…`: Programmlogik, nach Bereichen aufgeteilt und in dieser Reihenfolge geladen;
   alle sichtbaren Texte laufen über `tr('deutscher Text')`
 - `icon-quelle.svg`: Vorlage für das App-Symbol (daraus entstehen `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`)
 - `i18n.js`: Sprachumschaltung und Übersetzungen (`T`: `'Deutsch': ['English', 'Tiếng Việt']`)
