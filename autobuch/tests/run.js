@@ -435,6 +435,12 @@ test('Notfall-Sperrbildschirm wird erzeugt', async ({ page }) => {
   assert.deepEqual(size, [1179, 2556]);
 });
 
+test('Kacheln nach Kategorien, leere Kategorie wird ausgeblendet', async ({ page }) => {
+  await page.evaluate(() => { closeWizard(); state.home = { order: null, hidden: [], tiles: ['notes', 'fines', 'leasing'] }; save(); });
+  const r = await page.evaluate(() => [...document.querySelectorAll('#view-start .tile-group')].map((g) => [g.querySelector('h3').textContent, g.hidden]));
+  assert.deepEqual(r, [['Auswerten', false], ['Planen', false], ['Fahrzeug & Pflege', false], ['Unterlagen', true]]);
+});
+
 test('Keine bunten Emojis auf dem Bildschirm', async ({ page }) => {
   await seed(page);
   const left = await page.evaluate(() => {

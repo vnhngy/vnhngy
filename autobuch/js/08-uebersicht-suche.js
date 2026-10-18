@@ -59,12 +59,15 @@ function applyHome() {
     el.hidden = cfg.hidden.includes(key);
   }
   view.querySelectorAll('.tiles button').forEach((b) => { b.hidden = cfg.tiles.includes(b.dataset.view); });
+  // Kategorie ausblenden, wenn alle ihre Kacheln ausgeblendet sind
+  view.querySelectorAll('.tile-group').forEach((g) => { g.hidden = ![...g.querySelectorAll('button')].some((b) => !b.hidden); });
 }
 
 function homeForm() {
   const cfg = homeCfg();
   let order = [...cfg.order];
-  const tiles = [...document.querySelectorAll('#view-start .tiles button')].map((b) => [b.dataset.view, tr(TITLES[b.dataset.view])]);
+  const groups = [...document.querySelectorAll('#view-start .tile-group')].map((g) => [g.querySelector('h3').textContent, [...g.querySelectorAll('button')].map((b) => [b.dataset.view, tr(TITLES[b.dataset.view])])]);
+  const tiles = groups.flatMap(([, list]) => list);
   const label = (k) => tr(HOME_SECTIONS.find(([x]) => x === k)[1]);
   const rows = () => order.map((k, i) => `<div class="home-row">
       <label><input type="checkbox" name="sec_${k}" ${cfg.hidden.includes(k) ? '' : 'checked'}> ${label(k)}</label>
@@ -75,7 +78,8 @@ function homeForm() {
     <p class="note" style="margin-top:0">${tr('Wähle aus, was auf der Übersicht erscheint, und ordne es mit den Pfeilen.')}</p>
     <div id="homeRows">${rows()}</div>
     <fieldset style="margin-top:14px"><legend>${tr('Werkzeug-Kacheln')}</legend>
-      ${tiles.map(([v, n]) => `<div class="home-row"><label><input type="checkbox" name="tile_${v}" ${cfg.tiles.includes(v) ? '' : 'checked'}> ${n}</label></div>`).join('')}
+      ${groups.map(([name, list]) => `<div class="meta" style="margin:8px 0 2px">${esc(name)}</div>
+        ${list.map(([v, n]) => `<div class="home-row"><label><input type="checkbox" name="tile_${v}" ${cfg.tiles.includes(v) ? '' : 'checked'}> ${n}</label></div>`).join('')}`).join('')}
     </fieldset>
     <button type="button" class="link" id="homeReset" style="width:100%;margin-top:6px">${tr('Auf Standard zurücksetzen')}</button>
   `, (d) => {

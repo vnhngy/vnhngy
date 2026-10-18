@@ -369,13 +369,16 @@
   .tread b { display: block; font-size: 16px; color: var(--text); font-variant-numeric: tabular-nums; }
 
   /* Kacheln & Unterseiten */
-  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
+  .tiles.card { padding: 12px 10px 2px; }
+  .tile-group h3 { margin: 0 4px 5px; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .tile-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; }
   .tiles button {
-    display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 4px 10px;
-    border-radius: 22px; font-size: 12px; font-weight: 600; background: var(--glass);
-    -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur);
+    display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 7px 1px 6px; min-height: 0;
+    border-radius: 12px; font-size: 11px; font-weight: 600; line-height: 1.15; background: var(--surface-2);
+    border: 1px solid var(--edge); box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .tiles button span { font-size: 24px; line-height: 1.1; }
+  .tiles button span { font-size: 18px; line-height: 1.1; }
   button.back { background: none; border: 0; box-shadow: none; color: var(--accent); padding: 0 0 12px 4px; font-weight: 600; }
   .bignum { font-size: 30px; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
   .split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -417,7 +420,6 @@
   .award .meta { font-size: 13px; color: var(--muted); margin-top: 2px; min-height: 34px; }
   .award.locked .ico { filter: grayscale(1); opacity: .45; }
   .award.locked .title { color: var(--muted); }
-  .tiles { grid-template-columns: repeat(4, 1fr); }
 
   /* Einfarbige Symbole */
   svg.i { width: 1.15em; height: 1.15em; vertical-align: -.2em; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
@@ -570,6 +572,7 @@
   <symbol id="i-tree" viewBox="0 0 24 24"><path d="M12 3 6 11h3l-4 6h14l-4-6h3z"/><path d="M12 17v4"/></symbol>
   <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"/></symbol>
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4.5"/><path d="m11.2 11.8 8.8-8.8"/><path d="m17 6 3 3"/><path d="m14.5 8.5 2 2"/></symbol>
   <symbol id="i-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 14a4.5 4.5 0 0 0 7 0"/><path d="M9 9.5v.01"/><path d="M15 9.5v.01"/></symbol>
 </defs></svg>
 <header>
@@ -584,20 +587,40 @@
     <div id="notices" role="status" aria-live="polite"></div>
     <div data-sec="car" id="carHero"></div>
     <button class="sos-entry" data-sec="sos" data-view="help">🚨 Notfall, Unfall &amp; Warnleuchten</button>
-    <div class="tiles" data-sec="tiles">
-      <button data-view="stats"><span aria-hidden="true">📊</span>Statistik</button>
-      <button data-view="checks"><span aria-hidden="true">✅</span>Checklisten</button>
-      <button data-view="plan"><span aria-hidden="true">🗺️</span>Reiseplaner</button>
-      <button data-view="garages"><span aria-hidden="true">🔧</span>Werkstätten</button>
-      <button data-view="fines"><span aria-hidden="true">🧾</span>Strafzettel</button>
-      <button data-view="value"><span aria-hidden="true">📉</span>Wert</button>
-      <button data-view="logs"><span aria-hidden="true">🛢️</span>Öl &amp; Druck</button>
-      <button data-view="awards"><span aria-hidden="true">🏆</span>Erfolge</button>
-      <button data-view="agenda"><span aria-hidden="true">📅</span>Termine</button>
-      <button data-view="notes"><span aria-hidden="true">📒</span>Notizbuch</button>
-      <button data-view="damages"><span aria-hidden="true">📷</span>Schäden</button>
-      <button data-view="specs"><span aria-hidden="true">📄</span>Steckbrief</button>
-      <button data-view="leasing"><span aria-hidden="true">📅</span>Leasing</button>
+    <div class="tiles card" data-sec="tiles">
+      <div class="tile-group">
+        <h3>Auswerten</h3>
+        <div class="tile-grid">
+          <button data-view="stats"><span aria-hidden="true">📊</span>Statistik</button>
+          <button data-view="value"><span aria-hidden="true">📉</span>Wert</button>
+          <button data-view="awards"><span aria-hidden="true">🏆</span>Erfolge</button>
+        </div>
+      </div>
+      <div class="tile-group">
+        <h3>Planen</h3>
+        <div class="tile-grid">
+          <button data-view="agenda"><span aria-hidden="true">📅</span>Termine</button>
+          <button data-view="plan"><span aria-hidden="true">🗺️</span>Reiseplaner</button>
+          <button data-view="checks"><span aria-hidden="true">✅</span>Checklisten</button>
+        </div>
+      </div>
+      <div class="tile-group">
+        <h3>Fahrzeug &amp; Pflege</h3>
+        <div class="tile-grid">
+          <button data-view="specs"><span aria-hidden="true">📄</span>Steckbrief</button>
+          <button data-view="damages"><span aria-hidden="true">📷</span>Schäden</button>
+          <button data-view="logs"><span aria-hidden="true">🛢️</span>Öl &amp; Druck</button>
+          <button data-view="garages"><span aria-hidden="true">🔧</span>Werkstätten</button>
+        </div>
+      </div>
+      <div class="tile-group">
+        <h3>Unterlagen</h3>
+        <div class="tile-grid">
+          <button data-view="notes"><span aria-hidden="true">📒</span>Notizbuch</button>
+          <button data-view="fines"><span aria-hidden="true">🧾</span>Strafzettel</button>
+          <button data-view="leasing"><span aria-hidden="true">🔑</span>Leasing</button>
+        </div>
+      </div>
     </div>
     <div class="stats" data-sec="stats">
       <div class="stat"><div class="label">Kilometerstand</div><div class="value" id="sKm">–</div></div>
