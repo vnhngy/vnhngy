@@ -24,7 +24,7 @@ const photoGet = (id) => idb('readonly', (st) => st.get(id));
 const photoDel = (id) => idb('readwrite', (st) => st.delete(id)).catch(() => {});
 // Fotos aller Fahrzeuge (für Sicherung) plus Dokumente
 const allPhotoIds = () => [state, ...Object.values(state.otherCars || {})]
-  .flatMap((d) => [...(d.costs || []), ...(d.fuel || []), ...(d.notes || []), ...(d.accidents || []), ...(d.fines || []), { photos: d.car?.photo ? [d.car.photo] : [] }])
+  .flatMap((d) => [...(d.costs || []), ...(d.fuel || []), ...(d.notes || []), ...(d.damages || []), ...(d.accidents || []), ...(d.fines || []), { photos: d.car?.photo ? [d.car.photo] : [] }])
   .concat(state.documents).flatMap((x) => x.photos || []);
 
 // Blob-URLs gespeicherter Fotos zwischenspeichern, damit Bilder beim Neuzeichnen nicht flackern
@@ -182,8 +182,12 @@ function docsForm() {
     </div>
     ${field('Schadenhotline', 'claimPhone', d.claimPhone, 'type="tel" placeholder="steht auf deiner Versicherungskarte"')}
     ${field('Pannenhilfe', 'breakdown', d.breakdown, 'type="tel" placeholder="z. B. ADAC: 089 20 20 4000"')}
+    <div class="row2">
+      ${field('Notfallkontakt (Name)', 'iceName', d.iceName || '', 'placeholder="z. B. Mama"')}
+      ${field('Notfallkontakt (Telefon)', 'icePhone', d.icePhone || '', 'type="tel"')}
+    </div>
   `, (f) => {
-    state.docs = { plate: f.plate.trim().toUpperCase(), vin: f.vin.trim().toUpperCase(), insurer: f.insurer.trim(), policy: f.policy.trim(), claimPhone: f.claimPhone.trim(), breakdown: f.breakdown.trim() };
+    state.docs = { plate: f.plate.trim().toUpperCase(), vin: f.vin.trim().toUpperCase(), insurer: f.insurer.trim(), policy: f.policy.trim(), claimPhone: f.claimPhone.trim(), breakdown: f.breakdown.trim(), iceName: f.iceName.trim(), icePhone: f.icePhone.trim() };
   });
 }
 

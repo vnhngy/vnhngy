@@ -162,7 +162,7 @@ function maintForm(m) {
 
 /* ---------- Ereignisse ---------- */
 
-const TITLES = { search: 'Suchen', notes: 'Notizbuch', agenda: 'Termine', yearReport: 'Jahresbericht', fines: 'Strafzettel & Fristen', value: 'Wertverlauf', logs: 'Öl & Reifendruck', awards: 'Erfolge', stats: 'Statistik', checks: 'Checklisten', plan: 'Reiseplaner', garages: 'Werkstätten', report: 'Verkaufs-Mappe', drive: 'Fahrt läuft', help: 'Notfall & Hilfe', start: 'Übersicht', fuel: 'Tanken', trips: 'Fahrtenbuch', maint: 'Wartung', costs: 'Kosten', more: 'Mehr' };
+const TITLES = { search: 'Suchen', damages: 'Schäden', leasing: 'Leasing', specs: 'Steckbrief', notes: 'Notizbuch', agenda: 'Termine', yearReport: 'Jahresbericht', fines: 'Strafzettel & Fristen', value: 'Wertverlauf', logs: 'Öl & Reifendruck', awards: 'Erfolge', stats: 'Statistik', checks: 'Checklisten', plan: 'Reiseplaner', garages: 'Werkstätten', report: 'Verkaufs-Mappe', drive: 'Fahrt läuft', help: 'Notfall & Hilfe', start: 'Übersicht', fuel: 'Tanken', trips: 'Fahrtenbuch', maint: 'Wartung', costs: 'Kosten', more: 'Mehr' };
 
 function showSub(sub) {
   $('#sub-termine').hidden = sub !== 'termine';
@@ -180,12 +180,20 @@ function showView(v) {
 }
 
 document.addEventListener('click', (e) => {
-  const t = e.target.closest('button, li[data-edit-fuel], li[data-edit-cost], li[data-edit-trip], [data-edit-acc], li[data-drive], li[data-edit-doc], li[data-edit-rec], li[data-edit-value], li[data-edit-log], li[data-edit-note], li[data-agenda]');
+  const t = e.target.closest('button, li[data-edit-fuel], li[data-edit-cost], li[data-edit-trip], [data-edit-acc], li[data-drive], li[data-edit-doc], li[data-edit-rec], li[data-edit-value], li[data-edit-log], li[data-edit-note], li[data-agenda], li[data-edit-dmg]');
   if (!t) return;
   if (t.dataset.view) return showView(t.dataset.view);
   if (t.dataset.open === 'fuel') return fuelForm();
   if (t.dataset.open === 'cost') return costForm();
   if (t.dataset.open === 'budget') return budgetForm();
+  if (t.dataset.dmgZone) return damageForm(null, t.dataset.dmgZone);
+  if (t.dataset.open === 'damage') return damageForm();
+  if (t.dataset.editDmg) return damageForm(state.damages.find((x) => x.id === t.dataset.editDmg));
+  if (t.dataset.open === 'leasing') return leasingForm();
+  if (t.dataset.open === 'commute') return commuteForm();
+  if (t.dataset.open === 'specs') return specsForm();
+  if (t.dataset.open === 'shareSpecs') return shareSpecs();
+  if (t.dataset.open === 'lockscreen') return lockscreenSheet();
   if (t.dataset.open === 'note') return noteForm();
   if (t.dataset.editNote) return noteForm(state.notes.find((x) => x.id === t.dataset.editNote));
   if (t.dataset.open === 'ics') return $('#calBtn').click();
@@ -260,7 +268,7 @@ $('#carForm').addEventListener('submit', (e) => {
   e.preventDefault();
   const f = e.target;
   const oldFuel = state.car.fuel;
-  state.car = { name: f.name.value.trim(), variant: f.variant.value.trim(), year: f.year.value.trim(), fuel: f.fuel.value, km: num(f.km.value), tank: num(f.tank.value) };
+  state.car = { ...state.car, name: f.name.value.trim(), variant: f.variant.value.trim(), year: f.year.value.trim(), fuel: f.fuel.value, km: num(f.km.value), tank: num(f.tank.value) };
   fuelChanged(oldFuel);
   f.querySelector('button').blur();
   save();

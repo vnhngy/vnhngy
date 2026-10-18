@@ -150,6 +150,12 @@ async function buildReport(opt) {
       ${acc.map((a) => row([fmtDate(a.date.slice(0, 10)), esc(a.place || '–'), esc(a.notes || '–')])).join('')}</table>` : `<p>${tr('Keine Unfälle erfasst.')}</p>`}`;
   }
 
+  if (opt.accidents && state.damages.length) {
+    const dm = [...state.damages].sort(byDate);
+    html += `<h2>${tr('Schäden (Kratzer, Dellen)')}</h2><table><tr><th>${tr('Datum')}</th><th>${tr('Stelle')}</th><th>${tr('Beschreibung')}</th><th>${tr('Status')}</th></tr>
+      ${dm.map((x) => row([fmtDate(x.date), esc(tr(zoneName(x.zone))), esc(x.desc || '–'), x.repaired ? tr('repariert {date}', { date: fmtDate(x.repairedDate) }) : tr('Offen')])).join('')}</table>`;
+  }
+
   if (opt.photos) {
     const withPhotos = bills.filter((x) => x.photos?.length);
     if (withPhotos.length) {

@@ -198,7 +198,7 @@ test('Tank-Prognose wird berechnet', async ({ page }) => {
 
 test('Übersetzungen vollständig (Englisch, Vietnamesisch)', async ({ page }) => {
   await seed(page);
-  const views = ['start', 'fuel', 'trips', 'maint', 'costs', 'more', 'help', 'stats', 'checks', 'plan', 'garages', 'fines', 'value', 'logs', 'awards', 'notes', 'agenda'];
+  const views = ['start', 'fuel', 'trips', 'maint', 'costs', 'more', 'help', 'stats', 'checks', 'plan', 'garages', 'fines', 'value', 'logs', 'awards', 'notes', 'agenda', 'damages', 'leasing', 'specs'];
   for (const lang of ['en', 'vi']) {
     const missing = await page.evaluate(([l, vs]) => {
       MISSING.clear(); setLang(l);
@@ -300,7 +300,7 @@ test('Neue Formulare sind übersetzt', async ({ page }) => {
   const missing = await page.evaluate(async () => {
     setLang('en'); MISSING.clear();
     state.trips.push({ id: 't1', date: today(), type: 'Privat', from: 'A', to: 'B', startKm: 1, endKm: 2, purpose: '', partner: '' });
-    fuelForm(); sheet.close(); budgetForm(); sheet.close(); noteForm(); sheet.close(); tripForm(state.trips[0]); sheet.close();
+    fuelForm(); sheet.close(); budgetForm(); sheet.close(); noteForm(); sheet.close(); tripForm(state.trips[0]); sheet.close(); damageForm(); sheet.close(); leasingForm(); sheet.close(); commuteForm(); sheet.close(); specsForm(); sheet.close(); lockscreenSheet(); sheet.close(); state.leasing = { start: addDays(-400), end: addDays(400), kmStart: 1, kmPerYear: 10, rate: 5 };
     state.budget = { monthly: 10 }; save();
     await buildYearReport(String(new Date().getFullYear()));
     openStory(String(new Date().getFullYear())); for (let i = 0; i < story.cards.length; i++) { story.i = i; drawStory(); } document.querySelector('#story').close();
@@ -320,7 +320,7 @@ test('Parkplatz-Kompass zeigt Entfernung zum Auto', async ({ page, ctx }) => {
   assert.ok(r.dist > 280 && r.dist < 320, JSON.stringify(r)); // ca. 300 m nach Norden
   assert.match(r.text, /m$/);
   await page.click('#sheetForm [data-close]');
-  assert.equal(await page.evaluate(() => compass), null);
+  await page.waitForFunction(() => compass === null); // Schließen beendet GPS und Kompass
 });
 
 test('Rekorde, CO₂-Bilanz und Tankstellen-Ranking', async ({ page }) => {
@@ -360,6 +360,79 @@ test('Dein Autojahr: Rückblick zum Durchtippen', async ({ page }) => {
   assert.match(await page.innerText('#story'), /Erfolge/);
   await page.mouse.click(300, 400);
   assert.equal(await page.evaluate(() => document.querySelector('#story').open), false);
+});
+
+test('Schäden: Stelle am Auto antippen, festhalten, reparieren', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => showView('damages'));
+  await page.click('#dmgCar [data-dmg-zone="fl"]');
+  assert.equal(await page.inputValue('#sheetForm [name=zone]'), 'fl');
+  await page.fill('#sheetForm [name=desc]', 'Kratzer 10 cm');
+  await page.click('#sheetForm button.primary');
+  assert.equal((await page.innerText('#dmgCar [data-dmg-zone="fl"]')).trim(), '1');
+  await page.click('#dmgList li[data-edit-dmg]');
+  await page.check('#sheetForm [name=repaired]');
+  await page.click('#sheetForm button.primary');
+  const d = await page.evaluate(() => state.damages[0]);
+  assert.equal(d.repaired, true);
+  assert.equal(d.repairedDate, await page.evaluate(() => today()));
+  assert.match(await page.innerText('#dmgFixed'), /Repariert \(1\)/);
+});
+
+test('Leasing: Hochrechnung und Warnung bei zu vielen km', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => { state.car.km = 99000; save(); showView('leasing'); });
+  await page.click('#leaseBody button[data-open="leasing"]');
+  await page.evaluate(() => { sheetForm.start.value = addDays(-365); sheetForm.end.value = addMonths(addDays(-365), 36); });
+  await page.fill('#sheetForm [name=kmStart]', '80000');
+  await page.fill('#sheetForm [name=kmPerYear]', '10000');
+  await page.fill('#sheetForm [name=rate]', '10');
+  await page.click('#sheetForm button.primary');
+  const s = await page.evaluate(() => leasingStatus());
+  assert.equal(s.driven, 19000);
+  assert.ok(s.over > 25000 && s.over < 28000, JSON.stringify(s)); // 19.000 km/Jahr statt 10.000 bei 3 Jahren
+  assert.match(await page.innerText('#leaseBody'), /zu viel/);
+  assert.match(await page.innerText('#notices'), /Leasing/);
+});
+
+test('Pendlerpauschale aus dem Fahrtenbuch', async ({ page }) => {
+  await seed(page);
+  const y = String(new Date().getFullYear());
+  const c = await page.evaluate((yr) => {
+    state.trips.push({ id: 'p1', date: yr + '-01-05', type: 'Arbeitsweg', from: 'A', to: 'B', startKm: 1000, endKm: 1023, purpose: '', partner: '' },
+      { id: 'p2', date: yr + '-01-06', type: 'Arbeitsweg', from: 'A', to: 'B', startKm: 1046, endKm: 1069, purpose: '', partner: '' });
+    tripYear = yr; save();
+    return commuteFigures(yr);
+  }, y);
+  assert.deepEqual({ km: c.km, days: c.days }, { km: 23, days: 2 });
+  assert.equal(Math.round(c.amount * 100), +y >= 2026 ? 1748 : 1320); // 2 × 23 km × 0,38 €
+  assert.match(await page.innerText('#commuteBody'), /Pendlerpauschale/);
+});
+
+test('Spritspar-Rechner, Steckbrief und Fahrzeugfoto bleibt beim Speichern', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => showView('stats'));
+  await page.fill('#saveForm [name=km]', '10000');
+  await page.evaluate(() => { const r = document.querySelector('#saveForm [name=less]'); r.value = '1'; r.dispatchEvent(new Event('input', { bubbles: true })); });
+  assert.match(await page.innerText('#saveOut'), /100 Liter weniger/);
+
+  await page.evaluate(() => showView('specs'));
+  await page.click('#view-specs button[data-open="specs"]');
+  await page.fill('#sheetForm [name=tireSize]', '205/55 R16 91V');
+  await page.click('#sheetForm button.primary');
+  assert.match(await page.innerText('#specBody'), /205\/55 R16/);
+
+  const photo = await page.evaluate(() => { state.car.photo = 'p-car'; save(); showView('more'); document.querySelector('#carForm button').click(); return state.car.photo; });
+  assert.equal(photo, 'p-car');
+});
+
+test('Notfall-Sperrbildschirm wird erzeugt', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => { Object.assign(state.docs, { plate: 'S-AB 1234', insurer: 'HUK', iceName: 'Mama', icePhone: '0170 123' }); save(); showView('help'); });
+  await page.click('#view-help button[data-open="lockscreen"]');
+  await page.waitForFunction(() => document.querySelector('#lockImg')?.src.startsWith('blob:'));
+  const size = await page.evaluate(() => { const c = lockscreenCanvas(); return [c.width, c.height]; });
+  assert.deepEqual(size, [1179, 2556]);
 });
 
 test('Keine bunten Emojis auf dem Bildschirm', async ({ page }) => {

@@ -333,6 +333,19 @@
   .warn-text { color: var(--warn); }
   .bad-text { color: var(--bad); }
   .good-text { color: var(--good); }
+  .dmg-car { position: relative; width: 190px; margin: 4px auto 0; aspect-ratio: 100 / 160; }
+  .dmg-car svg { width: 100%; height: 100%; display: block; }
+  .dmg-car .body { fill: var(--surface-2); stroke: var(--edge); stroke-width: 1.2; }
+  .dmg-car .glass { fill: var(--accent); opacity: .22; }
+  .dmg-car .roof { fill: none; stroke: var(--edge); stroke-width: 1; }
+  .dmg-spot { position: absolute; transform: translate(-50%, -50%); width: 34px; height: 34px; min-height: 0; padding: 0; border-radius: 50%; font-size: 15px; font-weight: 700; color: var(--muted); background: var(--glass-strong); border: 1px dashed var(--edge); }
+  .dmg-spot.has { background: var(--warn); color: #fff; border: 0; }
+  .progress.lease { position: relative; overflow: visible; height: 10px; }
+  .progress.lease i { border-radius: 999px; }
+  .progress.lease b { position: absolute; top: -4px; width: 2px; height: 18px; background: var(--text); border-radius: 1px; }
+  .lock-preview { display: flex; justify-content: center; margin: 4px 0 14px; }
+  .lock-preview img { width: 46%; border-radius: 18px; border: 1px solid var(--edge); box-shadow: 0 6px 20px rgba(0,0,0,.18); }
+  .tips { margin: 8px 0 0; padding-left: 20px; } .tips li { margin: 4px 0; }
   .rank { min-width: 26px; font-weight: 700; color: var(--muted); text-align: center; }
   .compass { display: flex; justify-content: center; margin: 4px 0 6px; }
   .compass svg { width: 170px; height: 170px; fill: var(--accent); transition: transform .25s ease-out; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--edge); padding: 14px; }
@@ -556,6 +569,7 @@
   <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></symbol>
   <symbol id="i-tree" viewBox="0 0 24 24"><path d="M12 3 6 11h3l-4 6h14l-4-6h3z"/><path d="M12 17v4"/></symbol>
   <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></symbol>
   <symbol id="i-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 14a4.5 4.5 0 0 0 7 0"/><path d="M9 9.5v.01"/><path d="M15 9.5v.01"/></symbol>
 </defs></svg>
 <header>
@@ -581,6 +595,9 @@
       <button data-view="awards"><span aria-hidden="true">🏆</span>Erfolge</button>
       <button data-view="agenda"><span aria-hidden="true">📅</span>Termine</button>
       <button data-view="notes"><span aria-hidden="true">📒</span>Notizbuch</button>
+      <button data-view="damages"><span aria-hidden="true">📷</span>Schäden</button>
+      <button data-view="specs"><span aria-hidden="true">📄</span>Steckbrief</button>
+      <button data-view="leasing"><span aria-hidden="true">📅</span>Leasing</button>
     </div>
     <div class="stats" data-sec="stats">
       <div class="stat"><div class="label">Kilometerstand</div><div class="value" id="sKm">–</div></div>
@@ -713,6 +730,26 @@
       <h2>CO₂-Bilanz</h2>
       <div id="statCo2"></div>
     </div>
+    <div class="card">
+      <h2>Spritspar-Rechner</h2>
+      <form id="saveForm">
+        <label class="field"><span>Verbrauch senken um</span><input type="range" name="less" min="0.1" max="2" step="0.1" value="0.5" aria-describedby="saveLess"></label>
+        <div class="bignum" id="saveLess" style="font-size:20px;margin:-4px 0 10px"></div>
+        <label class="field"><span>Kilometer pro Jahr</span><input name="km" inputmode="numeric"></label>
+      </form>
+      <div id="saveOut"></div>
+      <details style="margin-top:10px">
+        <summary class="title">💡 So sparst du Sprit</summary>
+        <ul class="tips">
+          <li>Reifendruck monatlich prüfen: 0,5 bar zu wenig kostet bis zu 5 % mehr.</li>
+          <li>Früh hochschalten, bei 2.000 Umdrehungen.</li>
+          <li>Vorausschauend fahren und rollen lassen statt bremsen.</li>
+          <li>Dachbox und Fahrradträger abnehmen, wenn sie nicht gebraucht werden.</li>
+          <li>Unnötiges Gewicht aus dem Kofferraum räumen.</li>
+          <li>Auf der Autobahn 120 statt 150 km/h spart rund 20 %.</li>
+        </ul>
+      </details>
+    </div>
     <div class="actions">
       <button class="primary" data-open="story">✨ Dein Autojahr</button>
       <button data-open="yearReport">🖨 Jahresbericht als PDF</button>
@@ -725,6 +762,38 @@
     <p class="note" style="margin-top:0">Alle Fristen der nächsten 12 Monate: Wartung, TÜV, Strafzettel, Dokumente und feste Zahlungen.</p>
     <div class="card"><ul class="list" id="agendaList"></ul></div>
     <button data-open="ics" style="width:100%">📅 In den iPhone-Kalender übernehmen</button>
+  </section>
+
+  <!-- Schäden -->
+  <section class="view" id="view-damages">
+    <button class="back" data-view="start">‹ Zurück</button>
+    <div class="card">
+      <div class="dmg-car" id="dmgCar"></div>
+      <p class="note" style="text-align:center;margin-bottom:0">Tipp auf eine Stelle, um einen Schaden festzuhalten. Vorne ist oben.</p>
+    </div>
+    <div class="card">
+      <h2>Offene Schäden</h2>
+      <ul class="list" id="dmgList"></ul>
+      <button data-open="damage" style="width:100%;margin-top:12px">📷 Schaden festhalten</button>
+    </div>
+    <div id="dmgFixed"></div>
+    <p class="note">Fotos mit Datum helfen bei Mietwagen-Rückgabe, Versicherung und Verkauf. Sie erscheinen auch in der Verkaufs-Mappe.</p>
+  </section>
+
+  <!-- Leasing -->
+  <section class="view" id="view-leasing">
+    <button class="back" data-view="start">‹ Zurück</button>
+    <div class="card"><div id="leaseBody"></div></div>
+  </section>
+
+  <!-- Steckbrief -->
+  <section class="view" id="view-specs">
+    <button class="back" data-view="start">‹ Zurück</button>
+    <div class="card"><div id="specBody"></div></div>
+    <div class="actions">
+      <button class="primary" data-open="specs">Bearbeiten</button>
+      <button data-open="shareSpecs">Teilen</button>
+    </div>
   </section>
 
   <!-- Notizbuch -->
@@ -855,6 +924,7 @@
         <li>Deiner <b>Versicherung</b> den Unfall innerhalb einer Woche melden.</li>
       </ol>
       <button class="primary" data-open="accident" style="width:100%">📝 Unfall dokumentieren</button>
+      <button data-open="lockscreen" style="width:100%;margin-top:10px">🔒 Notfall-Sperrbildschirm erstellen</button>
     </div>
     <div class="card">
       <h2>Dokumentierte Unfälle</h2>
@@ -915,6 +985,10 @@
     <div class="card">
       <h2>Nach Art</h2>
       <ul class="list" id="tripTypes"></ul>
+    </div>
+    <div class="card">
+      <h2>Pendlerpauschale</h2>
+      <div id="commuteBody"></div>
     </div>
     <div class="card" id="favCard" hidden>
       <h2>Lieblingsstrecken</h2>
@@ -1098,6 +1172,7 @@
 <script src="js/08-uebersicht-suche.js"></script>
 <script src="js/09-notizen-termine-budget.js"></script>
 <script src="js/10-kompass-rueckblick-rekorde.js"></script>
-<script src="js/11-assistent-start.js"></script>
+<script src="js/11-schaeden-leasing-steuer.js"></script>
+<script src="js/12-assistent-start.js"></script>
 </body>
 </html>

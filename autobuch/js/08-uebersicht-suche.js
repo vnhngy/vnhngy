@@ -117,6 +117,7 @@ function searchIndex() {
   state.garages.forEach((g) => add('🔧', 'garages', g.name, g.address, [g.phone, g.contact, g.note, g.hours], () => garageForm(g)));
   state.values.forEach((v) => add('📉', 'value', tr('Wert') + ': ' + fmtEUR(v.value, 0), fmtDate(v.date), [v.note], () => valueForm(v)));
   state.notes.forEach((n) => add('📒', 'notes', n.title || tr('Notiz'), fmtDate(n.date), [n.text], () => noteForm(n)));
+  state.damages.forEach((d) => add('🚗', 'damages', tr(zoneName(d.zone)), fmtDate(d.date), [d.desc], () => damageForm(d)));
   state.logs.forEach((l) => add(l.kind === 'oil' ? '🛢' : '🛞', 'logs', tr(l.kind === 'oil' ? 'Öl nachgefüllt' : 'Reifendruck geprüft'), fmtDate(l.date), [l.note], () => logForm(l, l.kind)));
   return out;
 }

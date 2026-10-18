@@ -27,6 +27,12 @@ Alle Daten bleiben auf dem iPhone (localStorage).
 - **Dein Autojahr:** Jahresrückblick zum Durchtippen (km, Tanken, Kosten, Verbrauch, Lieblingsziel, CO₂)
 - **Rekorde, CO₂-Bilanz, Tankstellen-Ranking:** in der Statistik
 - **Lieblingsstrecken:** häufige Fahrten mit einem Tipp ins Fahrtenbuch
+- **Schäden:** Kratzer & Dellen mit Fotos an einer Auto-Skizze markieren, auch in der Verkaufs-Mappe
+- **Leasing:** km-Limit-Hochrechnung, Mehr-km-Kosten, Warnung auf der Übersicht
+- **Pendlerpauschale:** Schätzung aus den Arbeitsweg-Fahrten (ab 2026: 0,38 €/km)
+- **Spritspar-Rechner:** Ersparnis in € und CO₂ bei weniger Verbrauch, mit Spartipps
+- **Steckbrief:** Reifengröße, Reifendruck, Ölsorte usw., zum Teilen
+- **Notfall-Sperrbildschirm:** Hintergrundbild mit Notfallkontakt, Kennzeichen und Versicherung
 - **Einrichtungs-Assistent:** erscheint beim ersten Start (Sprache, Auto, Wartung, Reifen, Notfall);
   jederzeit erneut unter **Mehr → Einrichtungs-Assistent**
 - **Tanken:** Verbrauch (l/100 km) zwischen vollen Tankfüllungen, Ø-Literpreis
@@ -64,7 +70,7 @@ wird die Sprache des iPhones übernommen. Zahlen- und Datumsformate folgen der S
 
 Dateien:
 - `index.html`: Aufbau, Design und Symbole
-- `js/01-…` bis `js/11-…`: Programmlogik, nach Bereichen aufgeteilt und in dieser Reihenfolge geladen;
+- `js/01-…` bis `js/12-…`: Programmlogik, nach Bereichen aufgeteilt und in dieser Reihenfolge geladen;
   alle sichtbaren Texte laufen über `tr('deutscher Text')`
 - `i18n.js`: Sprachumschaltung und Übersetzungen (`T`: `'Deutsch': ['English', 'Tiếng Việt']`)
 - `tests/run.js`: automatische Tests (siehe unten)
