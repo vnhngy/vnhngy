@@ -1,0 +1,8 @@
+17:58:44 gelesen: 1485146 Objekte, 1480216 Wege, 11280745 Punkte
+17:58:49 verbunden: 149991 Linienzüge
+17:58:50 vereinfacht 0/149991, 1 Kacheln
+17:59:15 vereinfacht 50000/149991, 8691 Kacheln
+17:59:27 vereinfacht 100000/149991, 8956 Kacheln
+17:59:30 vereinfacht: 2197211 Punkte, 8975 Kacheln
+17:59:31 fertig: 224 Pakete, 8975 Kacheln, 16.5 MB, größtes Paket 239 KB, Median 73 KB
+Stand OSM: 2026-10-25
