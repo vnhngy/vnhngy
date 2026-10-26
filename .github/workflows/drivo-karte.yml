@@ -1,0 +1,67 @@
+name: Drivo-Kartenkacheln
+
+# Baut die Straßen- und Flusskacheln für die Karte in der App Drivo aus dem Deutschland-Auszug von OpenStreetMap.
+# Läuft bei Änderungen am Skript oder Workflow auf diesem Branch, oder von Hand („Run workflow“).
+on:
+  push:
+    branches: [drivo-karte]
+    paths: ['karte/make_tiles.py', '.github/workflows/drivo-karte.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: drivo-karte
+  cancel-in-progress: true
+
+jobs:
+  kacheln:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Werkzeuge installieren
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq osmium-tool
+          python -m pip install --quiet numpy
+          osmium --version | head -1
+          df -h / | tail -1
+
+      - name: Deutschland-Auszug laden (Geofabrik)
+        run: |
+          curl -fsSL --retry 3 --retry-delay 20 -o germany.osm.pbf https://download.geofabrik.de/europe/germany-latest.osm.pbf
+          ls -lh germany.osm.pbf
+          STAND=$(osmium fileinfo -g header.option.osmosis_replication_timestamp germany.osm.pbf | cut -c1-10)
+          echo "STAND=${STAND:-$(date +%F)}" >> "$GITHUB_ENV"
+
+      - name: Straßen und Flüsse herausfiltern
+        run: |
+          osmium tags-filter germany.osm.pbf \
+            w/highway=motorway,motorway_link,trunk,trunk_link,primary,primary_link,secondary,tertiary \
+            w/waterway=river,canal \
+            -o filtered.osm.pbf --overwrite
+          rm germany.osm.pbf
+          osmium export filtered.osm.pbf -f geojsonseq --geometry-types=linestring \
+            -x print_record_separator=false -o lines.geojsonseq --overwrite
+          ls -lh filtered.osm.pbf lines.geojsonseq
+
+      - name: Kacheln bauen
+        run: python karte/make_tiles.py lines.geojsonseq out "$STAND" | tee karte/stats.txt
+
+      - name: Ergebnis einchecken
+        run: |
+          tar -czf karte/drivo-osm.tar.gz -C out osm
+          ls -lh karte/drivo-osm.tar.gz
+          echo "Stand OSM: $STAND" >> karte/stats.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add karte/drivo-osm.tar.gz karte/stats.txt
+          git commit -m "Kartenkacheln Deutschland, OSM-Stand $STAND"
+          git push
