@@ -159,7 +159,7 @@ wizard.addEventListener('close', () => { if (!state.onboarded) closeWizard(); })
 /* ---------- Einfarbige Symbole statt Emojis ---------- */
 
 // Emojis in allen Texten (auch Übersetzungen) werden auf dem Bildschirm durch Linien-Symbole ersetzt.
-const EMOJI_ICONS = { '⛽': 'fuel', '📍': 'pin', '🔧': 'wrench', '🛠': 'wrench', '🚨': 'siren', '🚗': 'car', '📎': 'clip', '🛢': 'drop', '🔁': 'repeat', '🔄': 'refresh', '💾': 'save', '🛞': 'tire', '✅': 'checks', '🗺': 'map', '🧾': 'receipt', '🏆': 'trophy', '🏅': 'medal', '📅': 'calendar', '▶': 'play', '⬇': 'download', '📄': 'doc', '📁': 'folder', '📝': 'pen', '🖨': 'printer', '📞': 'phone', '👍': 'okcircle', '❄': 'snow', '☀': 'sun', '📊': 'chart', '📉': 'trend', '🚑': 'medic', '🚓': 'shield', '✨': 'sparkle', '🚶': 'walk', '📷': 'camera', '📸': 'camera', '💡': 'bulb', '🛰': 'gps', '🧳': 'suitcase', '🌸': 'leaf', '🏷': 'tag', '🕘': 'clock', '⏱': 'clock', '⏰': 'clock', '👤': 'user', '🗑': 'trash', '🌱': 'leaf', '🍃': 'leaf', '🛣': 'road', '📒': 'book', '👋': 'smile', '🎉': 'flag', '⚠': 'alert', '🎯': 'target', '🧭': 'compass', '🌳': 'tree', '🌍': 'globe', '🔒': 'lock', '🔑': 'key', '🚆': 'train', '🛡': 'shield', '🔎': 'search', '🔋': 'battery', '🌡': 'thermo', '🎤': 'mic', '🗓': 'calgrid', '🖼': 'image' };
+const EMOJI_ICONS = { '⛽': 'fuel', '📍': 'pin', '🔧': 'wrench', '🛠': 'wrench', '🚨': 'siren', '🚗': 'car', '📎': 'clip', '🛢': 'drop', '🔁': 'repeat', '🔄': 'refresh', '💾': 'save', '🛞': 'tire', '✅': 'checks', '🗺': 'map', '🧾': 'receipt', '🏆': 'trophy', '🏅': 'medal', '📅': 'calendar', '▶': 'play', '⬇': 'download', '📄': 'doc', '📁': 'folder', '📝': 'pen', '🖨': 'printer', '📞': 'phone', '👍': 'okcircle', '❄': 'snow', '☀': 'sun', '📊': 'chart', '📉': 'trend', '🚑': 'medic', '🚓': 'shield', '✨': 'sparkle', '🚶': 'walk', '📷': 'camera', '📸': 'camera', '💡': 'bulb', '🛰': 'gps', '🧳': 'suitcase', '🌸': 'leaf', '🏷': 'tag', '🕘': 'clock', '⏱': 'clock', '⏰': 'clock', '👤': 'user', '🗑': 'trash', '🌱': 'leaf', '🍃': 'leaf', '🛣': 'road', '📒': 'book', '👋': 'smile', '🎉': 'flag', '⚠': 'alert', '🎯': 'target', '🧭': 'compass', '🌳': 'tree', '🌍': 'globe', '🔒': 'lock', '🔑': 'key', '🚆': 'train', '🛡': 'shield', '🔎': 'search', '🔋': 'battery', '🌡': 'thermo', '🎤': 'mic', '🗓': 'calgrid', '🖼': 'image', '💳': 'card' };
 const EMOJI_RE = new RegExp(`(${Object.keys(EMOJI_ICONS).join('|')})[\uFE0E\uFE0F]?`, 'gu');
 const NO_SVG = new Set(['OPTION', 'TITLE', 'TEXTAREA', 'SCRIPT', 'STYLE']);
 
@@ -217,7 +217,7 @@ function setLang(l) {
 }
 
 let startView = 'start';
-try { startView = sessionStorage.getItem('autobuch-view') || 'start'; } catch (e) { /* egal */ }
+try { startView = sessionStorage.getItem('autobuch-view') || state.startView || 'start'; } catch (e) { startView = state.startView || 'start'; }
 initLang(state.lang);
 if (!state.carId) state.carId = uid(); // Fahrzeug-ID für ältere Daten nachtragen
 if (bookRecurring()) save();

@@ -7,7 +7,7 @@
 const STORE_KEY = 'autobuch-v1';
 // Versionsnummer nach dem Schema Haupt.Funktion.Korrektur: neue Funktionen 1.1.0, nur Fehlerkorrekturen 1.1.1.
 // Bei jedem Update zusammen mit VERSION in sw.js erhöhen und CHANGELOG in js/17-… ergänzen.
-const APP_VERSION = '1.2.0';
+const APP_VERSION = '1.3.0';
 // Vergleicht zwei Versionen; alte Nummern ohne Punkt („32“) gelten als 0.32.0
 const verParts = (v) => (/^\d+$/.test(String(v)) ? [0, +v, 0] : String(v).split('.').map(Number));
 const cmpVer = (a, b) => { const x = verParts(a), y = verParts(b); for (let i = 0; i < 3; i++) if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) - (y[i] || 0); return 0; };
@@ -29,7 +29,7 @@ const unitOf = (grade) => gradeOf(grade).unit || 'l';
 const consUnit = () => unitOf(defaultGrade()) + '/100';
 
 // Daten, die zu einem Fahrzeug gehören. Beim Wechsel des Autos werden genau diese Felder getauscht.
-const CAR_KEYS = ['car', 'fuel', 'costs', 'maint', 'trips', 'tires', 'mounted', 'drives', 'accidents', 'parking', 'docs', 'recurring', 'fines', 'values', 'logs', 'notes', 'budget', 'damages', 'leasing', 'specs', 'handovers', 'issues', 'insKm', 'supplies', 'care', 'pool', 'parts'];
+const CAR_KEYS = ['car', 'fuel', 'costs', 'maint', 'trips', 'tires', 'mounted', 'drives', 'accidents', 'parking', 'docs', 'recurring', 'fines', 'values', 'logs', 'notes', 'budget', 'damages', 'leasing', 'specs', 'handovers', 'issues', 'insKm', 'supplies', 'care', 'pool', 'parts', 'appointments', 'consGoal'];
 
 // Richtwerte für eine Mercedes A-Klasse W176 (Baujahr 2015). Im Serviceheft prüfen.
 function defaultMaint(fuel) {
@@ -56,7 +56,7 @@ function freshState() {
     drives: [], documents: [],
     docs: { plate: '', vin: '', insurer: '', policy: '', claimPhone: '', breakdown: '' }, accidents: [],
     lang: null, onboarded: false, checks: {}, garages: [],
-    recurring: [], fines: [], values: [], logs: [], notes: [], budget: { monthly: null }, damages: [], leasing: null, specs: {}, handovers: [], issues: [], insKm: null, supplies: [], care: {}, parts: [], seenVersion: null, pool: { people: [], rate: null }, quizBest: 0, lock: null, dismissed: [],
+    recurring: [], fines: [], values: [], logs: [], notes: [], budget: { monthly: null }, damages: [], leasing: null, specs: {}, handovers: [], issues: [], insKm: null, supplies: [], care: {}, parts: [], appointments: [], consGoal: null, cards: [], startView: 'start', seenVersion: null, pool: { people: [], rate: null }, quizBest: 0, lock: null, dismissed: [],
     carId: null, otherCars: {}, lastBackup: null, backupSnooze: null,
     home: null, // { order, hidden, tiles } – Aufbau der Übersicht
   };
@@ -268,6 +268,7 @@ function render() {
   renderExtras6();
   renderExtras7();
   renderExtras8();
+  renderExtras9();
   renderGuides();
   const lb = $('#lastBackup');
   lb.textContent = state.lastBackup ? tr('Letzte Sicherung: {date}', { date: fmtDate(state.lastBackup) }) : tr('Noch keine Sicherung angelegt.');
@@ -326,6 +327,7 @@ function render() {
   if (document.activeElement?.form !== pf) {
     pf.key.value = state.prices.key || ''; pf.type.value = state.prices.type; pf.rad.value = String(state.prices.rad);
   }
+  $('#startViewSel').value = state.startView || 'start';
   document.querySelectorAll('#themeSeg button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.theme === state.theme)));
   document.querySelectorAll('#langSeg button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === LANG)));
 }

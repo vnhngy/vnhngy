@@ -77,6 +77,13 @@ Die App hieß früher **Autobuch**. Der Ordner, die Web-Adresse und der interne 
 - **Ersatzteile:** Teilenummern, Bezugsquelle und Preis im Steckbrief
 - **Spritpreis-Verlauf:** Literpreis der letzten 24 Tankfüllungen
 - **Checkliste Gebrauchtwagenkauf**
+- **Heute-Karte:** Begrüßung mit Tankreichweite, nächstem Termin, Parkuhr und Budget
+- **Hinweise kompakt:** höchstens zwei offen, der Rest zusammengeklappt; als Bereich verschiebbar
+- **Monatsrückblick & Monatsvergleich:** Kosten, km und Tankfüllungen gegenüber dem Vormonat
+- **Werkstatttermine:** mit Uhrzeit und Werkstatt, Hinweis am Vortag, im Kalender-Export mit Ort
+- **Kundenkarten:** Nummern als Code-128-Strichcode (mit zxing geprüft) zum Vorzeigen an der Kasse
+- **Verbrauchsziel:** Monatsziel mit den letzten 6 Monaten und Serien
+- **Startansicht:** wählbar unter Mehr → Darstellung
 - **Einrichtungs-Assistent:** erscheint beim ersten Start (Sprache, Auto, Wartung, Reifen, Notfall);
   jederzeit erneut unter **Mehr → Einrichtungs-Assistent**
 - **Tanken:** Verbrauch (l/100 km) zwischen vollen Tankfüllungen, Ø-Literpreis
@@ -114,7 +121,7 @@ wird die Sprache des iPhones übernommen. Zahlen- und Datumsformate folgen der S
 
 Dateien:
 - `index.html`: Aufbau, Design und Symbole
-- `js/01-…` bis `js/18-…`: Programmlogik, nach Bereichen aufgeteilt und in dieser Reihenfolge geladen;
+- `js/01-…` bis `js/19-…`: Programmlogik, nach Bereichen aufgeteilt und in dieser Reihenfolge geladen;
   alle sichtbaren Texte laufen über `tr('deutscher Text')`
 - `icon-quelle.svg`: Vorlage für das App-Symbol (daraus entstehen `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`)
 - `i18n.js`: Sprachumschaltung und Übersetzungen (`T`: `'Deutsch': ['English', 'Tiếng Việt']`)

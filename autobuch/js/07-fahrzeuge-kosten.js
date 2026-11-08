@@ -111,7 +111,8 @@ function renderNotices() {
   if (bn) out.push(bn);
   const ln = leasingNotice();
   if (ln) out.push(ln);
-  out.push(seasonNotices(), insKmNotice(), supplyNotice(), warrantyNotice());
+  // Reihenfolge = Wichtigkeit; allgemeine Saison-Tipps kommen ganz zum Schluss
+  out.push(apptNotice(), insKmNotice(), warrantyNotice(), supplyNotice());
   const open = state.fines.filter((f) => !f.paid && f.due && daysUntil(f.due) <= 7);
   if (open.length) {
     out.push(`<div class="card notice"><span class="ico">🧾</span><div class="grow">
@@ -128,7 +129,12 @@ function renderNotices() {
       <div class="maint-btns"><button class="small primary" data-backup="now">${tr('💾 Jetzt sichern')}</button><button class="small" data-backup="later">${tr('Später')}</button></div>
     </div></div>`);
   }
-  $('#notices').innerHTML = out.join('');
+  out.push(seasonNotices());
+  // Höchstens zwei Hinweise offen zeigen, den Rest zusammenklappen, damit die Übersicht nicht zugeschüttet wird
+  const list = out.join('').split(/(?=<div class="card notice">)/).filter(Boolean);
+  const wasOpen = $('#moreNotices')?.open;
+  $('#notices').innerHTML = list.slice(0, 2).join('') + (list.length > 2
+    ? `<details class="more-notices" id="moreNotices"${wasOpen ? ' open' : ''}><summary>${tr(list.length === 3 ? '1 weiterer Hinweis' : '{n} weitere Hinweise', { n: list.length - 2 })}</summary>${list.slice(2).join('')}</details>` : '');
 }
 
 /* ---------- Wiederkehrende Kosten ---------- */

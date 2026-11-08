@@ -6,6 +6,7 @@
 /* ---------- Neu in dieser Version ---------- */
 
 const CHANGELOG = [
+  ['1.3.0', ['„Heute“-Karte auf der Übersicht', 'Monatsrückblick und Monatsvergleich', 'Werkstatttermine mit Erinnerung und Kalender', 'Kundenkarten mit Strichcode zum Vorzeigen', 'Verbrauchsziel pro Monat', 'Startansicht wählbar', 'Hinweise kompakter und nach Wichtigkeit sortiert']],
   ['1.2.0', ['Neuer Name: Autobuch heißt jetzt Drivo', 'Neues Logo']],
   ['1.1.2', ['Übersicht aufgeräumt: Termine und Chronik findest du jetzt im Kalender (oben umschalten)']],
   ['1.1.1', ['Fahrzeugfoto wird schärfer gespeichert']],

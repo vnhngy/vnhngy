@@ -186,12 +186,18 @@ function showView(v) {
 }
 
 document.addEventListener('click', (e) => {
-  const t = e.target.closest('button, li[data-edit-fuel], li[data-edit-cost], li[data-edit-trip], [data-edit-acc], li[data-drive], li[data-edit-doc], li[data-edit-rec], li[data-edit-value], li[data-edit-log], li[data-edit-note], li[data-agenda], li[data-edit-dmg], .stat[data-open], li[data-hist-item], li[data-handover], li[data-edit-supply], [data-care-edit], li[data-edit-part], li[data-cal-item]');
+  const t = e.target.closest('button, li[data-edit-fuel], li[data-edit-cost], li[data-edit-trip], [data-edit-acc], li[data-drive], li[data-edit-doc], li[data-edit-rec], li[data-edit-value], li[data-edit-log], li[data-edit-note], li[data-agenda], li[data-edit-dmg], .stat[data-open], li[data-hist-item], li[data-handover], li[data-edit-supply], [data-care-edit], li[data-edit-part], li[data-cal-item], li[data-edit-appt], [data-show-card]');
   if (!t) return;
   if (t.dataset.view) { showView(t.dataset.view); if (t.dataset.sub) showSub(t.dataset.sub); return; }
   if (t.dataset.open === 'fuel') return fuelForm();
   if (t.dataset.open === 'cost') return costForm();
   if (t.dataset.open === 'budget') return budgetForm();
+  if (t.dataset.open === 'appt') return apptForm();
+  if (t.dataset.editAppt) return apptForm(state.appointments.find((x) => x.id === t.dataset.editAppt));
+  if (t.dataset.open === 'card') return cardForm();
+  if (t.dataset.editCard) return cardForm(state.cards.find((x) => x.id === t.dataset.editCard));
+  if (t.dataset.showCard) return showCard(state.cards.find((x) => x.id === t.dataset.showCard));
+  if (t.dataset.open === 'goal') return goalForm();
   if (t.dataset.gal) { galFilter = t.dataset.gal; return renderGallery(); }
   if (t.dataset.calDay) { calDay = t.dataset.calDay; return renderCalendar(); }
   if (t.dataset.calShift) return calShift(Number(t.dataset.calShift));
@@ -334,6 +340,7 @@ $('#priceForm').addEventListener('submit', (e) => {
   alert(tr('Gespeichert'));
 });
 
+$('#startViewSel').addEventListener('change', (e) => { state.startView = e.target.value; save(); });
 $('#driveBtn').addEventListener('click', startDrive);
 $('#printBtn').addEventListener('click', () => window.print());
 $('#dStop').addEventListener('click', () => { if (confirm(tr('Fahrt beenden und speichern?'))) stopDrive(); });

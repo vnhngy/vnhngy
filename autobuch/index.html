@@ -333,6 +333,29 @@
   .warn-text { color: var(--warn); }
   .bad-text { color: var(--bad); }
   .good-text { color: var(--good); }
+  .more-notices { margin: -4px 0 12px; }
+  #notices .notice .meta { font-size: 14px; line-height: 1.4; }
+  #notices .notice .title { font-weight: 700; }
+  .more-notices summary { color: var(--accent); font-weight: 600; font-size: 14px; padding: 4px 6px 8px; cursor: pointer; list-style: none; }
+  .more-notices summary::-webkit-details-marker { display: none; }
+  .today-card { padding-top: 14px; }
+  .today-hello { font-size: 22px; font-weight: 800; letter-spacing: -.01em; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .today-hello span { font-size: 14px; font-weight: 500; color: var(--muted); }
+  .today-lines { margin-top: 6px; }
+  .today-lines button { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: none; border: 0; box-shadow: none; padding: 9px 0; border-top: 1px solid var(--line); border-radius: 0; font-size: 15px; min-height: 0; }
+  .today-lines button:first-child { border-top: 0; }
+  .today-ico { width: 22px; text-align: center; color: var(--accent); flex: none; }
+  .today-lines .chev { color: var(--muted); }
+  .goal-months { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin: 10px 0 6px; text-align: center; }
+  .goal-months div { border-radius: 12px; padding: 8px 2px; background: var(--surface-2); border: 1px solid var(--edge); display: flex; flex-direction: column; gap: 2px; }
+  .goal-months b { font-size: 14px; } .goal-months span { font-size: 11px; color: var(--muted); }
+  .goal-months .ok { border-color: var(--good); background: color-mix(in srgb, var(--good) 14%, var(--surface-2)); }
+  .goal-months .miss { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 12%, var(--surface-2)); }
+  dialog.card-dlg { margin: 0; width: 100vw; max-width: 100vw; height: 100vh; max-height: 100vh; border-radius: 0; border: 0; background: #fff; color: #10141b; display: none; }
+  dialog.card-dlg[open] { display: grid; place-items: center; animation: none; }
+  .card-show { width: min(420px, 90vw); text-align: center; }
+  .card-show .barcode { width: 100%; height: 130px; margin: 22px 0 10px; display: block; }
+  .card-num { font-size: 22px; font-weight: 700; letter-spacing: .08em; font-variant-numeric: tabular-nums; margin-bottom: 8px; }
   .park-photo { display: block; width: 100%; max-height: 180px; object-fit: cover; border-radius: 14px; margin-top: 8px; }
   .gal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .gal-item { margin: 0; }
@@ -624,6 +647,7 @@
   <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></symbol>
   <symbol id="i-calgrid" viewBox="0 0 24 24"><path d="M4 5h16v16H4z"/><path d="M4 10h16"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 17.5h.01"/><path d="M12 17.5h.01"/></symbol>
   <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/><path d="M7 15h4"/></symbol>
   <symbol id="i-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 14a4.5 4.5 0 0 0 7 0"/><path d="M9 9.5v.01"/><path d="M15 9.5v.01"/></symbol>
 </defs></svg>
 <header>
@@ -635,8 +659,10 @@
 <main>
   <!-- Übersicht -->
   <section class="view active" id="view-start">
-    <div id="notices" role="status" aria-live="polite"></div>
+    <div id="notices" data-sec="notices" role="status" aria-live="polite"></div>
     <div data-sec="car" id="carHero"></div>
+    <div class="card today-card" data-sec="today" id="todayCard"></div>
+    <div data-sec="month"><div class="card" id="monthCard" hidden></div></div>
     <button class="sos-entry" data-sec="sos" data-view="help">🚨 Notfall, Unfall &amp; Warnleuchten</button>
     <div class="tiles card" data-sec="tiles">
       <div class="tile-group">
@@ -725,6 +751,15 @@
       <button data-open="fuelCsv">⬇︎ Export (Excel)</button>
     </div>
     <div class="card">
+      <h2>Verbrauchsziel</h2>
+      <div id="goalBody"></div>
+    </div>
+    <div class="card">
+      <h2>Kundenkarten</h2>
+      <ul class="list" id="cardList"></ul>
+      <button data-open="card" style="width:100%;margin-top:10px">💳 Karte hinzufügen</button>
+    </div>
+    <div class="card">
       <h2>Spritpreis-Verlauf</h2>
       <div class="chart" id="priceTrend"></div>
     </div>
@@ -765,6 +800,11 @@
       <button data-open="issuesShare" id="issueShare" style="width:100%;margin-top:10px">Liste an die Werkstatt schicken</button>
     </div>
     <div class="card">
+      <h2>Werkstatttermine</h2>
+      <ul class="list" id="apptList"></ul>
+      <button data-open="appt" style="width:100%;margin-top:10px">📅 Werkstatttermin eintragen</button>
+    </div>
+    <div class="card">
       <h2>Wartung &amp; Termine</h2>
       <ul class="list" id="maintList"></ul>
     </div>
@@ -802,6 +842,10 @@
     <div class="card">
       <h2>Kosten pro Monat</h2>
       <div class="chart" id="statChart"></div>
+    </div>
+    <div class="card">
+      <h2>Monatsvergleich</h2>
+      <div id="statMonth"></div>
     </div>
     <div class="card">
       <h2>Verbrauch Sommer / Winter</h2>
@@ -1325,6 +1369,9 @@
       </div>
       <p class="note" style="margin-bottom:6px">Akzentfarbe (gilt für das ausgewählte Fahrzeug)</p>
       <div class="swatches" id="accentSeg"></div>
+      <label class="field" style="margin-top:14px"><span>Beim Öffnen starten mit</span><select id="startViewSel">
+        <option value="start">Übersicht</option><option value="fuel">Tanken</option><option value="trips">Fahrtenbuch</option><option value="maint">Wartung</option><option value="costs">Kosten</option>
+      </select></label>
     </div>
     <div class="card">
       <h2>App-Sperre</h2>
@@ -1379,6 +1426,7 @@
 <dialog id="wizard" class="wizard"><form method="dialog" id="wizardForm"></form></dialog>
 <dialog id="viewer" class="viewer"><img alt="Foto"></dialog>
 <dialog id="story" class="story" aria-label="Dein Autojahr"></dialog>
+<dialog id="cardDlg" class="card-dlg" aria-label="Kundenkarte"></dialog>
 <dialog id="driveMode" class="drive-mode" aria-label="Fahrmodus"></dialog>
 <dialog id="lockDlg" class="lock-dlg" aria-label="Drivo ist gesperrt">
   <div class="lock-box">
@@ -1412,6 +1460,7 @@
 <script src="js/15-versicherung-pannen-gewohnheiten.js"></script>
 <script src="js/16-pflege-gemeinschaft-quiz.js"></script>
 <script src="js/17-neu-galerie-kalender.js"></script>
-<script src="js/18-assistent-start.js"></script>
+<script src="js/18-heute-karten-termine.js"></script>
+<script src="js/19-assistent-start.js"></script>
 </body>
 </html>

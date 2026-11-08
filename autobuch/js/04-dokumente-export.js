@@ -211,6 +211,16 @@ function calendarFile() {
       'BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${icsText(title)}`, 'TRIGGER:-P3D', 'END:VALARM', 'END:VEVENT');
     count++;
   });
+  state.appointments.filter((a) => a.date >= today()).forEach((a) => {
+    const g = state.garages.find((x) => x.id === a.garageId);
+    const title = `${state.car.name || tr('Auto')}: ${a.title || tr('Werkstatttermin')}`;
+    const t = (a.time || '08:00').replace(':', '') + '00';
+    const endH = String(Math.min(23, Number((a.time || '08:00').slice(0, 2)) + 1)).padStart(2, '0') + t.slice(2);
+    lines.push('BEGIN:VEVENT', `UID:appt-${a.id}@autobuch`, `DTSTAMP:${stamp}`, `DTSTART:${ymd(a.date)}T${t}`, `DTEND:${ymd(a.date)}T${endH}`,
+      `SUMMARY:${icsText(title)}`, ...(g?.address ? [`LOCATION:${icsText(g.name + ', ' + g.address)}`] : []), `DESCRIPTION:${icsText([a.note, g?.phone].filter(Boolean).join(' · ') + ' (Drivo)')}`,
+      'BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${icsText(title)}`, 'TRIGGER:-PT2H', 'END:VALARM', 'END:VEVENT');
+    count++;
+  });
   state.documents.filter((d) => d.expires && d.expires >= today()).forEach((d) => {
     const title = tr('{doc} läuft ab', { doc: d.title || tr(d.type) });
     lines.push('BEGIN:VEVENT', `UID:doc-${d.id}-${ymd(d.expires)}@autobuch`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${ymd(d.expires)}`, `DTEND;VALUE=DATE:${ymd(addDays(1, d.expires))}`,

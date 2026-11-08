@@ -171,6 +171,12 @@ function seasonNotices() {
     const key = `${y}-${id}-${state.carId}`;
     if (!(state.dismissed || []).includes(key)) list.push({ key, icon, title, meta, extra });
   };
+  // Fristen mit Datum zuerst, danach die allgemeinen Saison-Tipps
+  const insuranceDue = `${y}-11-30`, left = daysUntil(insuranceDue);
+  if (left >= 0 && left <= 46) {
+    add('insurance', '🛡', tr('Kfz-Versicherung: Wechsel bis 30. November'),
+      tr('Noch {n} Tage. Läuft dein Vertrag zum 1. Januar (das ist meist so), kannst du bis zum 30.11. kündigen. Ein Vergleich spart oft über 100 € im Jahr.', { n: left }));
+  }
   if ((m === 10 || m === 11) && !['Winter', 'Ganzjahr'].includes(mounted?.season)) {
     add('winter-tires', '❄', tr('Zeit für Winterreifen'), tr('Faustregel: von O bis O (Oktober bis Ostern). Bei Glätte, Schnee oder Eis sind Winterreifen Pflicht.'),
       `<button class="small" data-view="maint" data-sub="reifen">${tr('Reifen ansehen')}</button>`);
@@ -183,11 +189,6 @@ function seasonNotices() {
   if (m === 3 || m === 4) add('spring', '🌱', tr('Frühjahrs-Check'), tr('Salz abwaschen (mit Unterbodenwäsche), Klimaanlage einmal laufen lassen, Wischerblätter prüfen.'));
   if (m === 6 || m === 7) add('holiday', '🧳', tr('Urlaubs-Check'), tr('Vor der großen Fahrt: Reifendruck für volle Beladung, Öl, Licht und Warnweste prüfen.'),
     `<button class="small" data-view="checks">${tr('Checkliste öffnen')}</button>`);
-  const insuranceDue = `${y}-11-30`, left = daysUntil(insuranceDue);
-  if (left >= 0 && left <= 46) {
-    add('insurance', '🛡', tr('Kfz-Versicherung: Wechsel bis 30. November'),
-      tr('Noch {n} Tage. Läuft dein Vertrag zum 1. Januar (das ist meist so), kannst du bis zum 30.11. kündigen. Ein Vergleich spart oft über 100 € im Jahr.', { n: left }));
-  }
   return list.map((x) => `<div class="card notice"><span class="ico">${x.icon}</span><div class="grow">
     <div class="title">${x.title}</div><div class="meta">${x.meta}</div>
     <div class="maint-btns">${x.extra}<button class="small" data-dismiss="${x.key}">${tr('Erledigt')}</button></div></div></div>`).join('');

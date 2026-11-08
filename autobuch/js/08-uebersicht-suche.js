@@ -39,7 +39,7 @@ function renderForecast() {
 /* ---------- Übersicht anpassen ---------- */
 
 const HOME_SECTIONS = [
-  ['car', 'Fahrzeugbild'], ['sos', 'Notfall-Knopf'], ['tiles', 'Werkzeug-Kacheln'], ['stats', 'Kennzahlen'], ['actions', 'Tanken & Ausgabe'],
+  ['car', 'Fahrzeugbild'], ['today', 'Heute'], ['notices', 'Hinweise'], ['month', 'Monatsrückblick'], ['sos', 'Notfall-Knopf'], ['tiles', 'Werkzeug-Kacheln'], ['stats', 'Kennzahlen'], ['actions', 'Tanken & Ausgabe'],
   ['forecast', 'Tank-Prognose'], ['parking', 'Parkplatz'], ['due', 'Als Nächstes fällig'], ['chart', 'Kosten der letzten 12 Monate'],
 ];
 const homeCfg = () => {

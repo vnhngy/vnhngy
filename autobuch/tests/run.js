@@ -300,7 +300,7 @@ test('Neue Formulare sind übersetzt', async ({ page }) => {
   const missing = await page.evaluate(async () => {
     setLang('en'); MISSING.clear();
     state.trips.push({ id: 't1', date: today(), type: 'Privat', from: 'A', to: 'B', startKm: 1, endKm: 2, purpose: '', partner: '' });
-    fuelForm(); sheet.close(); budgetForm(); sheet.close(); noteForm(); sheet.close(); tripForm(state.trips[0]); sheet.close(); damageForm(); sheet.close(); leasingForm(); sheet.close(); commuteForm(); sheet.close(); specsForm(); sheet.close(); lockscreenSheet(); sheet.close(); handoverForm(); sheet.close(); travelForm(); sheet.close(); lockSetup(); sheet.close(); taxForm(); sheet.close(); priceTargetForm(); sheet.close(); csvImportSheet(); sheet.close(); dataCheckSheet(); sheet.close(); openDriveMode(); document.querySelector('#driveMode').close(); insKmForm(); sheet.close(); supplyForm(); sheet.close(); repairForm(); sheet.close(); state.garages.push({ id: 'g', name: 'X' }); garageForm(state.garages[0]); sheet.close(); costForm(); sheet.close(); careForm('wash'); sheet.close(); poolForm(); sheet.close(); loadForm(); sheet.close(); quizSheet(); sheet.close(); state.pool = { people: ['A'], rate: null }; save(); partForm(); sheet.close(); whatsNewSheet(true); sheet.close(); showView('gallery'); showView('calendar'); state.leasing = { start: addDays(-400), end: addDays(400), kmStart: 1, kmPerYear: 10, rate: 5 };
+    fuelForm(); sheet.close(); budgetForm(); sheet.close(); noteForm(); sheet.close(); tripForm(state.trips[0]); sheet.close(); damageForm(); sheet.close(); leasingForm(); sheet.close(); commuteForm(); sheet.close(); specsForm(); sheet.close(); lockscreenSheet(); sheet.close(); handoverForm(); sheet.close(); travelForm(); sheet.close(); lockSetup(); sheet.close(); taxForm(); sheet.close(); priceTargetForm(); sheet.close(); csvImportSheet(); sheet.close(); dataCheckSheet(); sheet.close(); openDriveMode(); document.querySelector('#driveMode').close(); insKmForm(); sheet.close(); supplyForm(); sheet.close(); repairForm(); sheet.close(); state.garages.push({ id: 'g', name: 'X' }); garageForm(state.garages[0]); sheet.close(); costForm(); sheet.close(); careForm('wash'); sheet.close(); poolForm(); sheet.close(); loadForm(); sheet.close(); quizSheet(); sheet.close(); state.pool = { people: ['A'], rate: null }; save(); partForm(); sheet.close(); whatsNewSheet(true); sheet.close(); apptForm(); sheet.close(); cardForm(); sheet.close(); goalForm(); sheet.close(); showView('gallery'); showView('calendar'); state.leasing = { start: addDays(-400), end: addDays(400), kmStart: 1, kmPerYear: 10, rate: 5 };
     state.budget = { monthly: 10 }; save();
     await buildYearReport(String(new Date().getFullYear()));
     openStory(String(new Date().getFullYear())); for (let i = 0; i < story.cards.length; i++) { story.i = i; drawStory(); } document.querySelector('#story').close();
@@ -557,11 +557,12 @@ test('Saison- und Versicherungs-Hinweise im Oktober', async ({ page }) => {
   await page.clock.setFixedTime(new Date('2026-10-20T10:00:00'));
   await page.reload();
   await seed(page);
-  const n = await page.innerText('#notices');
+  const n = await page.textContent('#notices'); // auch zugeklappte Hinweise
   assert.match(n, /Winterreifen/);
   assert.match(n, /30\. November/);
+  await page.evaluate(() => { const d = document.querySelector('#moreNotices'); if (d) d.open = true; });
   await page.click('#notices button[data-dismiss*="winter-tires"]');
-  assert.doesNotMatch(await page.innerText('#notices'), /Zeit für Winterreifen/);
+  assert.doesNotMatch(await page.textContent('#notices'), /Zeit für Winterreifen/);
   assert.ok(await page.evaluate(() => agendaItems().some((x) => x.date === '2026-11-30')));
 });
 
@@ -861,6 +862,60 @@ test('Ersatzteile, Spritpreis-Verlauf und Gebrauchtwagen-Checkliste', async ({ p
   assert.equal(await page.evaluate(() => document.querySelectorAll('#priceTrend circle').length), 2);
   await page.evaluate(() => showView('checks'));
   assert.match(await page.innerText('#checkLists'), /Gebrauchtwagenkauf/);
+});
+
+test('Heute-Karte, Monatsvergleich und Startansicht', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => { state.parking = { lat: null, lng: null, time: Date.now(), note: '', until: Date.now() + 20 * 60000 }; save(); });
+  const t = await page.innerText('#todayCard');
+  assert.match(t, /Guten (Morgen|Tag|Abend)|Gute Nacht/);
+  assert.match(t, /Parkuhr: noch (19|20) Min/);
+  assert.match(t, /Tank reicht noch/);
+  await page.evaluate(() => { state.appointments.push({ id: 'a1', date: addDays(2), time: '08:00', garageId: '', title: 'Service B', note: '' }); save(); });
+  assert.equal((await page.innerText('#todayCard')).match(/Service B/g).length, 1); // nicht doppelt
+  assert.match(await page.evaluate(() => document.querySelector('#statMonth').innerText), /Kosten/);
+  await page.evaluate(() => { showView('more'); });
+  await page.selectOption('#startViewSel', 'fuel');
+  await page.evaluate(() => sessionStorage.clear());
+  await page.reload();
+  assert.equal(await page.evaluate(() => currentView), 'fuel');
+});
+
+test('Werkstatttermine: Liste, Hinweis, Termine und Kalenderdatei', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => { state.garages.push({ id: 'g1', name: 'Autohaus Süd', phone: '07131 123', address: 'Hauptstr. 1, Heilbronn', hours: '', contact: '', note: '' }); save(); showView('maint'); });
+  await page.click('#view-maint button[data-open="appt"]');
+  await page.fill('#sheetForm [name=title]', 'Service B');
+  await page.evaluate(() => { sheetForm.date.value = addDays(1); sheetForm.time.value = '07:30'; });
+  await page.click('#sheetForm button.primary');
+  assert.match(await page.innerText('#apptList'), /Service B[\s\S]*Autohaus Süd[\s\S]*Morgen/);
+  assert.match(await page.innerText('#notices'), /Morgen Werkstatttermin/);
+  assert.ok(await page.evaluate(() => agendaItems().some((x) => x.title === 'Service B')));
+  const ics = await page.evaluate(() => calendarFile());
+  assert.match(ics, /DTSTART:\d{8}T073000/);
+  assert.match(ics, /LOCATION:Autohaus Süd\\, Hauptstr\. 1\\, Heilbronn/);
+});
+
+test('Kundenkarten mit Strichcode und Verbrauchsziel', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => showView('fuel'));
+  await page.click('#view-fuel button[data-open="card"]');
+  await page.fill('#sheetForm [name=name]', 'Payback');
+  await page.fill('#sheetForm [name=number]', '3086012345678901');
+  await page.click('#sheetForm button.primary');
+  await page.click('#cardList [data-show-card]');
+  assert.equal(await page.evaluate(() => document.querySelector('#cardDlg').open), true);
+  const bars = await page.evaluate(() => document.querySelectorAll('#cardDlg svg.barcode rect').length);
+  assert.ok(bars > 30, 'Strichcode gezeichnet: ' + bars);
+  const c = await page.evaluate(() => code128('3086012345678901'));
+  assert.ok(c.startsWith('211214') && c.endsWith('2331112'));
+  await page.click('#cardDlg button');
+
+  await page.click('#goalBody button[data-open="goal"]');
+  await page.fill('#sheetForm [name=target]', '6');
+  await page.click('#sheetForm button.primary');
+  assert.match(await page.innerText('#goalBody'), /Ziel: unter 6,0/);
+  assert.equal(await page.evaluate(() => document.querySelectorAll('#goalBody .goal-months > div').length), 6);
 });
 
 test('Keine bunten Emojis auf dem Bildschirm', async ({ page }) => {
