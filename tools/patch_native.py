@@ -72,7 +72,7 @@ def android():
     buildTypes {""", 1)
         t = re.sub(r"(release\s*\{)", r"\1\n            signingConfig signingConfigs.carrowRelease", t, count=1)
     open(g, "w", encoding="utf-8").write(t)
-    # MainActivity: Rand-bis-Rand einschalten, damit Capacitor die sicheren Ränder als CSS-Variablen liefert
+    # MainActivity: Rand-bis-Rand einschalten (Capacitor 8, System Bars). Erst nach super.onCreate, sonst bleibt die Titelleiste des Startbilds stehen.
     pkg_dir = os.path.join(base, "src", "main", "java", *APP_ID.split("."))
     ma = os.path.join(pkg_dir, "MainActivity.java")
     must(os.path.exists(ma), f"{ma} fehlt.")
@@ -85,8 +85,8 @@ import com.getcapacitor.BridgeActivity;
 public class MainActivity extends BridgeActivity {{
     @Override
     public void onCreate(Bundle savedInstanceState) {{
+        super.onCreate(savedInstanceState);   // zuerst: setzt das App-Design ohne Titelleiste
         EdgeToEdge.enable(this);
-        super.onCreate(savedInstanceState);
     }}
 }}
 """)

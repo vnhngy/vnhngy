@@ -89,13 +89,10 @@ sub('const DS_NAME = "Cong Vinh Nguyen", DS_ADDR = "Kehrhüttenstraße 36, 74078
 # ---------- 10. Version ----------
 sub('const APP_VER = "1.0.0";', f'const APP_VER = {json.dumps(VER)};')
 
-# ---------- 11. Sichere Ränder: auf Android liefert Capacitor --safe-area-inset-* (ältere WebViews kennen env() nicht) ----------
-n_env = 0
-def env_fix(m):
-    global n_env; n_env += 1
-    side, fb = m.group(1), (m.group(2) or "0px").strip()
-    return f"var(--safe-area-inset-{side},env(safe-area-inset-{side},{fb}))"
-src = re.sub(r"env\(safe-area-inset-(top|bottom|left|right)(?:,([^()]*))?\)", env_fix, src)
+# ---------- 11. Sichere Ränder ----------
+# Bleiben env(safe-area-inset-*): Capacitor 8 (System Bars, insetsHandling "native") polstert auf älteren
+# Android-WebViews die Ansicht selbst, auf neuen liefert env() die richtigen Werte; iOS kennt env() ohnehin.
+n_env = len(re.findall(r"env\(safe-area-inset-", src))
 
 # ---------- 12. Anleitung: nur mit Videos/Bildern im neuen Namen (media/tut), sonst ausblenden ----------
 TUT = os.path.join(ROOT, "media", "tut")
@@ -125,7 +122,7 @@ cap = {
   "backgroundColor": CFG["colors"]["head"],
   "ios": {"contentInset": "never", "backgroundColor": CFG["colors"]["head"], "scrollEnabled": True},
   "android": {"backgroundColor": CFG["colors"]["head"]},
-  "plugins": {"SystemBars": {"insetsHandling": "css", "style": "DARK", "initialViewportFitValueHint": "cover"}},
+  "plugins": {"SystemBars": {"insetsHandling": "native", "style": "DARK", "initialViewportFitValueHint": "cover"}},
 }
 json.dump(cap, open(os.path.join(ROOT, "capacitor.config.json"), "w"), indent=2)
 print(f"Fertig: {NAME} {VER} ({APP_ID}) · Name {n_brand}× ersetzt · {n_env} Sicherheitsränder · Anleitung {'dabei' if has_tut else 'ausgeblendet'} · www/ {sum(len(f) for _, _, f in os.walk(WWW))} Dateien")
