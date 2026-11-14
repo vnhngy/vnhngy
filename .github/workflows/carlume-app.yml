@@ -26,6 +26,8 @@ jobs:
   android:
     runs-on: ubuntu-latest
     timeout-minutes: 40
+    permissions:
+      contents: write
     env:
       HAS_KEY: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
     steps:
@@ -53,6 +55,16 @@ jobs:
           name: carlume-android-test-apk
           path: android/app/build/outputs/apk/debug/*.apk
           retention-days: 30
+      - name: Test-APK in den Branch drivo-app-apk legen
+        run: |
+          set -e
+          NAME=$(python3 -c "import json;c=json.load(open('app.config.json'));print(c['name'].lower()+'-'+c['version'])")
+          mkdir -p "$RUNNER_TEMP/apk" && cp android/app/build/outputs/apk/debug/app-debug.apk "$RUNNER_TEMP/apk/$NAME-test.apk"
+          cd "$RUNNER_TEMP/apk"
+          echo "Android-Testversion $NAME (Bau ${{ github.run_number }}, ${{ github.sha }}). Installieren: Datei aufs Android-Handy, öffnen, Installation aus unbekannten Quellen erlauben." > README.txt
+          git init -q -b drivo-app-apk; git config user.name "github-actions"; git config user.email "github-actions@users.noreply.github.com"
+          git add -A; git commit -qm "Test-APK $NAME (Bau ${{ github.run_number }})"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" drivo-app-apk
       - name: Play-Store-Datei (AAB) bauen und signieren
         if: ${{ inputs.release && env.HAS_KEY == 'true' }}
         env:
