@@ -1,4 +1,4 @@
-# Carrow – Handy-App (iPhone und Android)
+# Carmint – Handy-App (iPhone und Android)
 
 Die App entsteht aus der Web-Fassung (Claude-Artifact) und wird mit [Capacitor](https://capacitorjs.com) zu einer echten App für den App Store und Google Play.
 
@@ -10,7 +10,7 @@ Die App entsteht aus der Web-Fassung (Claude-Artifact) und wird mit [Capacitor](
 
 | Pfad | Inhalt |
 |---|---|
-| `app.config.json` | Name, App-Kennung, Version, Betreiber-Angaben – **hier den endgültigen Namen eintragen** |
+| `app.config.json` | Name (Carmint), App-Kennung (de.vinhnguyen.carmint), Version, Betreiber-Angaben |
 | `src/source.html` | Web-Fassung, gespeichert aus dem Artifact |
 | `src/app-runtime.js` | Ersatz für die Claude-Laufzeit: Speicher auf dem Gerät, Server, Fotos, Teilen, Links, Zurück-Taste |
 | `src/privacy.de.html`, `src/privacy.en.html` | Datenschutzerklärung der App |
@@ -18,7 +18,7 @@ Die App entsteht aus der Web-Fassung (Claude-Artifact) und wird mit [Capacitor](
 | `tools/patch_native.py` | passt die erzeugten iOS-/Android-Projekte an (Berechtigungen, Version, nur iPhone) |
 | `tools/logo.py`, `assets/` | Logo, App-Symbol und Startbild |
 | `media/osm/` | Kartenkacheln Deutschland (OpenStreetMap, ODbL) |
-| `.github/workflows/carrow-app.yml` | automatischer Bau bei GitHub |
+| `.github/workflows/carmint-app.yml` | automatischer Bau bei GitHub |
 
 ## Neue Version der Web-Fassung übernehmen
 

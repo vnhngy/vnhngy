@@ -1,7 +1,7 @@
 # Selbsttest auf echten Systemen: startet die App im iPhone-Simulator und im Android-Emulator,
 # lässt sie sich selbst bedienen (tools/smoke.js: Ort 74072, Auto anlegen, Karte) und macht Bildschirmfotos.
 # Die Fotos landen im Branch "drivo-app-check" (Ordner ios/ und android/).
-name: Carrow Selbsttest
+name: Carmint Selbsttest
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: carrow-smoke-${{ github.ref }}
+  group: carmint-smoke-${{ github.ref }}
   cancel-in-progress: true
 
 env:

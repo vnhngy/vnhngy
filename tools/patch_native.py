@@ -60,9 +60,9 @@ def android():
     t = re.sub(r"versionCode \d+", f"versionCode {BUILD}", t)
     t = re.sub(r'versionName "[^"]*"', f'versionName "{VER}"', t)
     # Signieren für den Play Store, nur wenn die Schlüsseldatei vorhanden ist (GitHub-Geheimnisse, siehe Anleitung)
-    if "carrowRelease" not in t and os.environ.get("ANDROID_KEYSTORE_FILE"):
+    if "appRelease" not in t and os.environ.get("ANDROID_KEYSTORE_FILE"):
         t = t.replace("buildTypes {", """signingConfigs {
-        carrowRelease {
+        appRelease {
             storeFile file(System.getenv("ANDROID_KEYSTORE_FILE"))
             storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
             keyAlias System.getenv("ANDROID_KEY_ALIAS")
@@ -70,7 +70,7 @@ def android():
         }
     }
     buildTypes {""", 1)
-        t = re.sub(r"(release\s*\{)", r"\1\n            signingConfig signingConfigs.carrowRelease", t, count=1)
+        t = re.sub(r"(release\s*\{)", r"\1\n            signingConfig signingConfigs.appRelease", t, count=1)
     open(g, "w", encoding="utf-8").write(t)
     # MainActivity: Rand-bis-Rand einschalten (Capacitor 8, System Bars). Erst nach super.onCreate, sonst bleibt die Titelleiste des Startbilds stehen.
     pkg_dir = os.path.join(base, "src", "main", "java", *APP_ID.split("."))

@@ -2,7 +2,7 @@
 # - Bei jedem Push auf diesen Branch: Android-Testdatei (APK) und iPhone-Testbau für den Simulator.
 # - Von Hand („Run workflow“, Haken bei „release“): Play-Store-Datei (AAB) und Upload zu TestFlight,
 #   sobald die Geheimnisse (Secrets) eingetragen sind (siehe STORE-ANLEITUNG.md).
-name: Carrow App
+name: Carmint App
 
 on:
   push:
@@ -15,7 +15,7 @@ on:
         default: false
 
 concurrency:
-  group: carrow-app-${{ github.ref }}
+  group: carmint-app-${{ github.ref }}
   cancel-in-progress: true
 
 env:
@@ -50,7 +50,7 @@ jobs:
         run: set -o pipefail; ./gradlew --no-daemon assembleDebug 2>&1 | tee -a ../build.log
       - uses: actions/upload-artifact@v4
         with:
-          name: carrow-android-test-apk
+          name: carmint-android-test-apk
           path: android/app/build/outputs/apk/debug/*.apk
           retention-days: 30
       - name: Play-Store-Datei (AAB) bauen und signieren
@@ -68,7 +68,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ inputs.release }}
         with:
-          name: carrow-android-playstore-aab
+          name: carmint-android-playstore-aab
           path: android/app/build/outputs/bundle/release/*.aab
           if-no-files-found: warn
       - name: Fehler sichtbar machen
@@ -106,11 +106,11 @@ jobs:
           xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' -derivedDataPath build-ios CODE_SIGNING_ALLOWED=NO build 2>&1 | tail -n 400 | tee -a build.log
       - name: Simulator-App packen
-        run: cd build-ios/Build/Products/Debug-iphonesimulator && zip -qry "$GITHUB_WORKSPACE/carrow-simulator.zip" App.app
+        run: cd build-ios/Build/Products/Debug-iphonesimulator && zip -qry "$GITHUB_WORKSPACE/carmint-simulator.zip" App.app
       - uses: actions/upload-artifact@v4
         with:
-          name: carrow-ios-simulator-app
-          path: carrow-simulator.zip
+          name: carmint-ios-simulator-app
+          path: carmint-simulator.zip
           retention-days: 14
       - name: TestFlight (Archiv bauen, signieren, hochladen)
         if: ${{ inputs.release && env.HAS_ASC == 'true' }}
@@ -124,7 +124,7 @@ jobs:
           printf '%s' "${{ secrets.ASC_KEY_P8 }}" > "$KEY"
           AUTH="-allowProvisioningUpdates -authenticationKeyPath $KEY -authenticationKeyID $ASC_KEY_ID -authenticationKeyIssuerID $ASC_ISSUER_ID"
           xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Release -destination 'generic/platform=iOS' \
-            -archivePath "$RUNNER_TEMP/Carrow.xcarchive" DEVELOPMENT_TEAM="$TEAM_ID" CODE_SIGN_STYLE=Automatic $AUTH archive 2>&1 | tail -n 300 | tee -a build.log
+            -archivePath "$RUNNER_TEMP/Carmint.xcarchive" DEVELOPMENT_TEAM="$TEAM_ID" CODE_SIGN_STYLE=Automatic $AUTH archive 2>&1 | tail -n 300 | tee -a build.log
           cat > "$RUNNER_TEMP/export.plist" <<EOF
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -135,7 +135,7 @@ jobs:
             <key>signingStyle</key><string>automatic</string>
           </dict></plist>
           EOF
-          xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/Carrow.xcarchive" -exportOptionsPlist "$RUNNER_TEMP/export.plist" \
+          xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/Carmint.xcarchive" -exportOptionsPlist "$RUNNER_TEMP/export.plist" \
             -exportPath "$RUNNER_TEMP/export" $AUTH 2>&1 | tail -n 200 | tee -a build.log
       - name: Fehler sichtbar machen
         if: failure()
