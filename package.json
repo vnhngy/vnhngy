@@ -1,0 +1,26 @@
+{
+  "name": "carrow-app",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Handy-App (iPhone/Android) aus der Web-Fassung, gebaut mit Capacitor",
+  "scripts": {
+    "build": "python3 tools/build_www.py",
+    "assets": "capacitor-assets generate --assetPath assets",
+    "sync": "cap sync"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/app": "^8.0.0",
+    "@capacitor/app-launcher": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/filesystem": "^8.0.0",
+    "@capacitor/ios": "^8.0.0",
+    "@capacitor/share": "^8.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.0.0",
+    "pdf-lib": "1.17.1"
+  },
+  "engines": { "node": ">=22" }
+}

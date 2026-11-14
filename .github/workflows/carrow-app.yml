@@ -1,0 +1,142 @@
+# Baut die Handy-App (Name und Version in app.config.json) für Android und iPhone.
+# - Bei jedem Push auf diesen Branch: Android-Testdatei (APK) und iPhone-Testbau für den Simulator.
+# - Von Hand („Run workflow“, Haken bei „release“): Play-Store-Datei (AAB) und Upload zu TestFlight,
+#   sobald die Geheimnisse (Secrets) eingetragen sind (siehe STORE-ANLEITUNG.md).
+name: Carrow App
+
+on:
+  push:
+    branches: [drivo-app]
+  workflow_dispatch:
+    inputs:
+      release:
+        description: "Store-Fassungen bauen (Play Store AAB + TestFlight)"
+        type: boolean
+        default: false
+
+concurrency:
+  group: carrow-app-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: "true"
+  BUILD_NUMBER: ${{ github.run_number }}
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      HAS_KEY: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - name: Abhängigkeiten
+        run: set -o pipefail; npm install --no-audit --no-fund 2>&1 | tee -a build.log
+      - name: Web-Teil bauen
+        run: set -o pipefail; python3 tools/build_www.py 2>&1 | tee -a build.log
+      - name: Android-Projekt erzeugen
+        run: |
+          set -o pipefail
+          npx cap add android 2>&1 | tee -a build.log
+          npx capacitor-assets generate --android --assetPath assets 2>&1 | tee -a build.log
+          python3 tools/patch_native.py android 2>&1 | tee -a build.log
+          npx cap sync android 2>&1 | tee -a build.log
+      - name: Test-APK bauen
+        working-directory: android
+        run: set -o pipefail; ./gradlew --no-daemon assembleDebug 2>&1 | tee -a ../build.log
+      - uses: actions/upload-artifact@v4
+        with:
+          name: carrow-android-test-apk
+          path: android/app/build/outputs/apk/debug/*.apk
+          retention-days: 30
+      - name: Play-Store-Datei (AAB) bauen und signieren
+        if: ${{ inputs.release && env.HAS_KEY == 'true' }}
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -o pipefail
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/upload.jks"
+          export ANDROID_KEYSTORE_FILE="$RUNNER_TEMP/upload.jks"
+          python3 tools/patch_native.py android 2>&1 | tee -a build.log
+          (cd android && ./gradlew --no-daemon bundleRelease) 2>&1 | tee -a build.log
+      - uses: actions/upload-artifact@v4
+        if: ${{ inputs.release }}
+        with:
+          name: carrow-android-playstore-aab
+          path: android/app/build/outputs/bundle/release/*.aab
+          if-no-files-found: warn
+      - name: Fehler sichtbar machen
+        if: failure()
+        run: python3 -c "import sys;t=open('build.log',errors='replace').read()[-6000:];t=t.replace('%','%25').replace('\r','').replace('\n','%0A');print('::error title=Android-Bau fehlgeschlagen::'+t)"
+
+  ios:
+    runs-on: macos-15
+    timeout-minutes: 60
+    env:
+      HAS_ASC: ${{ secrets.ASC_KEY_P8 != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Xcode 26 wählen
+        run: |
+          XC=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)
+          if [ -z "$XC" ]; then echo "::error::Kein Xcode 26 auf dem Runner gefunden"; ls /Applications | grep Xcode; exit 1; fi
+          sudo xcode-select -s "$XC"; xcodebuild -version | tee -a build.log
+      - name: Abhängigkeiten
+        run: set -o pipefail; npm install --no-audit --no-fund 2>&1 | tee -a build.log
+      - name: Web-Teil bauen
+        run: set -o pipefail; python3 tools/build_www.py 2>&1 | tee -a build.log
+      - name: iOS-Projekt erzeugen
+        run: |
+          set -o pipefail
+          npx cap add ios 2>&1 | tee -a build.log
+          npx capacitor-assets generate --ios --assetPath assets 2>&1 | tee -a build.log
+          python3 tools/patch_native.py ios 2>&1 | tee -a build.log
+          npx cap sync ios 2>&1 | tee -a build.log
+      - name: Testbau für den Simulator
+        run: |
+          set -o pipefail
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' -derivedDataPath build-ios CODE_SIGNING_ALLOWED=NO build 2>&1 | tail -n 400 | tee -a build.log
+      - name: Simulator-App packen
+        run: cd build-ios/Build/Products/Debug-iphonesimulator && zip -qry "$GITHUB_WORKSPACE/carrow-simulator.zip" App.app
+      - uses: actions/upload-artifact@v4
+        with:
+          name: carrow-ios-simulator-app
+          path: carrow-simulator.zip
+          retention-days: 14
+      - name: TestFlight (Archiv bauen, signieren, hochladen)
+        if: ${{ inputs.release && env.HAS_ASC == 'true' }}
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          set -o pipefail
+          mkdir -p "$RUNNER_TEMP/asc"; KEY="$RUNNER_TEMP/asc/AuthKey_$ASC_KEY_ID.p8"
+          printf '%s' "${{ secrets.ASC_KEY_P8 }}" > "$KEY"
+          AUTH="-allowProvisioningUpdates -authenticationKeyPath $KEY -authenticationKeyID $ASC_KEY_ID -authenticationKeyIssuerID $ASC_ISSUER_ID"
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Release -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/Carrow.xcarchive" DEVELOPMENT_TEAM="$TEAM_ID" CODE_SIGN_STYLE=Automatic $AUTH archive 2>&1 | tail -n 300 | tee -a build.log
+          cat > "$RUNNER_TEMP/export.plist" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>$TEAM_ID</string>
+            <key>signingStyle</key><string>automatic</string>
+          </dict></plist>
+          EOF
+          xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/Carrow.xcarchive" -exportOptionsPlist "$RUNNER_TEMP/export.plist" \
+            -exportPath "$RUNNER_TEMP/export" $AUTH 2>&1 | tail -n 200 | tee -a build.log
+      - name: Fehler sichtbar machen
+        if: failure()
+        run: python3 -c "import sys;t=open('build.log',errors='replace').read()[-6000:];t=t.replace('%','%25').replace('\r','').replace('\n','%0A');print('::error title=iOS-Bau fehlgeschlagen::'+t)"

@@ -1,0 +1,12 @@
+{
+  "name": "Carrow",
+  "appId": "de.vinhnguyen.carrow",
+  "version": "1.0.0",
+  "build": 1,
+  "operator": {
+    "name": "Cong Vinh Nguyen",
+    "address": "Kehrhüttenstraße 36, 74078 Heilbronn",
+    "email": "congvinhn779@gmail.com"
+  },
+  "colors": { "head": "#1D1F22", "bg": "#0E0F10" }
+}
