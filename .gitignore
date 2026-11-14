@@ -4,3 +4,4 @@ ios/
 android/
 vendor/
 *.log
+__pycache__/

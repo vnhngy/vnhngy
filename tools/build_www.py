@@ -50,6 +50,8 @@ for i, m in reversed(list(enumerate(svgs))):
 
 # ---------- 4. Laufzeit fürs Handy laden, bevor das App-Skript startet ----------
 sub("<head>", '<head><script src="app-runtime.js"></script>')
+SMOKE = os.environ.get("SMOKE") == "1"          # nur automatischer Test: App bedient sich selbst
+if SMOKE: sub("</body></html>", '<script src="smoke.js"></script></body></html>')
 
 # ---------- 5. Kein Einladungscode in der App ----------
 sub("async function gateCheck(){\n  let need = false;", "async function gateCheck(){\n  if (window.drivoApp){ setGate(false); return; }\n  let need = false;")
@@ -110,6 +112,7 @@ if os.path.isdir(WWW): shutil.rmtree(WWW)
 os.makedirs(os.path.join(WWW, "vendor"))
 open(os.path.join(WWW, "index.html"), "w", encoding="utf-8").write(src)
 shutil.copy(os.path.join(ROOT, "src", "app-runtime.js"), WWW)
+if SMOKE: shutil.copy(os.path.join(ROOT, "tools", "smoke.js"), WWW)
 shutil.copytree(os.path.join(ROOT, "media", "osm"), os.path.join(WWW, "osm"))
 if has_tut: shutil.copytree(TUT, os.path.join(WWW, "tut"))
 pdflib = next((f for f in (os.path.join(ROOT, "node_modules", "pdf-lib", "dist", "pdf-lib.min.js"), os.path.join(ROOT, "vendor", "pdf-lib.min.js")) if os.path.exists(f)), None)
