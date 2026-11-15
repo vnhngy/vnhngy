@@ -14,6 +14,7 @@ Die App entsteht aus der Web-Fassung (Claude-Artifact) und wird mit [Capacitor](
 | `src/source.html` | Web-Fassung, gespeichert aus dem Artifact |
 | `src/app-runtime.js` | Ersatz für die Claude-Laufzeit: Speicher auf dem Gerät, Server, Fotos, Teilen, Links, Zurück-Taste |
 | `src/privacy.de.html`, `src/privacy.en.html` | Datenschutzerklärung der App |
+| `src/glass.css`, `src/glass.js` | Liquid-Glass-Design und flüssige Bewegungen (letzte Stil-Schicht, gleitende Linse in Leiste und Unterreitern, Haptik) |
 | `tools/build_www.py` | baut `www/` (App-Inhalt) und `capacitor.config.json` |
 | `tools/patch_native.py` | passt die erzeugten iOS-/Android-Projekte an (Berechtigungen, Version, nur iPhone) |
 | `tools/logo.py`, `assets/` | Logo, App-Symbol und Startbild |

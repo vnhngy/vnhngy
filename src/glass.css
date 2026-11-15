@@ -1,0 +1,208 @@
+/* ==========================================================================
+   Carlume · Liquid Glass
+   Letzte Schicht über allen Stilen der Web-Fassung (wird beim Bau ans Ende gehängt).
+   - Farbiger, ruhiger Hintergrund, darüber durchscheinende Glasflächen
+   - Kopf und Leiste schweben als Glas über dem Inhalt, der darunter durchscrollt
+   - Weiche Linse in Leiste und Unterreitern, die zum gewählten Eintrag gleitet (glass.js)
+   - Bewegungen nur mit transform/opacity (flüssig auch auf älteren Handys);
+     Unschärfe nur auf Kopf, Leiste, Menüs und Blättern, nicht auf jeder Karte
+   ========================================================================== */
+:root{
+  --lg-wall:
+    radial-gradient(65% 42% at 100% 0%,rgba(96,132,255,.34),transparent 70%),
+    radial-gradient(55% 38% at 0% 38%,rgba(255,154,92,.22),transparent 70%),
+    radial-gradient(75% 45% at 55% 108%,rgba(70,205,180,.22),transparent 70%),
+    linear-gradient(180deg,#EEF1F7,#E3E7EF);
+  --lg-fill:linear-gradient(160deg,rgba(255,255,255,.82),rgba(255,255,255,.56));
+  --lg-fill-strong:rgba(255,255,255,.72);
+  --lg-bar:rgba(246,248,252,.62);
+  --lg-edge:rgba(255,255,255,.9);
+  --lg-line:rgba(28,36,60,.08);
+  --lg-hi:inset 0 1px 0 rgba(255,255,255,.95),inset 0 0 0 .5px rgba(255,255,255,.6);
+  --lg-shadow:0 12px 30px -16px rgba(30,40,80,.32),0 1px 2px rgba(30,40,80,.06);
+  --lg-track:rgba(255,255,255,.42);
+  --lg-thumb:linear-gradient(180deg,rgba(255,255,255,.98),rgba(255,255,255,.82));
+  --lg-thumb-shadow:inset 0 1px 0 #fff,0 6px 16px -6px rgba(30,40,80,.35),0 0 0 .5px rgba(30,40,80,.06);
+  --lg-input:rgba(255,255,255,.66);
+  --lg-tab-thumb:linear-gradient(180deg,rgba(40,60,120,.10),rgba(40,60,120,.06));
+  --lg-tab-thumb-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 0 0 .5px rgba(40,60,120,.10);
+  --lg-blur:blur(26px) saturate(185%);
+  --lg-blur-strong:blur(34px) saturate(200%);
+  --lg-r:22px; --lg-r-s:14px;
+  --ease-out:cubic-bezier(.22,1,.36,1);
+  --ease-spring:cubic-bezier(.34,1.42,.64,1);
+  --ease-sheet:cubic-bezier(.32,.72,0,1);
+  --lg-panel:rgba(255,255,255,.7);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --lg-wall:
+    radial-gradient(65% 42% at 100% 0%,rgba(70,110,255,.30),transparent 70%),
+    radial-gradient(55% 38% at 0% 40%,rgba(255,130,60,.12),transparent 70%),
+    radial-gradient(75% 45% at 55% 108%,rgba(40,190,170,.16),transparent 70%),
+    linear-gradient(180deg,#0C0F17,#05070B);
+  --lg-fill:linear-gradient(160deg,rgba(255,255,255,.085),rgba(255,255,255,.035));
+  --lg-fill-strong:rgba(28,32,42,.62);
+  --lg-bar:rgba(10,13,20,.55);
+  --lg-edge:rgba(255,255,255,.11);
+  --lg-line:rgba(255,255,255,.07);
+  --lg-hi:inset 0 1px 0 rgba(255,255,255,.11);
+  --lg-shadow:0 14px 32px -16px rgba(0,0,0,.75);
+  --lg-track:rgba(255,255,255,.055);
+  --lg-thumb:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.1));
+  --lg-thumb-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 6px 16px -6px rgba(0,0,0,.6),0 0 0 .5px rgba(255,255,255,.12);
+  --lg-input:rgba(255,255,255,.05);
+  --lg-tab-thumb:var(--lg-thumb);
+  --lg-tab-thumb-shadow:var(--lg-thumb-shadow);
+  --lg-panel:rgba(22,26,36,.55);
+}}
+:root[data-theme="dark"]{
+  --lg-wall:
+    radial-gradient(65% 42% at 100% 0%,rgba(70,110,255,.30),transparent 70%),
+    radial-gradient(55% 38% at 0% 40%,rgba(255,130,60,.12),transparent 70%),
+    radial-gradient(75% 45% at 55% 108%,rgba(40,190,170,.16),transparent 70%),
+    linear-gradient(180deg,#0C0F17,#05070B);
+  --lg-fill:linear-gradient(160deg,rgba(255,255,255,.085),rgba(255,255,255,.035));
+  --lg-fill-strong:rgba(28,32,42,.62);
+  --lg-bar:rgba(10,13,20,.55);
+  --lg-edge:rgba(255,255,255,.11);
+  --lg-line:rgba(255,255,255,.07);
+  --lg-hi:inset 0 1px 0 rgba(255,255,255,.11);
+  --lg-shadow:0 14px 32px -16px rgba(0,0,0,.75);
+  --lg-track:rgba(255,255,255,.055);
+  --lg-thumb:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.1));
+  --lg-thumb-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 6px 16px -6px rgba(0,0,0,.6),0 0 0 .5px rgba(255,255,255,.12);
+  --lg-input:rgba(255,255,255,.05);
+  --lg-tab-thumb:var(--lg-thumb);
+  --lg-tab-thumb-shadow:var(--lg-thumb-shadow);
+  --lg-panel:rgba(22,26,36,.55);
+}
+@media (prefers-reduced-transparency: reduce){:root:not(#_){--lg-bar:var(--bg);--lg-fill-strong:var(--bg);--lg-blur:none;--lg-blur-strong:none}}
+
+/* ---------- Grundgefühl einer App: kein Tipp-Blitz, kein Markieren von Bedienelementen, kein Gummiband der ganzen Seite ---------- */
+html:root:root{background:var(--lg-wall);--panel:var(--lg-panel);padding-top:0;padding-bottom:0;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+html:root:root body{background:transparent;overscroll-behavior:none}
+button,.tab,.chip,.seg,label,.st,.remind,.price-tile{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+
+/* ---------- Kopf: Glas, Inhalt scrollt darunter durch ---------- */
+body{position:relative}
+body::before,body::after{display:none}
+.top{position:absolute;top:0;left:0;right:0;z-index:20;margin:0;border:0;border-radius:0;padding-top:env(safe-area-inset-top,0px);
+  background:var(--lg-bar);-webkit-backdrop-filter:var(--lg-blur)!important;backdrop-filter:var(--lg-blur)!important;
+  box-shadow:inset 0 -1px 0 var(--lg-line)}
+.top-in{padding-block:10px}
+.carpick,.langpick select,.helpbtn{border-radius:999px;background:var(--lg-track);border:1px solid var(--lg-edge);box-shadow:var(--lg-hi)}
+.carpick{padding:2px 8px 2px 14px}
+.helpbtn{width:38px;height:38px}
+main{padding-top:calc(var(--topH,58px) + 10px)!important;padding-bottom:calc(var(--tabsH,82px) + 12px)!important}
+
+/* ---------- Leiste unten: schwebende Glas-Kapsel mit gleitender Linse ---------- */
+.tabs{position:absolute;left:max(10px,env(safe-area-inset-left,0px));right:max(10px,env(safe-area-inset-right,0px));bottom:max(10px,calc(env(safe-area-inset-bottom,0px) - 6px));z-index:20;margin:0 auto;width:auto;max-width:560px;
+  border-radius:999px;padding:6px;border:1px solid var(--lg-edge);
+  background:var(--lg-fill-strong);-webkit-backdrop-filter:var(--lg-blur-strong)!important;backdrop-filter:var(--lg-blur-strong)!important;
+  box-shadow:var(--lg-hi),0 18px 40px -14px rgba(0,0,0,.45),0 2px 6px rgba(0,0,0,.08)}
+#tabs{--tx:0px;--tw:0px}
+#tabs::before{content:"";position:absolute;top:6px;bottom:6px;left:0;width:var(--tw);transform:translate3d(var(--tx),0,0);
+  border-radius:999px;background:var(--lg-tab-thumb);box-shadow:var(--lg-tab-thumb-shadow);pointer-events:none;z-index:0;
+  transition:transform .5s var(--ease-spring),width .5s var(--ease-spring),opacity .2s}
+#tabs.lg-still::before{transition:none}
+#tabs.lg-none::before{opacity:0}
+.tab{position:relative;z-index:1;border-radius:999px;min-height:52px;background:transparent!important;box-shadow:none!important;color:var(--muted);font-weight:600;transition:color .3s var(--ease-out),transform .25s var(--ease-spring)}
+.tab[aria-selected="true"]{color:var(--fg)}
+.tab[aria-selected="true"]::before{display:none}
+.tab svg{transition:transform .35s var(--ease-spring)}
+.tab[aria-selected="true"] svg{color:var(--accent);transform:translateY(-1px)}
+.moremenu{border-radius:22px;background:var(--lg-fill-strong);-webkit-backdrop-filter:var(--lg-blur-strong)!important;backdrop-filter:var(--lg-blur-strong)!important;border:1px solid var(--lg-edge);box-shadow:var(--lg-hi),0 24px 50px -16px rgba(0,0,0,.5)}
+.moremenu button{border-radius:14px}
+.moremenu button[aria-current="page"]{background:var(--lg-thumb);box-shadow:var(--lg-thumb-shadow)}
+
+/* ---------- Unterreiter: Glas-Spur mit gleitender Linse ---------- */
+.seg{position:relative;--tx:0px;--tw:0px;border-radius:999px!important;padding:4px;gap:2px;background:var(--lg-track);border:1px solid var(--lg-edge);box-shadow:var(--lg-hi)!important}
+.seg::before{content:"";position:absolute;top:4px;bottom:4px;left:0;width:var(--tw);transform:translate3d(var(--tx),0,0);
+  border-radius:999px;background:var(--lg-thumb);box-shadow:var(--lg-thumb-shadow);pointer-events:none;z-index:0;
+  transition:transform .45s var(--ease-spring),width .45s var(--ease-spring)}
+.seg.lg-still::before{transition:none}
+.seg.lg-none::before{opacity:0}
+.seg button{position:relative;z-index:1;border-radius:999px!important;background:transparent!important;box-shadow:none!important;color:var(--muted);font-weight:600;min-height:38px;transition:color .3s var(--ease-out),transform .2s var(--ease-spring)}
+.seg button[aria-selected="true"]{color:var(--fg)}
+
+/* ---------- Glasflächen ---------- */
+.card,.price-tile,.stations,.list,.carcard,.remind,.empty,.bento-big,.alarm-row,.mapcard,.amp{
+  background:var(--lg-fill);border:1px solid var(--lg-edge);border-radius:var(--lg-r)!important;box-shadow:var(--lg-hi),var(--lg-shadow)!important}
+.amp.ok{background:linear-gradient(160deg,color-mix(in srgb,var(--ok) 22%,transparent),color-mix(in srgb,var(--ok) 8%,transparent))}
+.amp.warn{background:linear-gradient(160deg,color-mix(in srgb,var(--warn) 22%,transparent),color-mix(in srgb,var(--warn) 8%,transparent))}
+.amp.bad{background:linear-gradient(160deg,color-mix(in srgb,var(--bad) 22%,transparent),color-mix(in srgb,var(--bad) 8%,transparent))}
+.note,.verdict,.dt,.when-save > div,.ls-nums > div{border-radius:var(--lg-r-s)!important}
+.empty,.alarm-row{border-style:solid}
+.price-tile[aria-pressed="true"],.carcard.active,.sh-prices > div.on{border-color:color-mix(in srgb,var(--accent) 70%,transparent);box-shadow:0 0 0 1.5px var(--accent) inset,var(--lg-hi),var(--lg-shadow)!important}
+.stations .st,.list .row{border-color:var(--lg-line)}
+.hero{border-radius:var(--lg-r);border:1px solid var(--lg-edge);box-shadow:var(--lg-shadow)}
+.carphoto,.rcpt-thumb{border-radius:var(--lg-r-s)}
+.st .badge{border-radius:12px}
+
+.ph-wrap:not(.has-ph){background:radial-gradient(60% 70% at 50% 64%,rgba(255,255,255,.16),transparent 72%),var(--lg-track)!important}
+/* ---------- Knöpfe, Chips, Felder ---------- */
+.btn{border-radius:999px;font-weight:600;padding:10px 18px}
+.btn.small{border-radius:999px;padding:7px 14px}
+.btn:not(.ghost):not(.danger){background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 82%,#fff),var(--accent));color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 8px 18px -8px color-mix(in srgb,var(--accent) 80%,transparent)!important}
+.btn.ghost{background:var(--lg-fill);border:1px solid var(--lg-edge);box-shadow:var(--lg-hi)!important;color:var(--fg)}
+.btn.danger{border-radius:999px}
+.chip{border-radius:999px;background:var(--lg-track);border:1px solid var(--lg-edge);box-shadow:var(--lg-hi)!important}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:transparent;color:#fff}
+.pill{border-radius:999px}
+.icon-btn,.icon-btn.ring,.fav-btn,.sheet-x,.mapctl button,.ph-btn{border-radius:999px}
+.icon-btn.ring,.mapctl button,.fav-btn,.sheet-x{background:var(--lg-fill);border:1px solid var(--lg-edge);box-shadow:var(--lg-hi)!important}
+input[type=text],input[type=number],input[type=date],select,textarea{border-radius:var(--lg-r-s);background:var(--lg-input);border:1px solid var(--lg-edge)}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
+
+/* ---------- Blätter, Dialoge, Hinweise ---------- */
+.sheet-bg,.dsx .sheet-bg{background:rgba(3,5,10,.42)}
+.sheet-card,.dsx-card{background:var(--lg-fill-strong);-webkit-backdrop-filter:var(--lg-blur-strong)!important;backdrop-filter:var(--lg-blur-strong)!important;border:1px solid var(--lg-edge);box-shadow:var(--lg-hi),0 -20px 60px -12px rgba(0,0,0,.55)}
+.sheet-card{border-radius:30px}
+.sheet-card::before{content:"";justify-self:center;width:38px;height:5px;border-radius:3px;background:var(--muted);opacity:.35;margin:-8px 0 -4px}
+.dsx-card{border-radius:26px}
+.toast,.undo{border-radius:999px;background:var(--lg-fill-strong);color:var(--fg);-webkit-backdrop-filter:var(--lg-blur-strong)!important;backdrop-filter:var(--lg-blur-strong)!important;border:1px solid var(--lg-edge);box-shadow:var(--lg-hi),0 14px 34px -12px rgba(0,0,0,.5)}
+.undo{bottom:calc(var(--tabsH,82px) + 12px)}
+.toast{bottom:calc(var(--tabsH,82px) + 60px)}
+
+/* ---------- Startbildschirm ---------- */
+.splash.splash{color-scheme:dark;color:#fff;--head-fg:#fff;--fg:#F2F4F8;--muted:rgba(242,244,248,.62);--line:rgba(255,255,255,.12);
+  background:
+    radial-gradient(70% 38% at 100% 4%,rgba(80,120,255,.42),transparent 70%),
+    radial-gradient(60% 34% at -6% 46%,rgba(255,140,70,.22),transparent 70%),
+    radial-gradient(80% 40% at 60% 104%,rgba(40,200,175,.24),transparent 72%),
+    linear-gradient(180deg,#0B0E16,#05070B)}
+.splash .splash-row input[type=text]{background:rgba(255,255,255,.07)!important;border-color:rgba(255,255,255,.16)!important;color:#fff!important}
+.splash input::placeholder{color:rgba(255,255,255,.5)}
+.splash-go,.splash-start{border-radius:999px;background:linear-gradient(180deg,#5B83F0,#3E6AE1);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 10px 24px -10px rgba(62,106,225,.8)}
+.splash-alt{border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18)}
+.splash-row input[type=text]{border-radius:999px;padding-inline:18px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16)}
+.splash-welcome li{border-radius:16px;background:linear-gradient(160deg,rgba(255,255,255,.09),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+.splash-eye em{border-radius:999px}
+
+/* ---------- Bewegung: flüssig, nur transform/opacity, aus bei „Bewegung reduzieren“ ---------- */
+@media (prefers-reduced-motion:no-preference){
+  @keyframes lgInR{from{opacity:0;transform:translate3d(16px,0,0)}to{opacity:1;transform:none}}
+  @keyframes lgInL{from{opacity:0;transform:translate3d(-16px,0,0)}to{opacity:1;transform:none}}
+  @keyframes lgUp{from{opacity:0;transform:translate3d(0,10px,0) scale(.985)}to{opacity:1;transform:none}}
+  @keyframes lgSheet{from{transform:translate3d(0,100%,0)}to{transform:none}}
+  @keyframes lgFade{from{opacity:0}to{opacity:1}}
+  @keyframes lgPop{from{opacity:0;transform:scale(.92) translate3d(0,8px,0)}to{opacity:1;transform:none}}
+  @keyframes lgToast{from{opacity:0;transform:translate3d(0,14px,0) scale(.94)}to{opacity:1;transform:none}}
+  #main.a-r > .view{animation:lgInR .42s var(--ease-out) both}
+  #main.a-l > .view{animation:lgInL .42s var(--ease-out) both}
+  #main.s-r .panel{animation:lgInR .38s var(--ease-out) both}
+  #main.s-l .panel{animation:lgInL .38s var(--ease-out) both}
+  #main.anim .panel > *{animation:lgUp .5s var(--ease-out) both}
+  #main.anim .stations > .st,#main.anim .list > .row{animation:lgUp .46s var(--ease-out) both}
+  #tabs.chg .tab[aria-selected="true"] svg{animation:none}
+  .sheet:not([hidden]) .sheet-card{animation:lgSheet .52s var(--ease-sheet) both}
+  .sheet:not([hidden]) .sheet-bg,.dsx:not([hidden]) .sheet-bg{animation:lgFade .3s ease both}
+  .dsx:not([hidden]) .dsx-card{animation:lgPop .42s var(--ease-spring) both}
+  .moremenu:not([hidden]){animation:lgPop .34s var(--ease-spring) both;transform-origin:bottom right}
+  .toast:not([hidden]),.undo:not([hidden]){animation:lgToast .4s var(--ease-spring) both}
+  .btn,.chip,.icon-btn,.price-tile,.kpi.link,.remind,.st.go,.moremenu button,.carcard,.alarm-row{transition:transform .28s var(--ease-spring),background-color .25s ease,border-color .25s ease,color .25s ease,box-shadow .25s ease,filter .2s ease}
+  .btn:active,.chip:active,.icon-btn:active,.moremenu button:active{transform:scale(.95);transition-duration:.08s}
+  .tab:active,.seg button:active{transform:scale(.93);transition-duration:.08s}
+  .price-tile:active,.kpi.link:active,.remind:active,.st.go:active,.carcard:active,.alarm-row:active{transform:scale(.98);transition-duration:.08s}
+}
+@media (prefers-reduced-motion:reduce){#tabs::before,.seg::before{transition:none}}

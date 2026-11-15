@@ -104,6 +104,13 @@ else:
     sub("</head>", "<style>.helpbtn,.splash-help{display:none!important}</style></head>")
     src = re.sub(r' poster="/_blob/[0-9a-f]{32}"', "", src)
 
+# ---------- 13. Liquid-Glass-Design: als letzte Schicht über alle Stile der Web-Fassung ----------
+GLASS_CSS = open(os.path.join(ROOT, "src", "glass.css"), encoding="utf-8").read()
+GLASS_JS = open(os.path.join(ROOT, "src", "glass.js"), encoding="utf-8").read()
+sub("</body></html>", "<style id=\"lg\">" + GLASS_CSS + "</style><script>" + GLASS_JS + "</script></body></html>")
+# Großgeschriebener Name in CSS-Texten (z. B. Bildunterschrift „DRIVO · DEIN AUTO“)
+n_up = src.count("DRIVO"); src = src.replace("DRIVO", NAME.upper())
+
 # ---------- schreiben ----------
 if os.path.isdir(WWW): shutil.rmtree(WWW)
 os.makedirs(os.path.join(WWW, "vendor"))
@@ -125,4 +132,4 @@ cap = {
   "plugins": {"SystemBars": {"insetsHandling": "native", "style": "DARK", "initialViewportFitValueHint": "cover"}},
 }
 json.dump(cap, open(os.path.join(ROOT, "capacitor.config.json"), "w"), indent=2)
-print(f"Fertig: {NAME} {VER} ({APP_ID}) · Name {n_brand}× ersetzt · {n_env} Sicherheitsränder · Anleitung {'dabei' if has_tut else 'ausgeblendet'} · www/ {sum(len(f) for _, _, f in os.walk(WWW))} Dateien")
+print(f"Fertig: {NAME} {VER} ({APP_ID}) · Name {n_brand}× (+{n_up}× groß) ersetzt · Glas-Design · {n_env} Sicherheitsränder · Anleitung {'dabei' if has_tut else 'ausgeblendet'} · www/ {sum(len(f) for _, _, f in os.walk(WWW))} Dateien")

@@ -5,3 +5,4 @@ android/
 vendor/
 *.log
 __pycache__/
+capacitor.config.json
