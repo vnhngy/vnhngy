@@ -11,6 +11,6 @@ adb shell monkey -p "$ID" -c android.intent.category.LAUNCHER 1 >/dev/null
 last=0
 for t in 10 40 55 62 70; do sleep $((t - last)); last=$t; adb exec-out screencap -p > "shots/android/$t.png"; done
 adb shell am force-stop "$ID"
-adb shell monkey -p "$ID" -c android.intent.category.LAUNCHER 1 >/dev/null; sleep 14; adb exec-out screencap -p > shots/android/neustart.png
+adb shell monkey -p "$ID" -c android.intent.category.LAUNCHER 1 >/dev/null; sleep 14; adb exec-out screencap -p > shots/android/neustart.png; sleep 25; adb exec-out screencap -p > shots/android/neustart2.png
 adb logcat -d | grep -iE "Capacitor|chromium|console|AndroidRuntime|FATAL|has died|ActivityTaskManager|ActivityManager.*carlume|libc|DEBUG|crash|backButton" | tail -n 600 > shots/android/log.txt || true
 adb logcat -d -b crash > shots/android/crash.txt || true
