@@ -90,6 +90,8 @@ jobs:
   ios:
     runs-on: macos-15
     timeout-minutes: 60
+    permissions:
+      contents: write
     env:
       HAS_ASC: ${{ secrets.ASC_KEY_P8 != '' }}
     steps:
@@ -124,6 +126,22 @@ jobs:
           name: carlume-ios-simulator-app
           path: carlume-simulator.zip
           retention-days: 14
+      - name: iPhone-Datei (IPA) für Sideloadly bauen (unsigniert, Sideloadly signiert mit der eigenen Apple-ID)
+        run: |
+          set -o pipefail
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Release -sdk iphoneos \
+            -destination 'generic/platform=iOS' -derivedDataPath build-ios-dev \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" build 2>&1 | tail -n 200 | tee -a build.log
+          APP=build-ios-dev/Build/Products/Release-iphoneos/App.app
+          test -d "$APP" || { echo "::error::App.app für iPhone fehlt"; exit 1; }
+          NAME=$(python3 -c "import json;c=json.load(open('app.config.json'));print(c['name']+'-'+c['version'])")
+          mkdir -p "$RUNNER_TEMP/ipa/Payload" && cp -R "$APP" "$RUNNER_TEMP/ipa/Payload/"
+          (cd "$RUNNER_TEMP/ipa" && zip -qry "$NAME-sideloadly.ipa" Payload && rm -rf Payload && ls -la)
+          cd "$RUNNER_TEMP/ipa"
+          echo "iPhone-Testversion $NAME (Bau ${{ github.run_number }}, ${{ github.sha }}). Unsigniert: mit Sideloadly und der eigenen Apple-ID aufs iPhone spielen." > README.txt
+          git init -q -b drivo-app-ipa; git config user.name "github-actions"; git config user.email "github-actions@users.noreply.github.com"
+          git add -A; git commit -qm "IPA $NAME (Bau ${{ github.run_number }})"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" drivo-app-ipa
       - name: TestFlight (Archiv bauen, signieren, hochladen)
         if: ${{ inputs.release && env.HAS_ASC == 'true' }}
         env:
