@@ -14,6 +14,7 @@
   const NATIVE = !!(CAP && typeof CAP.isNativePlatform === "function" && CAP.isNativePlatform());
   const plugin = n => { try { return NATIVE ? CAP.registerPlugin(n) : null; } catch { return null; } };
   const FS = plugin("Filesystem"), SHARE = plugin("Share"), APP = plugin("App"), LAUNCH = plugin("AppLauncher");
+  const WIDGET = NATIVE && CAP.getPlatform?.() === "ios" ? plugin("WidgetBridge") : null;   // iPhone-Widget (eigenes Plugin in der App)
   const DIR = "DATA", ROOT = "drivo";
   const ls = { get: k => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); return true; } catch { return false; } }, del: k => { try { localStorage.removeItem(k); } catch {} } };
   const err = (code, message) => Object.assign(new Error(message || code), { code });
@@ -142,7 +143,7 @@
     try {
       const r = await origFetch(`${SB_URL}/functions/v1/device`, { method: "POST", headers: { "Content-Type": "application/json", apikey: SB_KEY }, body: JSON.stringify(body) });
       const j = await r.json().catch(() => null);
-      if (j?.ok && j.geo) { geoMine = { ...geoMine, ...j.geo }; ls.set("drivo.app.geo", JSON.stringify(geoMine)); notifyAll("live/geo"); notifyAll("ugeo/" + DEV); }
+      if (j?.ok && j.geo) { geoMine = { ...geoMine, ...j.geo }; ls.set("drivo.app.geo", JSON.stringify(geoMine)); notifyAll("live/geo"); notifyAll("ugeo/" + DEV);  pushWidget(); }
       if (j?.ok) { ls.set("drivo.app.placeSent", String(Date.now())); setTimeout(() => notifyLive(), j.kicked ? 8000 : 0); if (j.kicked) for (const t of [30e3, 75e3, 150e3]) setTimeout(() => notifyLive(), t); }
       return j;
     } catch { return null; }
@@ -190,7 +191,7 @@
         obj = clone(obj);
         if (isUser) { await files.writeText("data.json", JSON.stringify(obj)); return; }
         if (isBackup) { const all = await readJson("backups.json", {}); all[id] = obj; await files.writeText("backups.json", JSON.stringify(all)); return; }
-        if (p[0] === "subs") { subLocal = obj; ls.set("drivo.app.sub", JSON.stringify(obj)); notifyAll(path); queuePlace(); return; }
+        if (p[0] === "subs") { subLocal = obj; ls.set("drivo.app.sub", JSON.stringify(obj)); notifyAll(path); queuePlace(); pushWidget(); return; }
         if (p[0] === "live" && id === "geo") { geoMine = { ...geoMine, ...obj }; ls.set("drivo.app.geo", JSON.stringify(geoMine)); notifyAll(path); return; }
         if (p[0] === "ugeo") { geoMine = obj || {}; ls.set("drivo.app.geo", JSON.stringify(geoMine)); notifyAll(path); return; }
         if (p[0] === "amen" && id === DEV) { amenLocal = obj; ls.set("drivo.app.amen", JSON.stringify(obj)); return; }
@@ -300,6 +301,46 @@
     if (first && cur && first !== cur) { first.click(); return; }
     APP.minimizeApp?.().catch?.(() => {});
   });
+
+  /* ---------- iPhone-Widget: Ort, Umkreis, Sorte und Sprache für das Widget auf dem Startbildschirm ----------
+     Nur diese Werte gehen ans Widget (App-Gruppe, bleibt auf dem Handy). Die Preise holt das Widget selbst vom Server. */
+  let widgetLast = "";
+  const slugQ = q => String(q || "").toLowerCase().trim().replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40) || "x";
+  function widgetSnap() {
+    const s = subLocal || {};
+    const query = String(s.query || "Heilbronn");
+    const rad = Math.min(10, Math.max(1, Math.round(+s.rad) || 5));
+    const m = /^\s*(-?\d{1,2}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)\s*$/.exec(query);
+    const g = m ? { lat: +m[1], lng: +m[2] } : geoMine["q-" + slugQ(query)];
+    if (!g || !isFinite(g.lat) || !isFinite(g.lng)) return null;
+    const f = ls.get("drivo.fuel"), l = ls.get("drivo.lang");
+    const fuel = ["e5", "e10", "diesel"].includes(f) ? f : "e5";
+    const lang = l === "de" || l === "en" ? l : (/^de/i.test(navigator.language || "de") ? "de" : "en");
+    return { v: 1, query, place: m ? null : String(g.place || query), own: !!m, lat: +g.lat, lng: +g.lng, rad, fuel, lang };
+  }
+  function pushWidget() {
+    if (!WIDGET) return;
+    const snap = widgetSnap(); if (!snap) return;
+    const json = JSON.stringify(snap); if (json === widgetLast) return;
+    widgetLast = json; WIDGET.save({ json }).catch(() => { widgetLast = ""; });
+  }
+  if (WIDGET) {
+    const protoSet = Storage.prototype.setItem;     // Sorte oder Sprache in der App geändert → Widget mitziehen
+    Storage.prototype.setItem = function (k, v) { protoSet.call(this, k, v); if (k === "drivo.fuel" || k === "drivo.lang") setTimeout(pushWidget, 0); };
+    document.addEventListener("visibilitychange", () => { if (document.hidden) pushWidget(); });
+    setTimeout(pushWidget, 2500);
+  }
+  /* Widget angetippt (carlume://prices): Preise zeigen */
+  const showPrices = () => {
+    const t = document.getElementById("tab-home"); if (t && t.getAttribute("aria-selected") !== "true") t.click();
+    setTimeout(() => { const b = document.getElementById("seg-home-prices"); if (b && b.getAttribute("aria-selected") !== "true") b.click(); }, 80);
+  };
+  const isPricesUrl = u => /^carlume:\/\/prices/i.test(String(u || ""));
+  APP?.addListener?.("appUrlOpen", e => { if (isPricesUrl(e?.url)) setTimeout(showPrices, 300); });
+  APP?.getLaunchUrl?.().then(r => {
+    if (!isPricesUrl(r?.url)) return;
+    if (document.readyState === "complete") setTimeout(showPrices, 900); else window.addEventListener("load", () => setTimeout(showPrices, 900));
+  }).catch(() => {});
 
   // Ort beim Start einmal melden (falls schon gewählt), damit der Server die Region aktiv hält.
   setTimeout(pingSeen, 3000);

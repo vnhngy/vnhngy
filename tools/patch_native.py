@@ -4,10 +4,11 @@
 Aufruf:  python3 tools/patch_native.py ios      bzw.   python3 tools/patch_native.py android
 
 iOS:     Texte für die Berechtigungen (Standort, Kamera, Fotos), keine Verschlüsselungs-Exportpflicht,
-         Version und Build-Nummer, nur iPhone (kein iPad, sonst verlangt Apple iPad-Screenshots), Hochformat.
+         Version und Build-Nummer, nur iPhone (kein iPad, sonst verlangt Apple iPad-Screenshots), Hochformat,
+         Widget für Start- und Sperrbildschirm (native-ios/, tools/ios_widget.rb; braucht Ruby mit dem Paket xcodeproj).
 Android: Standort-Berechtigung, Version, Rand-bis-Rand-Anzeige für die sicheren Ränder (Capacitor 8).
 """
-import json, os, plistlib, re, sys
+import json, os, plistlib, re, shutil, subprocess, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CFG = json.load(open(os.path.join(ROOT, "app.config.json"), encoding="utf-8"))
 NAME, APP_ID, VER, BUILD = CFG["name"], CFG["appId"], CFG["version"], int(os.environ.get("BUILD_NUMBER") or CFG["build"])
@@ -30,6 +31,8 @@ def ios():
         "UIViewControllerBasedStatusBarAppearance": True,
         "UIStatusBarStyle": "UIStatusBarStyleLightContent",
         "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
+        # Widget angetippt: carlume://prices öffnet die Preise
+        "CFBundleURLTypes": [{"CFBundleURLName": APP_ID, "CFBundleURLSchemes": [NAME.lower()]}],
     })
     pl.pop("UISupportedInterfaceOrientations~ipad", None)
     with open(p, "wb") as f: plistlib.dump(pl, f)
@@ -40,9 +43,39 @@ def ios():
     s = re.sub(r"MARKETING_VERSION = [^;]+;", f"MARKETING_VERSION = {VER};", s)
     s = re.sub(r"CURRENT_PROJECT_VERSION = [^;]+;", f"CURRENT_PROJECT_VERSION = {BUILD};", s)
     s = re.sub(r'TARGETED_DEVICE_FAMILY = "?[0-9,]+"?;', "TARGETED_DEVICE_FAMILY = 1;", s)
-    s = re.sub(r"PRODUCT_BUNDLE_IDENTIFIER = [^;]+;", f"PRODUCT_BUNDLE_IDENTIFIER = {APP_ID};", s)
+    s = re.sub(r"PRODUCT_BUNDLE_IDENTIFIER = (?![^;]*\.widget;)[^;]+;", f"PRODUCT_BUNDLE_IDENTIFIER = {APP_ID};", s)
     open(pj, "w", encoding="utf-8").write(s)
     print(f"iOS angepasst: {NAME} {VER} ({BUILD}), {APP_ID}, nur iPhone, Hochformat")
+    if os.environ.get("SKIP_WIDGET") != "1":
+        ios_widget()
+
+def ios_widget():
+    """iPhone-Widget: Swift-Dateien ins Projekt legen, Startansicht mit Widget-Brücke, Xcode-Ziel per tools/ios_widget.rb."""
+    src = os.path.join(ROOT, "native-ios")
+    app_dir = os.path.join(ROOT, "ios", "App")
+    copies = {
+        "CarlumeShared.swift": ["App/Carlume/CarlumeShared.swift", "CarlumeWidget/CarlumeShared.swift"],
+        "WidgetBridge.swift": ["App/Carlume/WidgetBridge.swift"],
+        "CarlumeWidget.swift": ["CarlumeWidget/CarlumeWidget.swift"],
+        "CarlumeWidget-Info.plist": ["CarlumeWidget/Info.plist"],
+        "CarlumeWidget.entitlements": ["CarlumeWidget/CarlumeWidget.entitlements"],
+        "App.entitlements": ["App.entitlements"],
+    }
+    for name, dests in copies.items():
+        for d in dests:
+            dst = os.path.join(app_dir, d)
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            shutil.copyfile(os.path.join(src, name), dst)
+    sb = os.path.join(app_dir, "App", "Base.lproj", "Main.storyboard")
+    t = open(sb, encoding="utf-8").read()
+    if "CarlumeViewController" not in t:
+        n = len(re.findall(r'customClass="CAPBridgeViewController" customModule="Capacitor"', t))
+        must(n == 1, "Main.storyboard: CAPBridgeViewController nicht gefunden – " + t[:600])
+        t = t.replace('customClass="CAPBridgeViewController" customModule="Capacitor"',
+                      'customClass="CarlumeViewController" customModule="App" customModuleProvider="target"')
+        open(sb, "w", encoding="utf-8").write(t)
+    subprocess.run(["ruby", os.path.join(ROOT, "tools", "ios_widget.rb")], check=True)
+    print("iOS-Widget vorbereitet: Startansicht CarlumeViewController, Ziel CarlumeWidget")
 
 def android():
     base = os.path.join(ROOT, "android", "app")

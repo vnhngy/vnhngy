@@ -17,6 +17,7 @@ Die App entsteht aus der Web-Fassung (Claude-Artifact) und wird mit [Capacitor](
 | `src/glass.css`, `src/glass.js` | Liquid-Glass-Design und flüssige Bewegungen (letzte Stil-Schicht, gleitende Linse in Leiste und Unterreitern, Haptik) |
 | `tools/build_www.py` | baut `www/` (App-Inhalt) und `capacitor.config.json` |
 | `tools/patch_native.py` | passt die erzeugten iOS-/Android-Projekte an (Berechtigungen, Version, nur iPhone) |
+| `native-ios/`, `tools/ios_widget.rb` | iPhone-Widget (Start- und Sperrbildschirm): Swift-Code, Widget-Ziel im Xcode-Projekt, App-Gruppe `group.de.vinhnguyen.carlume` |
 | `tools/logo.py`, `assets/` | Logo, App-Symbol und Startbild |
 | `media/osm/` | Kartenkacheln Deutschland (OpenStreetMap, ODbL) |
 | `.github/workflows/carlume-app.yml` | automatischer Bau bei GitHub |

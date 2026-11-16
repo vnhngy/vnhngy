@@ -103,8 +103,10 @@ jobs:
           XC=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)
           if [ -z "$XC" ]; then echo "::error::Kein Xcode 26 auf dem Runner gefunden"; ls /Applications | grep Xcode; exit 1; fi
           sudo xcode-select -s "$XC"; xcodebuild -version | tee -a build.log
+      - uses: ruby/setup-ruby@v1
+        with: { ruby-version: "3.3" }
       - name: Abhängigkeiten
-        run: set -o pipefail; npm install --no-audit --no-fund 2>&1 | tee -a build.log
+        run: set -o pipefail; gem install xcodeproj -N 2>&1 | tail -n 2 | tee -a build.log; npm install --no-audit --no-fund 2>&1 | tee -a build.log
       - name: Web-Teil bauen
         run: set -o pipefail; python3 tools/build_www.py 2>&1 | tee -a build.log
       - name: iOS-Projekt erzeugen
@@ -118,7 +120,7 @@ jobs:
         run: |
           set -o pipefail
           xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator \
-            -destination 'generic/platform=iOS Simulator' -derivedDataPath build-ios CODE_SIGNING_ALLOWED=NO build 2>&1 | tail -n 400 | tee -a build.log
+            -destination 'generic/platform=iOS Simulator' -derivedDataPath build-ios CODE_SIGNING_ALLOWED=NO build 2>&1 | tee xb-sim.log | tail -n 200 >> build.log
       - name: Simulator-App packen
         run: cd build-ios/Build/Products/Debug-iphonesimulator && zip -qry "$GITHUB_WORKSPACE/carlume-simulator.zip" App.app
       - uses: actions/upload-artifact@v4
@@ -131,9 +133,15 @@ jobs:
           set -o pipefail
           xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Release -sdk iphoneos \
             -destination 'generic/platform=iOS' -derivedDataPath build-ios-dev \
-            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" build 2>&1 | tail -n 200 | tee -a build.log
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" build 2>&1 | tee xb-dev.log | tail -n 200 >> build.log
           APP=build-ios-dev/Build/Products/Release-iphoneos/App.app
           test -d "$APP" || { echo "::error::App.app für iPhone fehlt"; exit 1; }
+          # Vorläufig signieren (ad hoc), damit die Berechtigungen (App-Gruppe für das Widget) in der Datei stehen;
+          # Sideloadly signiert danach mit der eigenen Apple-ID neu.
+          for f in "$APP"/Frameworks/*; do codesign -f -s - "$f"; done
+          if [ -d "$APP/PlugIns/CarlumeWidget.appex" ]; then codesign -f -s - --entitlements ios/App/CarlumeWidget/CarlumeWidget.entitlements "$APP/PlugIns/CarlumeWidget.appex"; else echo "::warning::Widget fehlt in der IPA"; fi
+          codesign -f -s - --entitlements ios/App/App.entitlements "$APP"
+          codesign -d --entitlements :- "$APP" 2>/dev/null | head -20
           NAME=$(python3 -c "import json;c=json.load(open('app.config.json'));print(c['name']+'-'+c['version'])")
           mkdir -p "$RUNNER_TEMP/ipa/Payload" && cp -R "$APP" "$RUNNER_TEMP/ipa/Payload/"
           (cd "$RUNNER_TEMP/ipa" && zip -qry "$NAME-sideloadly.ipa" Payload && rm -rf Payload && ls -la)
@@ -169,4 +177,15 @@ jobs:
             -exportPath "$RUNNER_TEMP/export" $AUTH 2>&1 | tail -n 200 | tee -a build.log
       - name: Fehler sichtbar machen
         if: failure()
-        run: python3 -c "import sys;t=open('build.log',errors='replace').read()[-6000:];t=t.replace('%','%25').replace('\r','').replace('\n','%0A');print('::error title=iOS-Bau fehlgeschlagen::'+t)"
+        run: |
+          python3 - <<'PY'
+          import glob
+          errs = []
+          for f in glob.glob("xb-*.log") + ["build.log"]:
+              try:
+                  for line in open(f, errors="replace"):
+                      if ("error:" in line or "fatal error" in line) and line.strip() not in errs: errs.append(line.strip())
+              except FileNotFoundError: pass
+          t = "\n".join(errs[:40]) + "\n----\n" + open("build.log", errors="replace").read()[-3000:]
+          print("::error title=iOS-Bau fehlgeschlagen::" + t.replace("%", "%25").replace("\r", "").replace("\n", "%0A"))
+          PY
