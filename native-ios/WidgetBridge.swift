@@ -34,6 +34,7 @@ public class WidgetBridgePlugin: CAPPlugin, CAPBridgedPlugin {
 class CarlumeViewController: CAPBridgeViewController {
     override open func capacitorDidLoad() {
         bridge?.registerPluginInstance(WidgetBridgePlugin())
+        NSLog("Carlume: Widget-Brücke angemeldet (bridge %@)", bridge == nil ? "fehlt" : "da")
         WidgetShots.runIfRequested()
     }
 }
@@ -43,7 +44,12 @@ class CarlumeViewController: CAPBridgeViewController {
 enum WidgetShots {
     static func runIfRequested() {
         let p = ProcessInfo.processInfo
+        NSLog("Carlume: Start, Parameter %@", p.arguments.joined(separator: " "))
         guard p.arguments.contains("-carlumeWidgetShots") || p.environment["CARLUME_WIDGET_SHOTS"] == "1" else { return }
+        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        try? FileManager.default.createDirectory(at: docs, withIntermediateDirectories: true)
+        try? "gestartet\n".write(to: docs.appendingPathComponent("widget-start.txt"), atomically: true, encoding: .utf8)
+        NSLog("Carlume: Widget-Bilder werden gezeichnet in %@", docs.path)
         if #available(iOS 17.0, *) {
             Task { @MainActor in
                 try? await Task.sleep(nanoseconds: 6_000_000_000)   // App meldet in der Zeit ihren Ort ans Widget
@@ -87,6 +93,7 @@ enum WidgetShots {
             save()
         }
         save()
+        NSLog("Carlume: zeichne Muster")
         draw("muster", .sample(lang: "de"))
         draw("leer", CarlumeEntry(date: Date(), data: nil, message: "Öffne Carlume einmal und wähle deinen Ort. Oder: Widget gedrückt halten → Widget bearbeiten → Ort eintragen.", lang: "de"))
         draw("app", await CarlumeLoader.entry(fuelOverride: nil, place: nil))

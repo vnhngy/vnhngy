@@ -66,6 +66,9 @@ jobs:
           DATA=$(xcrun simctl get_app_container "$DEV" "$ID" data)
           for i in $(seq 1 30); do grep -q fertig "$DATA/Documents/widget-log.txt" 2>/dev/null && break; sleep 3; done
           xcrun simctl io "$DEV" screenshot shots/ios/widget-lauf.png || true
+          ls -la "$DATA/Documents" | head -30 > shots/ios/widget-dokumente.txt || true
+          xcrun simctl spawn "$DEV" log show --last 4m --style compact --predicate 'process == "App"' 2>/dev/null \
+            | grep -E "Carlume|WidgetBridge|Widget|⚡️|rror" | tail -n 250 > shots/ios/app-log.txt || true
           mkdir -p shots/ios/widget
           cp "$DATA"/Documents/widget-* shots/ios/widget/ 2>/dev/null || echo "keine Widget-Bilder" > shots/ios/widget/fehlt.txt
           ls shots/ios/widget | head -50

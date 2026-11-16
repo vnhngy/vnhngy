@@ -8,7 +8,7 @@
   const diag = tag => { const t = document.getElementById("tabs"), c = t && getComputedStyle(t), h = getComputedStyle(document.documentElement);
     const d = document.createElement("div"); d.style.cssText = "position:fixed;left:8px;right:8px;top:45%;z-index:99;background:#000d;color:#0f0;font:11px monospace;padding:6px;border-radius:6px;white-space:pre-wrap";
     d.textContent = [tag, "lg " + !!document.getElementById("lg") + " · tabs r " + (c && c.borderTopLeftRadius) + " · pos " + (c && c.position), "bg " + (c && c.backgroundColor) + " · bf " + (c && (c.backdropFilter || c.webkitBackdropFilter)),
-      "wall " + h.backgroundImage.slice(0, 48), "dark " + matchMedia("(prefers-color-scheme: dark)").matches + " · rt " + matchMedia("(prefers-reduced-transparency: reduce)").matches + " · theme " + (document.documentElement.dataset.theme || "-") + " · " + innerWidth + "x" + innerHeight].join("\n");
+      "wall " + h.backgroundImage.slice(0, 48), "widget " + (window.Capacitor?.isPluginAvailable?.("WidgetBridge") ? "da" : "fehlt"), "dark " + matchMedia("(prefers-color-scheme: dark)").matches + " · rt " + matchMedia("(prefers-reduced-transparency: reduce)").matches + " · theme " + (document.documentElement.dataset.theme || "-") + " · " + innerWidth + "x" + innerHeight].join("\n");
     document.body.appendChild(d); setTimeout(() => d.remove(), 12000); };
   await w(4000); diag("Start +4s"); await w(5000);   // Foto 1 bei ~8 s: Willkommen
   const q = document.querySelector("#splashQuery");
