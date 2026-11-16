@@ -1,0 +1,600 @@
+11-16 10:43:54.226  4868  4868 D nativeloader: InitVndkspLibrariesProduct: android.hardware.common-V2-ndk.so:android.hardware.common.fmq-V1-ndk.so:android.hardware.graphics.allocator-V2-ndk.so:android.hardware.graphics.common-V4-ndk.so:android.hardware.graphics.common@1.0.so:android.hardware.graphics.common@1.1.so:android.hardware.graphics.common@1.2.so:android.hardware.graphics.composer3-V1-ndk.so:android.hardware.graphics.mapper@2.0.so:android.hardware.graphics.mapper@2.1.so:android.hardware.graphics.mapper@3.0.so:android.hardware.graphics.mapper@4.0.so:android.hardware.renderscript@1.0.so:android.hidl.memory.token@1.0.so:android.hidl.memory@1.0-impl.so:android.hidl.memory@1.0.so:android.hidl.safe_union@1.0.so:libRSCpuRef.so:libRSDriver.so:libRS_internal.so:libbase.so:libbcinfo.so:libblas.so:libc++.so:libcompiler_rt.so:libcutils.so:libdmabufheap.so:libgralloctypes.so:libhardware.so:libhidlbase.so:libhidlmemory.so:libion.so:libjsoncpp.so:liblzma.so:libprocessgroup.so:libunwindstack.so:libutils.so:libutilscallstack.so:libz.so
+11-16 10:43:54.255  1778  2385 D StrictMode: 	at libcore.io.BlockGuardOs.open(BlockGuardOs.java:269)
+11-16 10:43:54.255  1778  2385 D StrictMode: 	at libcore.io.ForwardingOs.open(ForwardingOs.java:563)
+11-16 10:43:54.255  1778  2385 D StrictMode: 	at libcore.io.IoBridge.open(IoBridge.java:560)
+11-16 10:43:54.255  1778  2385 D StrictMode: 	at libcore.io.BlockGuardOs.fstat(BlockGuardOs.java:194)
+11-16 10:43:54.255  1778  2385 D StrictMode: 	at libcore.io.ForwardingOs.fstat(ForwardingOs.java:261)
+11-16 10:43:54.255  1778  2385 D StrictMode: 	at libcore.io.IoBridge.open(IoBridge.java:563)
+11-16 10:43:54.255  1778  2385 D StrictMode: 	at libcore.io.BlockGuardOs.read(BlockGuardOs.java:324)
+11-16 10:43:54.255  1778  2385 D StrictMode: 	at libcore.io.ForwardingOs.read(ForwardingOs.java:613)
+11-16 10:43:54.255  1778  2385 D StrictMode: 	at libcore.io.IoBridge.read(IoBridge.java:604)
+11-16 10:43:54.902  4868  4868 E BugleRcsEngine: [2] JibeService.onDestroy: JibeService: onDestroy() unregister factory exception: java.lang.IllegalArgumentException: Receiver not registered: com.google.android.ims.receiver.sip.DebugOptionsReceiver@e858be4
+11-16 10:43:54.902  4868  4868 E BugleRcsEngine: 	at com.google.android.ims.receiver.sip.DebugOptionsReceiver.b(PG:1)
+11-16 10:43:54.927  4868  4868 E ActivityThread: Service com.google.android.ims.service.JibeService has leaked IntentReceiver com.google.android.ims.receiver.sip.DebugOptionsReceiver@e858be4 that was originally registered here. Are you missing a call to unregisterReceiver()?
+11-16 10:43:54.927  4868  4868 E ActivityThread: android.app.IntentReceiverLeaked: Service com.google.android.ims.service.JibeService has leaked IntentReceiver com.google.android.ims.receiver.sip.DebugOptionsReceiver@e858be4 that was originally registered here. Are you missing a call to unregisterReceiver()?
+11-16 10:43:54.927  4868  4868 E ActivityThread: 	at com.google.android.ims.receiver.sip.DebugOptionsReceiver.a(PG:2)
+11-16 10:43:55.463  1778  2248 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:43:55.844  1778  2268 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:43:56.104  4868  4868 E BugleRcsEngine: [2] JibeService.onDestroy: JibeService: onDestroy() unregister factory exception: java.lang.IllegalArgumentException: Receiver not registered: com.google.android.ims.receiver.sip.DebugOptionsReceiver@e858be4
+11-16 10:43:56.104  4868  4868 E BugleRcsEngine: 	at com.google.android.ims.receiver.sip.DebugOptionsReceiver.b(PG:1)
+11-16 10:43:56.729  1450  3255 I GmsDebugLogger: [78] 
+11-16 10:43:56.761  2737  2856 W libc    : Access denied finding property "persist.adb.tls_server.enable"
+11-16 10:43:56.762  2737  2856 W libc    : Access denied finding property "service.adb.tls.port"
+11-16 10:43:57.283  1450  3255 I GmsDebugLogger: [73] 1801
+11-16 10:43:57.287  1450  3255 I GmsDebugLogger: [30] [VisionOcrDynamite.integ:231602402100000],[VisionBarcode.optional:231818100800],[TfliteDynamiteDynamite.integ:264010405100800],[MlkitOcrCommon.optional:231818100800],[MapsCoreDynamite.integ:231112103100800],[MlkitBarcodeUi.optional:231818100000]
+11-16 10:43:58.278  4381  4464 V DynamiteModule: Dynamite loader version >= 2, using loadModule2NoCrashUtils
+11-16 10:43:58.694  1450  3255 I GmsDebugLogger: [46] container:2318189190800
+11-16 10:43:58.978  1450  3255 I GmsDebugLogger: [83] 1 []
+11-16 10:43:59.346  1450  4248 I GmsDebugLogger: [73] 1801
+11-16 10:43:59.364  1450  4248 I GmsDebugLogger: [30] [TfliteDynamiteDynamite.integ:264010405100800]
+11-16 10:43:59.415  1450  4248 I GmsDebugLogger: [83] 1 [tflite_dynamite]
+11-16 10:43:59.520  4381  5070 I cr_CronetUrlRequestContext: destroyNativeStreamLocked org.chromium.net.impl.CronetBidirectionalStream@338d1da
+11-16 10:43:59.564  1450  4248 I GmsDebugLogger: [73] 1801
+11-16 10:43:59.576  1450  4248 I GmsDebugLogger: [30] [VisionOcrDynamite.integ:231602402100000],[TfliteDynamiteDynamite.integ:264010405100800],[MlkitOcrCommon.optional:231818100800]
+11-16 10:43:59.577  1450  4248 I GmsDebugLogger: [83] 1 [vision.ocr]
+11-16 10:43:59.746  5097  5097 E android.webview: Not starting debugger since process cannot load the jdwp agent.
+11-16 10:43:59.780  1450  4248 I GmsDebugLogger: [73] 1801
+11-16 10:43:59.782  1450  4248 I GmsDebugLogger: [30] [MapsCoreDynamite.integ:231112103100800]
+11-16 10:43:59.807  1450  4248 I GmsDebugLogger: [83] 1 [maps_core]
+11-16 10:43:59.844  1450  3767 I GmsDebugLogger: [73] 1801
+11-16 10:43:59.853  1450  3767 I GmsDebugLogger: [30] [VisionBarcode.optional:231818100800],[TfliteDynamiteDynamite.integ:264010405100800],[MlkitBarcodeUi.optional:231818100000]
+11-16 10:43:59.870  1450  3767 I GmsDebugLogger: [83] 1 [mlkit.barcode.ui]
+11-16 10:43:59.910  1450  4722 I GmsDebugLogger: [73] 1801
+11-16 10:43:59.919  1450  4722 I GmsDebugLogger: [30] [TfliteDynamiteDynamite.integ:264010405100800]
+11-16 10:43:59.924  1450  4722 I GmsDebugLogger: [83] 1 [tflite_dynamite]
+11-16 10:44:00.189  1778  2836 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:00.996  1778  2245 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:01.395  1778  2268 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:01.453  1057  1081 W libc    : Access denied finding property "ro.vendor.aware_available"
+11-16 10:44:01.462  1057  1081 W libc    : Access denied finding property "ro.vendor.aware_available"
+11-16 10:44:01.484  1057  4291 W libc    : Access denied finding property "ro.vendor.aware_available"
+11-16 10:44:01.488  1057  4291 W libc    : Access denied finding property "ro.vendor.aware_available"
+11-16 10:44:01.523  1057  4291 V SettingsSearchProvider: com.android.settings.development.WirelessDebuggingFragment$2@4544c5 tried to add an empty non-indexable key
+11-16 10:44:01.606   527   580 W ActivityManager: Scheduling restart of crashed service com.google.android.settings.intelligence/.modules.routines.impl.RoutinesJobIntentService in 1000ms for connection
+11-16 10:44:01.606   527   580 W ActivityManager: Scheduling restart of crashed service com.google.android.settings.intelligence/.modules.routines.impl.PruneDatabaseJobService in 11000ms for connection
+11-16 10:44:01.781  1057  1081 W libc    : Access denied finding property "ro.vendor.aware_available"
+11-16 10:44:01.884  1057  1081 W libc    : Access denied finding property "ro.vendor.aware_available"
+11-16 10:44:01.909  1057  4291 W libc    : Access denied finding property "ro.vendor.aware_available"
+11-16 10:44:01.935  1057  1081 W libc    : Access denied finding property "ro.vendor.aware_available"
+11-16 10:44:01.942  1057  4291 W libc    : Access denied finding property "ro.vendor.aware_available"
+11-16 10:44:01.964  1057  4291 W libc    : Access denied finding property "ro.vendor.aware_available"
+11-16 10:44:02.011  1057  1081 W libc    : Access denied finding property "ro.vendor.aware_available"
+11-16 10:44:02.052  5134  5134 E gs.intelligence: Not starting debugger since process cannot load the jdwp agent.
+11-16 10:44:02.129  1778  2248 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:02.246  1057  4291 W libc    : Access denied finding property "ro.vendor.aware_available"
+11-16 10:44:02.252  1057  1081 D PrefCtrlListHelper: Could not find Context-only controller for pref: com.google.android.settings.applications.specialaccess.DebuggingDataPreferenceController
+11-16 10:44:02.267  5134  5134 D nativeloader: InitLlndkLibrariesProduct: libEGL.so:libGLESv1_CM.so:libGLESv2.so:libGLESv3.so:libRS.so:libandroid_net.so:libbinder_ndk.so:libc.so:libcgrouprc.so:libclang_rt.asan-x86_64-android.so:libcom.android.tethering.connectivity_native.so:libdl.so:libft2.so:liblog.so:libm.so:libmediandk.so:libnativewindow.so:libneuralnetworks.so:libselinux.so:libsync.so:libvndksupport.so:libvulkan.so
+11-16 10:44:02.268  5134  5134 D nativeloader: InitVndkspLibrariesProduct: android.hardware.common-V2-ndk.so:android.hardware.common.fmq-V1-ndk.so:android.hardware.graphics.allocator-V2-ndk.so:android.hardware.graphics.common-V4-ndk.so:android.hardware.graphics.common@1.0.so:android.hardware.graphics.common@1.1.so:android.hardware.graphics.common@1.2.so:android.hardware.graphics.composer3-V1-ndk.so:android.hardware.graphics.mapper@2.0.so:android.hardware.graphics.mapper@2.1.so:android.hardware.graphics.mapper@3.0.so:android.hardware.graphics.mapper@4.0.so:android.hardware.renderscript@1.0.so:android.hidl.memory.token@1.0.so:android.hidl.memory@1.0-impl.so:android.hidl.memory@1.0.so:android.hidl.safe_union@1.0.so:libRSCpuRef.so:libRSDriver.so:libRS_internal.so:libbase.so:libbcinfo.so:libblas.so:libc++.so:libcompiler_rt.so:libcutils.so:libdmabufheap.so:libgralloctypes.so:libhardware.so:libhidlbase.so:libhidlmemory.so:libion.so:libjsoncpp.so:liblzma.so:libprocessgroup.so:libunwindstack.so:libutils.so:libutilscallstack.so:libz.so
+11-16 10:44:03.104  1778  2268 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:03.289  1057  4291 W libc    : Access denied finding property "ro.vendor.aware_available"
+11-16 10:44:03.518  1057  4291 D PrefCtrlListHelper: Could not find Context-only controller for pref: com.google.android.settings.applications.specialaccess.DebuggingDataPreferenceController
+11-16 10:44:03.824  1778  2245 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:04.157  1778  2268 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:04.341  1778  2248 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:04.782  1778  2245 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:04.970  1778  2268 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:05.265  1778  2248 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:05.434  1778  2268 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:05.705  1095  1095 I ContentCaptureHelper: Setting logging level to DEBUG
+11-16 10:44:05.819  1778  2248 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:05.829   527  2347 I ActivityTaskManager: Activity reported stop, but no longer stopping: ActivityRecord{f2533c8 u0 com.google.android.apps.nexuslauncher/.NexusLauncherActivity t7} STOPPED
+11-16 10:44:06.401  1778  2248 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:06.638  1778  2268 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:06.849  1778  2245 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:07.345  1778  2215 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:07.519  1778  2248 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:07.737  1778  2268 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:07.952  1778  2245 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:08.313  1778  2268 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:08.419  2737  3725 W libc    : Access denied finding property "persist.adb.tls_server.enable"
+11-16 10:44:08.419  2737  3725 W libc    : Access denied finding property "service.adb.tls.port"
+11-16 10:44:08.784  1778  2215 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:09.257  1450  4998 I GmsDebugLogger: [46] container:2318189190800
+11-16 10:44:09.302   527  2294 I ActivityManager: Process com.google.android.gms.persistent (pid 1411) has died: fg  BTOP
+11-16 10:44:09.306   527  2294 I ActivityManager: Killing 2606:de.vinhnguyen.carlume/u0a192 (adj 0): depends on provider com.google.android.gms/.fonts.provider.FontsProvider in dying proc com.google.android.gms.persistent (adj -10000)
+11-16 10:44:09.308   527  2294 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.lockbox.service.LockboxBrokerService in 1000ms for connection
+11-16 10:44:09.308   527  2294 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.nearby.messages.service.NearbyMessagesService in 11000ms for start-requested
+11-16 10:44:09.308   527  2294 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.chimera.PersistentIntentOperationService in 21000ms for start-requested
+11-16 10:44:09.308   527  2294 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/com.google.android.location.internal.server.GoogleLocationService in 31000ms for start-requested
+11-16 10:44:09.308   527  2294 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.chimera.PersistentBoundBrokerService in 41000ms for connection
+11-16 10:44:09.308   527  2294 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.clearcut.debug.ClearcutDebugDumpService in 51000ms for start-requested
+11-16 10:44:09.308   527  2294 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.gcm.nts.SchedulerService in 61000ms for start-requested
+11-16 10:44:09.308   527  2294 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.auth.setup.devicesignals.LockScreenService in 71000ms for start-requested
+11-16 10:44:09.308   527  2294 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.geotimezone.GeoTimeZoneService in 81000ms for connection
+11-16 10:44:09.308   527  2294 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/com.google.android.location.network.NetworkLocationService in 91000ms for connection
+11-16 10:44:09.308   527  2294 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.chimera.PersistentApiService in 100999ms for connection
+11-16 10:44:09.308   527  2294 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.nearby.exposurenotification.service.ExposureMatchingService in 110999ms for start-requested
+11-16 10:44:09.308   527  2294 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.nearby.sharing.ReceiveSurfaceService in 120999ms for start-requested
+11-16 10:44:09.308   527  2294 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.location.geocode.GeocodeService in 130999ms for connection
+11-16 10:44:09.308   527  2294 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/com.google.android.location.fused.FusedLocationService in 140999ms for connection
+11-16 10:44:09.308   527  2294 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.nearby.exposurenotification.service.ExposureNotificationInternalService in 150999ms for start-requested
+11-16 10:44:09.308   527  2294 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.gcm.GcmService in 160999ms for start-requested
+11-16 10:44:09.308   527  2294 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.chimera.PersistentDirectBootAwareApiService in 170999ms for connection
+11-16 10:44:09.308   527  2294 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.location.persistent.LocationPersistentService in 180999ms for start-requested
+11-16 10:44:09.308   527  2294 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/com.google.android.location.internal.GoogleLocationManagerService in 190999ms for start-requested
+11-16 10:44:09.308   527  2294 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/com.google.android.location.internal.server.HardwareArProviderService in 200999ms for connection
+11-16 10:44:09.308   527  2294 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.thunderbird.EmergencyPersistentService in 210999ms for start-requested
+11-16 10:44:09.308   527  2294 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.common.stats.GmsCoreStatsService in 220999ms for start-requested
+11-16 10:44:09.308   527  2294 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.deviceconnection.service.DeviceConnectionWatcherService in 230999ms for start-requested
+11-16 10:44:09.308   527  2294 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/com.google.android.contextmanager.service.ContextManagerService in 240999ms for start-requested
+11-16 10:44:09.535     0     0 W binder_debug: 12 callbacks suppressed
+11-16 10:44:09.339   527  2345 I ActivityManager: Process com.google.android.gms (pid 1450) has died: fg  BFGS
+11-16 10:44:09.354   527  2345 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.chimera.GmsApiService in 250953ms for connection
+11-16 10:44:09.354   527  2345 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.chimera.GmsBoundBrokerService in 260953ms for connection
+11-16 10:44:09.355   527  2345 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.chimera.GmsIntentOperationService in 270953ms for start-requested
+11-16 10:44:09.355   527  2345 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.chimera.container.ExternalFileApkService in 280953ms for start-requested
+11-16 10:44:09.355   527  2345 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.icing.service.AppIndexingService in 290953ms for connection
+11-16 10:44:09.370  5366  5366 E .gms.persistent: Not starting debugger since process cannot load the jdwp agent.
+11-16 10:44:09.391   527  2344 W ActivityManager: Exception when unbinding service de.vinhnguyen.carlume/org.chromium.content.app.SandboxedProcessService0:0
+11-16 10:44:09.394   527  2344 I ActivityManager: Killing 3006:com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0/u0a192i0 (adj 900): isolated not needed
+11-16 10:44:09.408   527  2344 W ActivityTaskManager: Force removing ActivityRecord{e83b8ee u0 de.vinhnguyen.carlume/.MainActivity t8}: app died, no saved state
+11-16 10:44:09.551   527   556 W ActivityManager: Rescheduling restart of crashed service com.google.android.gms/.chimera.GmsBoundBrokerService in 803ms for other
+11-16 10:44:09.552   527   556 W ActivityManager: Rescheduling restart of crashed service com.google.android.gms/.chimera.GmsIntentOperationService in 10803ms for other
+11-16 10:44:09.552   527   556 W ActivityManager: Rescheduling restart of crashed service com.google.android.gms/.chimera.container.ExternalFileApkService in 20803ms for other
+11-16 10:44:09.552   527   556 W ActivityManager: Rescheduling restart of crashed service com.google.android.gms/.icing.service.AppIndexingService in 30803ms for other
+11-16 10:44:09.564  5366  5366 D nativeloader: InitLlndkLibrariesProduct: libEGL.so:libGLESv1_CM.so:libGLESv2.so:libGLESv3.so:libRS.so:libandroid_net.so:libbinder_ndk.so:libc.so:libcgrouprc.so:libclang_rt.asan-x86_64-android.so:libcom.android.tethering.connectivity_native.so:libdl.so:libft2.so:liblog.so:libm.so:libmediandk.so:libnativewindow.so:libneuralnetworks.so:libselinux.so:libsync.so:libvndksupport.so:libvulkan.so
+11-16 10:44:09.570  5366  5366 D nativeloader: InitVndkspLibrariesProduct: android.hardware.common-V2-ndk.so:android.hardware.common.fmq-V1-ndk.so:android.hardware.graphics.allocator-V2-ndk.so:android.hardware.graphics.common-V4-ndk.so:android.hardware.graphics.common@1.0.so:android.hardware.graphics.common@1.1.so:android.hardware.graphics.common@1.2.so:android.hardware.graphics.composer3-V1-ndk.so:android.hardware.graphics.mapper@2.0.so:android.hardware.graphics.mapper@2.1.so:android.hardware.graphics.mapper@3.0.so:android.hardware.graphics.mapper@4.0.so:android.hardware.renderscript@1.0.so:android.hidl.memory.token@1.0.so:android.hidl.memory@1.0-impl.so:android.hidl.memory@1.0.so:android.hidl.safe_union@1.0.so:libRSCpuRef.so:libRSDriver.so:libRS_internal.so:libbase.so:libbcinfo.so:libblas.so:libc++.so:libcompiler_rt.so:libcutils.so:libdmabufheap.so:libgralloctypes.so:libhardware.so:libhidlbase.so:libhidlmemory.so:libion.so:libjsoncpp.so:liblzma.so:libprocessgroup.so:libunwindstack.so:libutils.so:libutilscallstack.so:libz.so
+11-16 10:44:10.478  5432  5432 E gle.android.gms: Not starting debugger since process cannot load the jdwp agent.
+11-16 10:44:10.521   844   876 V WindowManagerShell:  Checking filter Pair{{types=[] flags=0x0] notFlags=0x0 checks=[{atype=dream independent=true modes=[OPEN,TO_FRONT] flags=NONE mustBeTask=false order=ANY topActivity=null},{atype=home independent=true modes=[CLOSE,TO_BACK] flags=NONE mustBeTask=false order=ANY topActivity=null}]} RemoteTransition { remoteTransition = android.window.IRemoteTransition$Stub$Proxy@edefd60, appThread = android.app.IApplicationThread$Stub$Proxy@e655219, debugName = LauncherToDream }}
+11-16 10:44:10.521   844   876 V WindowManagerShell:  Checking filter Pair{{types=[] flags=0x0] notFlags=0x100 checks=[{atype=home independent=true modes=[OPEN,TO_FRONT] flags=NONE mustBeTask=false order=TOP topActivity=ComponentInfo{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity}},{atype=standard independent=true modes=[CLOSE,TO_BACK] flags=NONE mustBeTask=false order=ANY topActivity=null}]} RemoteTransition { remoteTransition = android.window.IRemoteTransition$Stub$Proxy@87dc2de, appThread = android.app.IApplicationThread$Stub$Proxy@49fccbf, debugName = QuickstepLaunchHome }}
+11-16 10:44:10.936  5432  5432 D nativeloader: InitLlndkLibrariesProduct: libEGL.so:libGLESv1_CM.so:libGLESv2.so:libGLESv3.so:libRS.so:libandroid_net.so:libbinder_ndk.so:libc.so:libcgrouprc.so:libclang_rt.asan-x86_64-android.so:libcom.android.tethering.connectivity_native.so:libdl.so:libft2.so:liblog.so:libm.so:libmediandk.so:libnativewindow.so:libneuralnetworks.so:libselinux.so:libsync.so:libvndksupport.so:libvulkan.so
+11-16 10:44:10.937  5432  5432 D nativeloader: InitVndkspLibrariesProduct: android.hardware.common-V2-ndk.so:android.hardware.common.fmq-V1-ndk.so:android.hardware.graphics.allocator-V2-ndk.so:android.hardware.graphics.common-V4-ndk.so:android.hardware.graphics.common@1.0.so:android.hardware.graphics.common@1.1.so:android.hardware.graphics.common@1.2.so:android.hardware.graphics.composer3-V1-ndk.so:android.hardware.graphics.mapper@2.0.so:android.hardware.graphics.mapper@2.1.so:android.hardware.graphics.mapper@3.0.so:android.hardware.graphics.mapper@4.0.so:android.hardware.renderscript@1.0.so:android.hidl.memory.token@1.0.so:android.hidl.memory@1.0-impl.so:android.hidl.memory@1.0.so:android.hidl.safe_union@1.0.so:libRSCpuRef.so:libRSDriver.so:libRS_internal.so:libbase.so:libbcinfo.so:libblas.so:libc++.so:libcompiler_rt.so:libcutils.so:libdmabufheap.so:libgralloctypes.so:libhardware.so:libhidlbase.so:libhidlmemory.so:libion.so:libjsoncpp.so:liblzma.so:libprocessgroup.so:libunwindstack.so:libutils.so:libutilscallstack.so:libz.so
+11-16 10:44:11.226  1778  2248 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:11.708  1778  2215 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:11.767   527   998 I ActivityManager: Process com.google.android.gms.ui (pid 4397) has died: fg  SVC 
+11-16 10:44:11.767   527   998 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.chimera.UiIntentOperationService in 1000ms for start-requested
+11-16 10:44:12.286  1095  1095 D SearchTargetUtil: layoutType=short_icon_row resultType=131072 packageName=com.google.android.googlequicksearchbox extras=Bundle{suggestion_type=33,suggest_truncate_start=false,is_answer=false,is_entity=false,is_personal=false,suggest_raw_text=xbox project helix console,group_id=web79258,response_id=66e03bfc-e242-4745-a602-99edd9899e93,support_query_builder=false,} searchAction=xbox project helix console searchActionExtras=Bundle{learn_more_url=https://support.google.com/websearch/answer/106230?hl=106230,suggestion_action_text=Report this,should_start_for_result=true,allow_pinning=true,skip_logging_in_target_handler=false,suggestion_action_rpc=2,}ParentID: null targetID: 2e9788ab-112d-46f2-8914-51933a96bde8
+11-16 10:44:12.808  5621  5621 E .android.gms.ui: Not starting debugger since process cannot load the jdwp agent.
+11-16 10:44:12.825  5366  5490 I SemanticLocation: 	at libcore.io.IoBridge.open(IoBridge.java:574)
+11-16 10:44:12.825  5366  5490 I SemanticLocation: 	at libcore.io.Linux.open(Native Method)
+11-16 10:44:12.825  5366  5490 I SemanticLocation: 	at libcore.io.ForwardingOs.open(ForwardingOs.java:563)
+11-16 10:44:12.825  5366  5490 I SemanticLocation: 	at libcore.io.BlockGuardOs.open(BlockGuardOs.java:274)
+11-16 10:44:12.825  5366  5490 I SemanticLocation: 	at libcore.io.ForwardingOs.open(ForwardingOs.java:563)
+11-16 10:44:12.825  5366  5490 I SemanticLocation: 	at libcore.io.IoBridge.open(IoBridge.java:560)
+11-16 10:44:12.935  5366  5490 I SemanticLocation: 	at libcore.io.IoBridge.open(IoBridge.java:574)
+11-16 10:44:12.935  5366  5490 I SemanticLocation: 	at libcore.io.Linux.open(Native Method)
+11-16 10:44:12.935  5366  5490 I SemanticLocation: 	at libcore.io.ForwardingOs.open(ForwardingOs.java:563)
+11-16 10:44:12.935  5366  5490 I SemanticLocation: 	at libcore.io.BlockGuardOs.open(BlockGuardOs.java:274)
+11-16 10:44:12.935  5366  5490 I SemanticLocation: 	at libcore.io.ForwardingOs.open(ForwardingOs.java:563)
+11-16 10:44:12.935  5366  5490 I SemanticLocation: 	at libcore.io.IoBridge.open(IoBridge.java:560)
+11-16 10:44:12.981  5621  5621 D nativeloader: InitLlndkLibrariesProduct: libEGL.so:libGLESv1_CM.so:libGLESv2.so:libGLESv3.so:libRS.so:libandroid_net.so:libbinder_ndk.so:libc.so:libcgrouprc.so:libclang_rt.asan-x86_64-android.so:libcom.android.tethering.connectivity_native.so:libdl.so:libft2.so:liblog.so:libm.so:libmediandk.so:libnativewindow.so:libneuralnetworks.so:libselinux.so:libsync.so:libvndksupport.so:libvulkan.so
+11-16 10:44:12.982  5621  5621 D nativeloader: InitVndkspLibrariesProduct: android.hardware.common-V2-ndk.so:android.hardware.common.fmq-V1-ndk.so:android.hardware.graphics.allocator-V2-ndk.so:android.hardware.graphics.common-V4-ndk.so:android.hardware.graphics.common@1.0.so:android.hardware.graphics.common@1.1.so:android.hardware.graphics.common@1.2.so:android.hardware.graphics.composer3-V1-ndk.so:android.hardware.graphics.mapper@2.0.so:android.hardware.graphics.mapper@2.1.so:android.hardware.graphics.mapper@3.0.so:android.hardware.graphics.mapper@4.0.so:android.hardware.renderscript@1.0.so:android.hidl.memory.token@1.0.so:android.hidl.memory@1.0-impl.so:android.hidl.memory@1.0.so:android.hidl.safe_union@1.0.so:libRSCpuRef.so:libRSDriver.so:libRS_internal.so:libbase.so:libbcinfo.so:libblas.so:libc++.so:libcompiler_rt.so:libcutils.so:libdmabufheap.so:libgralloctypes.so:libhardware.so:libhidlbase.so:libhidlmemory.so:libion.so:libjsoncpp.so:liblzma.so:libprocessgroup.so:libunwindstack.so:libutils.so:libutilscallstack.so:libz.so
+11-16 10:44:12.986  5432  5538 I GmsDebugLogger: [73] 1801
+11-16 10:44:12.989  5432  5538 I GmsDebugLogger: [30] [TfliteDynamiteDynamite.integ:264010405100800]
+11-16 10:44:12.990  5432  5538 I GmsDebugLogger: [83] 1 [tflite_dynamite]
+11-16 10:44:13.045  2737  4736 W libc    : Access denied finding property "persist.adb.tls_server.enable"
+11-16 10:44:13.045  2737  4736 W libc    : Access denied finding property "service.adb.tls.port"
+11-16 10:44:17.072   527  1938 E RecoverySnapshotStorage: 	at libcore.io.IoBridge.open(IoBridge.java:574)
+11-16 10:44:17.072   527  1938 E RecoverySnapshotStorage: 	at libcore.io.Linux.open(Native Method)
+11-16 10:44:17.072   527  1938 E RecoverySnapshotStorage: 	at libcore.io.ForwardingOs.open(ForwardingOs.java:563)
+11-16 10:44:17.072   527  1938 E RecoverySnapshotStorage: 	at libcore.io.BlockGuardOs.open(BlockGuardOs.java:274)
+11-16 10:44:17.072   527  1938 E RecoverySnapshotStorage: 	at libcore.io.IoBridge.open(IoBridge.java:560)
+11-16 10:44:17.183  5432  5540 I GmsDebugLogger: [73] 1801
+11-16 10:44:17.187  5432  5540 I GmsDebugLogger: [30] [VisionOcrDynamite.integ:231602402100000],[TfliteDynamiteDynamite.integ:264010405100800],[MlkitOcrCommon.optional:231818100800]
+11-16 10:44:17.189  5432  5540 I GmsDebugLogger: [83] 1 [vision.ocr]
+11-16 10:44:17.962  5432  5538 I GmsDebugLogger: [73] 1801
+11-16 10:44:17.971  5432  5538 I GmsDebugLogger: [30] [MapsCoreDynamite.integ:231112103100800]
+11-16 10:44:17.989  5432  5538 I GmsDebugLogger: [83] 1 [maps_core]
+11-16 10:44:18.113  5432  5537 W libc    : Access denied finding property "ro.hardware.chipname"
+11-16 10:44:18.174  2737  2868 W libc    : Access denied finding property "persist.adb.tls_server.enable"
+11-16 10:44:18.174  2737  2868 W libc    : Access denied finding property "service.adb.tls.port"
+11-16 10:44:18.442  5432  5537 I PeopleInitIntentOp: Not initializing debuggability [CONTEXT service_id=5 ]
+11-16 10:44:18.592  5432  5549 I GmsDebugLogger: [73] 1801
+11-16 10:44:18.593  5432  5549 I GmsDebugLogger: [30] [VisionBarcode.optional:231818100800],[TfliteDynamiteDynamite.integ:264010405100800],[MlkitBarcodeUi.optional:231818100000]
+11-16 10:44:18.595  5432  5549 I GmsDebugLogger: [83] 1 [mlkit.barcode.ui]
+11-16 10:44:18.843  2737  2868 W libc    : Access denied finding property "persist.adb.tls_server.enable"
+11-16 10:44:18.843  2737  2868 W libc    : Access denied finding property "service.adb.tls.port"
+11-16 10:44:18.871  5366  5486 I SemanticLocation: 	at libcore.io.IoBridge.open(IoBridge.java:574)
+11-16 10:44:18.871  5366  5486 I SemanticLocation: 	at libcore.io.Linux.open(Native Method)
+11-16 10:44:18.871  5366  5486 I SemanticLocation: 	at libcore.io.ForwardingOs.open(ForwardingOs.java:563)
+11-16 10:44:18.871  5366  5486 I SemanticLocation: 	at libcore.io.BlockGuardOs.open(BlockGuardOs.java:274)
+11-16 10:44:18.871  5366  5486 I SemanticLocation: 	at libcore.io.ForwardingOs.open(ForwardingOs.java:563)
+11-16 10:44:18.871  5366  5486 I SemanticLocation: 	at libcore.io.IoBridge.open(IoBridge.java:560)
+11-16 10:44:18.885  5366  5486 I SemanticLocation: 	at libcore.io.IoBridge.open(IoBridge.java:574)
+11-16 10:44:18.885  5366  5486 I SemanticLocation: 	at libcore.io.Linux.open(Native Method)
+11-16 10:44:18.885  5366  5486 I SemanticLocation: 	at libcore.io.ForwardingOs.open(ForwardingOs.java:563)
+11-16 10:44:18.885  5366  5486 I SemanticLocation: 	at libcore.io.BlockGuardOs.open(BlockGuardOs.java:274)
+11-16 10:44:18.885  5366  5486 I SemanticLocation: 	at libcore.io.ForwardingOs.open(ForwardingOs.java:563)
+11-16 10:44:18.885  5366  5486 I SemanticLocation: 	at libcore.io.IoBridge.open(IoBridge.java:560)
+11-16 10:44:19.012  5432  5555 I GmsDebugLogger: [73] 1801
+11-16 10:44:19.018  5432  5555 I GmsDebugLogger: [30] [TfliteDynamiteDynamite.integ:264010405100800]
+11-16 10:44:19.024  5432  5555 I GmsDebugLogger: [83] 1 [tflite_dynamite]
+11-16 10:44:19.084  5432  5555 I GmsDebugLogger: [73] 1801
+11-16 10:44:19.090  5432  5555 I GmsDebugLogger: [30] [VisionOcrDynamite.integ:231602402100000],[TfliteDynamiteDynamite.integ:264010405100800],[MlkitOcrCommon.optional:231818100800]
+11-16 10:44:19.093  5432  5555 I GmsDebugLogger: [83] 1 [vision.ocr]
+11-16 10:44:22.529  1634  1634 D AugmentedAutofillService: handleOnConnected(): debug=true, verbose=false
+11-16 10:44:22.895  5366  5846 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:25.010  5366  5846 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:25.014  5366  5848 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:26.891  5366  5568 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:26.913  5366  5582 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:26.922  5366  5582 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:26.927  5366  5582 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:26.941  5366  5582 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:26.954  5366  5582 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:26.970  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:26.982  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:26.985  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:26.999  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.028  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.047  5366  5875 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.067  5366  5875 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.071  5366  5845 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.098  5366  5877 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.120  5366  5839 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.127  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.143  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.164  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.191  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.208  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.236  5366  5577 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.242  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.258  5366  5568 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.264  5366  5845 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.274  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.289  5366  5846 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.296  5366  5875 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.305  5366  5875 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.312  5366  5875 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.332  5366  5875 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.358  5366  5875 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.363  5366  5875 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.386  5366  5876 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.427  5366  5877 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.467  5366  5846 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.487  5366  5876 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.514  5366  5876 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.547  5366  5876 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.583  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.654  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.685  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.736  5432  5553 I GmsDebugLogger: [73] 1801
+11-16 10:44:27.744  5432  5553 I GmsDebugLogger: [30] [VisionOcrDynamite.integ:231602402100000],[TfliteDynamiteDynamite.integ:264010405100800],[MlkitOcrCommon.optional:231818100800]
+11-16 10:44:27.748  5432  5553 I GmsDebugLogger: [83] 1 [vision.ocr]
+11-16 10:44:27.830  5366  5891 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.834  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.858  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.876  5366  5568 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.888  5366  5845 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.909  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.912  5366  5848 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:27.976  5366  5848 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.105  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.149  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.299  5366  5582 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.325  5366  5775 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.347  5366  5891 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.357  5366  5593 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.365  5366  5891 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.384  5366  5593 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.397  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.402  5366  5846 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.413  5366  5846 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.417  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.454  5366  5593 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.463  5366  5586 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.484  5366  5586 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.511  5366  5593 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.515  5366  5586 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.546  5366  5846 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.563  5366  5846 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.575  5366  5848 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.580  5366  5846 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.591  5366  5848 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.604  5366  5848 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.616  5366  5848 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.637  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.648  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.655  5366  5580 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.663  5366  5846 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.676  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.695  5366  5846 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.708  5366  5580 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.734  5366  5846 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.755  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.763  5366  5875 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.768  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.774  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.780  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.796  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.812  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.820  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.834  5366  5846 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.847  5366  5845 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.855  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.856  5366  5773 W PhenotypeConfigurationU: Update for unknown DeviceConfig package com.google.android.gms.chimera_debug [CONTEXT service_id=204 ]
+11-16 10:44:28.856  5366  5773 W PhenotypeConfigurationU: bwix: No package exists for config package: com.google.android.gms.chimera_debug
+11-16 10:44:28.864  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.870  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.888  5366  5845 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.903  5366  5891 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.929  5366  5845 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.937  5366  5845 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.949  5366  5845 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.969  5366  5580 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.984  5366  5580 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.991  5366  5586 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:28.998  5366  5580 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.003  5366  5593 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.019  5366  5580 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.035  5366  5580 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.043  5366  5586 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.047  5366  5775 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.051  5366  5775 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.234  5366  5891 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.263  5366  5891 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.281  5366  5891 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.291  5366  5891 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.307  5366  5580 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.320  5366  5839 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.333  5366  5839 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.349  5366  5845 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.359  5366  5845 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.365  5366  5775 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.371  5366  5775 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.382  5366  5775 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.389  5366  5568 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.408  5366  5568 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.423  5366  5775 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.430  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.441  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.444  5366  5839 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.452  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.460  5366  5839 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.463  5366  5876 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.484  5366  5876 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.491  5366  5876 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.500  5366  5876 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.504  5366  5586 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.507  5366  5775 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.514  5366  5775 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.522  5366  5775 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.536  5366  5775 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.560  5366  5775 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.585  5366  5775 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.600  5366  5775 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.612  5366  5577 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.623  5366  5577 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.644  5366  5577 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.670  5366  5845 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.699  5366  5845 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.723  5366  5845 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.727  5366  5912 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.733  5366  5775 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.747  5366  5775 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.755  5366  5775 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.792  5366  5775 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.812  5366  5775 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.816  5366  5775 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.829  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.838  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.842  5366  5912 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.844  5366  5912 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.849  5366  5875 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:29.876  5366  5568 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:30.022  5366  5580 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:30.049  5366  5580 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:30.067  5366  5580 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:30.108  5366  5580 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:30.140  5366  5580 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.152  5366  5568 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.163  5366  5586 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.186  1778  2245 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:32.229  5366  5586 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.396  1778  2248 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:32.449  5366  5586 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.504  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.583  5366  5912 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.602  1778  2215 W A       : Can't format flag AndroidGsaVelourJars__velour_crashtest_jar__name to integer.
+11-16 10:44:32.630  5366  5930 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.678  5366  5930 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.686  5366  5930 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.700  5366  5930 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.703  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.717  5366  5930 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.726  5366  5930 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.728  5366  5930 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.735  5366  5930 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.753  5366  5930 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.757  5366  5875 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.776  5366  5891 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.793  5366  5891 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.800  5366  5891 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.804  5366  5876 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.814  5366  5876 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.828  5366  5876 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.850  5366  5876 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.871  5366  5876 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.896  5366  5876 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.920  5366  5876 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.929  5366  5593 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.941  5366  5593 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.954  5366  5593 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.968  5366  5593 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.991  5366  5593 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:32.998  5366  5593 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.013  5366  5593 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.033  5366  5593 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.050  5366  5876 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.059  5366  5876 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.066  5366  5876 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.077  5366  5876 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.085  5366  5593 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.092  5366  5593 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.100  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.117  5366  5839 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.119  5366  5930 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.122  5366  5930 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.126  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.132  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.145  5366  5912 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.149  5366  5593 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.153  5366  5593 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.156  5366  5593 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.163  5366  5593 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.166  5366  5930 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.168  5366  5930 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.171  5366  5930 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.174  5366  5930 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.176  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.180  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.183  5366  5593 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.187  5366  5593 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.190  5366  5930 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.193  5366  5839 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.197  5366  5839 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.205  5366  5839 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.210  5366  5891 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.213  5366  5891 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.216  5366  5912 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.219  5366  5912 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.224  5366  5912 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.227  5366  5912 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.230  5366  5912 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.233  5366  5912 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.236  5366  5912 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.238  5366  5839 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.241  5366  5839 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.243  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.247  5366  5930 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.250  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.254  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.257  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.260  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.262  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.265  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.268  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.271  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.273  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.275  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.278  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.280  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.283  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.285  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.288  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.290  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.292  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.295  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.297  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.301  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.305  5366  5584 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.308  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.320  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.330  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.334  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.342  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.344  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.348  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.353  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.355  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.358  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.360  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.362  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.365  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.367  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.370  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.373  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.375  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.378  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.382  5366  5773 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.385  5366  5930 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.390  5366  5930 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.393  5366  5930 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:33.395  5366  5930 I NamespaceManager: Package com.google.android.crashrecovery name not found! Using module version.
+11-16 10:44:36.959   527  2294 I ActivityManager: Force stopping de.vinhnguyen.carlume appid=10192 user=0: from pid 5943
+11-16 10:44:37.024  5947  5947 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+11-16 10:44:37.027  5947  5947 I AndroidRuntime: Using default boot image
+11-16 10:44:37.027  5947  5947 I AndroidRuntime: Leaving lock profiling enabled
+11-16 10:44:37.072  5947  5947 D nativeloader: InitDefaultPublicLibraries for_preload=1: libandroid.so:libaaudio.so:libamidi.so:libbinder_ndk.so:libc.so:libcamera2ndk.so:libdl.so:libEGL.so:libGLESv1_CM.so:libGLESv2.so:libGLESv3.so:libicu.so:libicui18n.so:libicuuc.so:libjnigraphics.so:liblog.so:libmediandk.so:libm.so:libnativehelper.so:libnativewindow.so:libOpenMAXAL.so:libOpenSLES.so:libRS.so:libstdc++.so:libsync.so:libvulkan.so:libwebviewchromium_plat_support.so:libz.so
+11-16 10:44:37.093  5947  5947 W libc    : Access denied finding property "ro.product.name_for_attestation"
+11-16 10:44:37.094  5947  5947 W libc    : Access denied finding property "ro.product.brand_for_attestation"
+11-16 10:44:37.094  5947  5947 W libc    : Access denied finding property "ro.product.model_for_attestation"
+11-16 10:44:37.095  5947  5947 D AndroidRuntime: Calling main entry com.android.commands.monkey.Monkey
+11-16 10:44:37.109   527  2656 W ActivityTaskManager: callingPackage for (uid=2000, pid=5947) has no WPC
+11-16 10:44:37.116   527  2656 I ActivityTaskManager: START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=de.vinhnguyen.carlume/.MainActivity} with LAUNCH_SINGLE_TASK from uid 2000 (BAL_ALLOW_PERMISSION) result code=0
+11-16 10:44:37.138   527   557 I ActivityManager: Start proc 5960:de.vinhnguyen.carlume/u0a192 for next-top-activity {de.vinhnguyen.carlume/de.vinhnguyen.carlume.MainActivity}
+11-16 10:44:37.158  5947  5947 I AndroidRuntime: VM exiting with result code 0.
+11-16 10:44:37.381   527  1268 W ActivityTaskManager: takeTaskSnapshot: taskId=9 not found or not visible
+11-16 10:44:37.417   844   876 V WindowManagerShell:  Checking filter Pair{{types=[] flags=0x0] notFlags=0x0 checks=[{atype=dream independent=true modes=[OPEN,TO_FRONT] flags=NONE mustBeTask=false order=ANY topActivity=null},{atype=home independent=true modes=[CLOSE,TO_BACK] flags=NONE mustBeTask=false order=ANY topActivity=null}]} RemoteTransition { remoteTransition = android.window.IRemoteTransition$Stub$Proxy@edefd60, appThread = android.app.IApplicationThread$Stub$Proxy@e655219, debugName = LauncherToDream }}
+11-16 10:44:37.417   844   876 V WindowManagerShell:  Checking filter Pair{{types=[] flags=0x0] notFlags=0x100 checks=[{atype=home independent=true modes=[OPEN,TO_FRONT] flags=NONE mustBeTask=false order=TOP topActivity=ComponentInfo{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity}},{atype=standard independent=true modes=[CLOSE,TO_BACK] flags=NONE mustBeTask=false order=ANY topActivity=null}]} RemoteTransition { remoteTransition = android.window.IRemoteTransition$Stub$Proxy@87dc2de, appThread = android.app.IApplicationThread$Stub$Proxy@49fccbf, debugName = QuickstepLaunchHome }}
+11-16 10:44:37.570  1778  2385 D StrictMode: 	at libcore.io.BlockGuardOs.access(BlockGuardOs.java:74)
+11-16 10:44:37.570  1778  2385 D StrictMode: 	at libcore.io.ForwardingOs.access(ForwardingOs.java:128)
+11-16 10:44:37.570  1778  2385 D StrictMode: 	at libcore.io.BlockGuardOs.access(BlockGuardOs.java:74)
+11-16 10:44:37.570  1778  2385 D StrictMode: 	at libcore.io.ForwardingOs.access(ForwardingOs.java:128)
+11-16 10:44:37.831  5960  6013 W chromium: [WARNING:dns_config_service_android.cc(115)] Failed to read DnsConfig.
+11-16 10:44:37.844  6017  6017 E ocessService0:0: Not starting debugger since process cannot load the jdwp agent.
+11-16 10:44:37.850   527   557 I ActivityManager: Start proc 6017:com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0/u0i1 for  {de.vinhnguyen.carlume/org.chromium.content.app.SandboxedProcessService0:0}
+11-16 10:44:37.858  5960  6013 E chromium: [ERROR:simple_version_upgrade.cc(152)] Failed to write a new fake index.
+11-16 10:44:37.862  5960  6011 E chromium: [ERROR:simple_file_enumerator.cc(21)] opendir /data/user/0/de.vinhnguyen.carlume/cache/WebView/Default/HTTP Cache/Code Cache/wasm: No such file or directory (2)
+11-16 10:44:37.862  5960  6011 E chromium: [ERROR:simple_index_file.cc(614)] Could not reconstruct index from disk
+11-16 10:44:37.865  6017  6017 I cr_WebViewApkApp: Launched version=113.0.5672.136 minSdkVersion=29 isBundle=false processName=com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0
+11-16 10:44:37.912  5960  5960 D Capacitor: Starting BridgeActivity
+11-16 10:44:37.926  5960  5960 D Capacitor: Registering plugin instance: CapacitorCookies
+11-16 10:44:37.928  5960  5960 D Capacitor: Registering plugin instance: WebView
+11-16 10:44:37.929  5960  5960 D Capacitor: Registering plugin instance: CapacitorHttp
+11-16 10:44:37.930  5960  5960 D Capacitor: Registering plugin instance: SystemBars
+11-16 10:44:37.932  5960  5960 D Capacitor: Registering plugin instance: App
+11-16 10:44:37.933  5960  5960 D Capacitor: Registering plugin instance: AppLauncher
+11-16 10:44:37.934  5960  5960 D Capacitor: Registering plugin instance: Filesystem
+11-16 10:44:37.936  5960  5960 D Capacitor: Registering plugin instance: Haptics
+11-16 10:44:37.937  5960  5960 D Capacitor: Registering plugin instance: Share
+11-16 10:44:37.966  5960  5960 W Capacitor: Unable to read file at path public/plugins
+11-16 10:44:37.970  5960  5960 D Capacitor: Loading app at https://localhost
+11-16 10:44:38.005  5960  5960 D Capacitor: App started
+11-16 10:44:38.010  5960  5960 D Capacitor/AppPlugin: Firing change: true
+11-16 10:44:38.010  5960  5960 V Capacitor/AppPlugin: Notifying listeners for event appStateChange
+11-16 10:44:38.010  5960  5960 D Capacitor/AppPlugin: No listeners found for event appStateChange
+11-16 10:44:38.010  5960  5960 D Capacitor: App resumed
+11-16 10:44:38.023  5960  6014 D Capacitor: Handling local request: https://localhost/
+11-16 10:44:38.204   527   545 I ActivityTaskManager: Displayed de.vinhnguyen.carlume/.MainActivity for user 0: +1s93ms
+11-16 10:44:38.335  5960  6014 D Capacitor: Handling local request: https://localhost/app-runtime.js
+11-16 10:44:38.383  5960  6018 D Capacitor: Handling local request: https://localhost/smoke.js
+11-16 10:44:42.636  5960  6011 D Capacitor: Handling local request: https://localhost/favicon.ico
+11-16 10:44:43.802  5432  6089 I GmsDebugLogger: [73] 1801
+11-16 10:44:43.806  5432  6089 I GmsDebugLogger: [30] [VisionOcrDynamite.integ:231602402100000],[TfliteDynamiteDynamite.integ:264010405100800],[MlkitOcrCommon.optional:231818100800]
+11-16 10:44:43.813  5432  6089 I GmsDebugLogger: [83] 1 [vision.ocr]
+11-16 10:44:45.166  5960  5960 I Capacitor/Console: File:  - Line 350 - Msg: [object Object]
+11-16 10:44:45.167  5960  5960 V Capacitor/Plugin: To native (Capacitor plugin): callbackId: 60738246, pluginId: Filesystem, methodName: stat
+11-16 10:44:45.167  5960  5960 V Capacitor: callback: 60738246, pluginId: Filesystem, methodName: stat, methodData: {"path":"drivo\/data.json","directory":"DATA"}
+11-16 10:44:45.168  5960  5960 I Capacitor/Console: File:  - Line 350 - Msg: [object Object]
+11-16 10:44:45.168  5960  5960 V Capacitor/Plugin: To native (Capacitor plugin): callbackId: 60738247, pluginId: Filesystem, methodName: writeFile
+11-16 10:44:45.169  5960  5960 V Capacitor: callback: 60738247, pluginId: Filesystem, methodName: writeFile, methodData: {"path":"drivo\/_probe.txt","data":"x","directory":"DATA","encoding":"utf8","recursive":true}
+11-16 10:44:47.431  5960  5960 I Capacitor/Console: File:  - Line 334 - Msg: {"uri":"file:///data/user/0/de.vinhnguyen.carlume/files/drivo/_probe.txt"}
+11-16 10:44:47.433  5960  5960 D Capacitor: Sending plugin error: {"save":false,"callbackId":"60738246","pluginId":"Filesystem","methodName":"stat","success":false,"error":{"message":"'stat' failed because file at '\/data\/user\/0\/de.vinhnguyen.carlume\/files\/drivo\/data.json' does not exist.","code":"OS-PLUG-FILE-0008"}}
+11-16 10:44:47.441  5960  5960 E Capacitor/Console: File:  - Line 331 - Msg: [object Object]
+11-16 10:45:08.118  5432  6120 I GmsDebugLogger: [73] 1801
+11-16 10:45:08.119  5432  6120 I GmsDebugLogger: [30] [VisionOcrDynamite.integ:231602402100000],[TfliteDynamiteDynamite.integ:264010405100800],[MlkitOcrCommon.optional:231818100800]
+11-16 10:45:08.120  5432  6120 I GmsDebugLogger: [83] 1 [vision.ocr]
+11-16 10:45:12.874  5432  5530 I GmsDebugLogger: [73] 1801
+11-16 10:45:12.877  5432  5530 I GmsDebugLogger: [30] [VisionOcrDynamite.integ:231602402100000],[VisionBarcode.optional:231818100800],[TfliteDynamiteDynamite.integ:264010405100800],[MlkitOcrCommon.optional:231818100800],[MapsCoreDynamite.integ:231112103100800],[MlkitBarcodeUi.optional:231818100000]
+11-16 10:45:13.003  5432  6121 W libc    : Access denied finding property "ro.hardware.chipname"
+11-16 10:45:13.023  5432  6123 I GmsDebugLogger: [73] 1801
+11-16 10:45:13.028  5432  6123 I GmsDebugLogger: [30] [MapsCoreDynamite.integ:231112103100800]
+11-16 10:45:13.034  5432  6123 I GmsDebugLogger: [83] 1 [maps_core]
+11-16 10:45:13.107  5432  6123 I GmsDebugLogger: [73] 1801
+11-16 10:45:13.109  5432  6123 I GmsDebugLogger: [30] [VisionOcrDynamite.integ:231602402100000],[TfliteDynamiteDynamite.integ:264010405100800],[MlkitOcrCommon.optional:231818100800]
+11-16 10:45:13.111  5432  6123 I GmsDebugLogger: [83] 1 [vision.ocr]
+11-16 10:45:13.178  5432  5547 I PeopleInitIntentOp: Not initializing debuggability [CONTEXT service_id=5 ]
+11-16 10:45:13.276  5432  6123 I GmsDebugLogger: [73] 1801
+11-16 10:45:13.277  5432  6123 I GmsDebugLogger: [30] [VisionBarcode.optional:231818100800],[TfliteDynamiteDynamite.integ:264010405100800],[MlkitBarcodeUi.optional:231818100000]
+11-16 10:45:13.278  5432  6123 I GmsDebugLogger: [83] 1 [mlkit.barcode.ui]
+11-16 10:45:13.288  2737  6137 W libc    : Access denied finding property "persist.adb.tls_server.enable"
+11-16 10:45:13.289  2737  6137 W libc    : Access denied finding property "service.adb.tls.port"
+11-16 10:45:13.378  5366  6129 I SemanticLocation: 	at libcore.io.IoBridge.open(IoBridge.java:574)
+11-16 10:45:13.378  5366  6129 I SemanticLocation: 	at libcore.io.Linux.open(Native Method)
+11-16 10:45:13.378  5366  6129 I SemanticLocation: 	at libcore.io.ForwardingOs.open(ForwardingOs.java:563)
+11-16 10:45:13.378  5366  6129 I SemanticLocation: 	at libcore.io.BlockGuardOs.open(BlockGuardOs.java:274)
+11-16 10:45:13.378  5366  6129 I SemanticLocation: 	at libcore.io.ForwardingOs.open(ForwardingOs.java:563)
+11-16 10:45:13.378  5366  6129 I SemanticLocation: 	at libcore.io.IoBridge.open(IoBridge.java:560)
+11-16 10:45:13.406  5366  6129 I SemanticLocation: 	at libcore.io.IoBridge.open(IoBridge.java:574)
+11-16 10:45:13.406  5366  6129 I SemanticLocation: 	at libcore.io.Linux.open(Native Method)
+11-16 10:45:13.406  5366  6129 I SemanticLocation: 	at libcore.io.ForwardingOs.open(ForwardingOs.java:563)
+11-16 10:45:13.406  5366  6129 I SemanticLocation: 	at libcore.io.BlockGuardOs.open(BlockGuardOs.java:274)
+11-16 10:45:13.406  5366  6129 I SemanticLocation: 	at libcore.io.ForwardingOs.open(ForwardingOs.java:563)
+11-16 10:45:13.406  5366  6129 I SemanticLocation: 	at libcore.io.IoBridge.open(IoBridge.java:560)
+11-16 10:45:13.439  5432  6123 I GmsDebugLogger: [73] 1801
+11-16 10:45:13.443  5432  6123 I GmsDebugLogger: [30] [TfliteDynamiteDynamite.integ:264010405100800]
+11-16 10:45:13.445  5432  6123 I GmsDebugLogger: [83] 1 [tflite_dynamite]
+11-16 10:45:13.468  5432  6123 I GmsDebugLogger: [73] 1801
+11-16 10:45:13.471  5432  6123 I GmsDebugLogger: [30] [VisionOcrDynamite.integ:231602402100000],[TfliteDynamiteDynamite.integ:264010405100800],[MlkitOcrCommon.optional:231818100800]
+11-16 10:45:13.475  5432  6123 I GmsDebugLogger: [83] 1 [vision.ocr]
