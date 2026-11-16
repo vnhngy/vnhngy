@@ -42,7 +42,8 @@ class CarlumeViewController: CAPBridgeViewController {
 /// in den Dokumente-Ordner der App, damit man es ohne echtes iPhone ansehen kann.
 enum WidgetShots {
     static func runIfRequested() {
-        guard ProcessInfo.processInfo.arguments.contains("-carlumeWidgetShots") else { return }
+        let p = ProcessInfo.processInfo
+        guard p.arguments.contains("-carlumeWidgetShots") || p.environment["CARLUME_WIDGET_SHOTS"] == "1" else { return }
         if #available(iOS 17.0, *) {
             Task { @MainActor in
                 try? await Task.sleep(nanoseconds: 6_000_000_000)   // App meldet in der Zeit ihren Ort ans Widget
@@ -55,10 +56,8 @@ enum WidgetShots {
     @MainActor
     static func render() async {
         let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        var entries: [(String, CarlumeEntry)] = [("muster", .sample(lang: "de"))]
-        entries.append(("app", await CarlumeLoader.entry(fuelOverride: nil, place: nil)))
-        entries.append(("plz-diesel", await CarlumeLoader.entry(fuelOverride: "diesel", place: "74072")))
-        entries.append(("leer", CarlumeEntry(date: Date(), data: nil, message: "Öffne Carlume einmal und wähle deinen Ort. Oder: Widget gedrückt halten → Widget bearbeiten → Ort eintragen.", lang: "de")))
+        var log = "gruppe \(CarlumeGroup.id)\nsnap \(CarlumeGroup.defaults.string(forKey: "snap") ?? "-")\n"
+        func save() { try? log.write(to: docs.appendingPathComponent("widget-log.txt"), atomically: true, encoding: .utf8) }
         let sizes: [(WidgetFamily, CGSize)] = [
             (.systemSmall, CGSize(width: 170, height: 170)),
             (.systemMedium, CGSize(width: 364, height: 170)),
@@ -66,8 +65,7 @@ enum WidgetShots {
             (.accessoryCircular, CGSize(width: 76, height: 76)),
             (.accessoryInline, CGSize(width: 260, height: 26)),
         ]
-        var log = "gruppe \(CarlumeGroup.id)\nsnap \(CarlumeGroup.defaults.string(forKey: "snap") ?? "-")\n"
-        for (name, e) in entries {
+        func draw(_ name: String, _ e: CarlumeEntry) {
             if let d = e.data {
                 let first = d.rows.first.map { r in r.title + " " + String(r.price) } ?? ""
                 log += name + ": " + d.place + " " + d.fuel + " " + String(d.rows.count) + "/" + String(d.count) + " " + first + "\n"
@@ -81,11 +79,20 @@ enum WidgetShots {
                     r.scale = 3
                     if let img = r.uiImage, let png = img.pngData() {
                         try? png.write(to: docs.appendingPathComponent("widget-\(name)-\(fam)-\(scheme).png"))
+                    } else {
+                        log += "  kein Bild: \(fam) \(scheme)\n"
                     }
                 }
             }
+            save()
         }
-        try? log.write(to: docs.appendingPathComponent("widget-log.txt"), atomically: true, encoding: .utf8)
+        save()
+        draw("muster", .sample(lang: "de"))
+        draw("leer", CarlumeEntry(date: Date(), data: nil, message: "Öffne Carlume einmal und wähle deinen Ort. Oder: Widget gedrückt halten → Widget bearbeiten → Ort eintragen.", lang: "de"))
+        draw("app", await CarlumeLoader.entry(fuelOverride: nil, place: nil))
+        draw("plz-diesel", await CarlumeLoader.entry(fuelOverride: "diesel", place: "74072"))
+        log += "fertig\n"
+        save()
     }
 }
 

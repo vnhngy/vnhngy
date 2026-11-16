@@ -62,8 +62,10 @@ jobs:
           xcrun simctl launch "$DEV" "$ID"; sleep 12; xcrun simctl io "$DEV" screenshot shots/ios/neustart.png
           # Widget: die App zeichnet es in allen Größen als Bilder (Startparameter -carlumeWidgetShots)
           xcrun simctl terminate "$DEV" "$ID" || true
-          xcrun simctl launch "$DEV" "$ID" -carlumeWidgetShots; sleep 35
+          SIMCTL_CHILD_CARLUME_WIDGET_SHOTS=1 xcrun simctl launch "$DEV" "$ID" -carlumeWidgetShots
           DATA=$(xcrun simctl get_app_container "$DEV" "$ID" data)
+          for i in $(seq 1 30); do grep -q fertig "$DATA/Documents/widget-log.txt" 2>/dev/null && break; sleep 3; done
+          xcrun simctl io "$DEV" screenshot shots/ios/widget-lauf.png || true
           mkdir -p shots/ios/widget
           cp "$DATA"/Documents/widget-* shots/ios/widget/ 2>/dev/null || echo "keine Widget-Bilder" > shots/ios/widget/fehlt.txt
           ls shots/ios/widget | head -50

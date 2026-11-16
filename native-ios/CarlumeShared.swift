@@ -271,7 +271,10 @@ enum CarlumeLoader {
         if let a = UserDefaults.standard.array(forKey: k) as? [Double], a.count == 2 {
             return CLLocationCoordinate2D(latitude: a[0], longitude: a[1])
         }
-        guard let marks = try? await CLGeocoder().geocodeAddressString(q + ", Deutschland"),
+        let geocoder = CLGeocoder()
+        let timer = Task { try? await Task.sleep(nanoseconds: 12_000_000_000); geocoder.cancelGeocode() }
+        defer { timer.cancel() }
+        guard let marks = try? await geocoder.geocodeAddressString(q + ", Deutschland"),
               let c = marks.first?.location?.coordinate else { return nil }
         UserDefaults.standard.set([c.latitude, c.longitude], forKey: k)
         return c
