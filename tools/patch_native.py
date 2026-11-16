@@ -8,7 +8,7 @@ iOS:     Texte für die Berechtigungen (Standort, Kamera, Fotos), keine Verschl�
          Widget für Start- und Sperrbildschirm (native-ios/, tools/ios_widget.rb; braucht Ruby mit dem Paket xcodeproj).
 Android: Standort-Berechtigung, Version, Rand-bis-Rand-Anzeige für die sicheren Ränder (Capacitor 8).
 """
-import json, os, plistlib, re, shutil, subprocess, sys
+import glob, json, os, plistlib, re, shutil, subprocess, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CFG = json.load(open(os.path.join(ROOT, "app.config.json"), encoding="utf-8"))
 NAME, APP_ID, VER, BUILD = CFG["name"], CFG["appId"], CFG["version"], int(os.environ.get("BUILD_NUMBER") or CFG["build"])
@@ -66,14 +66,26 @@ def ios_widget():
             dst = os.path.join(app_dir, d)
             os.makedirs(os.path.dirname(dst), exist_ok=True)
             shutil.copyfile(os.path.join(src, name), dst)
+    # Startansicht: CarlumeViewController (meldet die Widget-Brücke an). Ab Capacitor 8.5 legt der SceneDelegate sie im Code an,
+    # davor Main.storyboard; beides anpassen, was vorhanden ist.
+    found = []
+    for fn in glob.glob(os.path.join(app_dir, "App", "*.swift")):
+        t = open(fn, encoding="utf-8").read()
+        if "CAPBridgeViewController()" in t:
+            open(fn, "w", encoding="utf-8").write(t.replace("CAPBridgeViewController()", "CarlumeViewController()"))
+            found.append(os.path.basename(fn))
     sb = os.path.join(app_dir, "App", "Base.lproj", "Main.storyboard")
-    t = open(sb, encoding="utf-8").read()
-    if "CarlumeViewController" not in t:
-        n = len(re.findall(r'customClass="CAPBridgeViewController" customModule="Capacitor"', t))
-        must(n == 1, "Main.storyboard: CAPBridgeViewController nicht gefunden – " + t[:600])
-        t = t.replace('customClass="CAPBridgeViewController" customModule="Capacitor"',
-                      'customClass="CarlumeViewController" customModule="App" customModuleProvider="target"')
-        open(sb, "w", encoding="utf-8").write(t)
+    if os.path.exists(sb):
+        t = open(sb, encoding="utf-8").read()
+        if 'customClass="CAPBridgeViewController" customModule="Capacitor"' in t:
+            t = t.replace('customClass="CAPBridgeViewController" customModule="Capacitor"',
+                          'customClass="CarlumeViewController" customModule="App" customModuleProvider="target"')
+            open(sb, "w", encoding="utf-8").write(t)
+            found.append("Main.storyboard")
+    for fn in glob.glob(os.path.join(app_dir, "App", "*Delegate.swift")):
+        print("---", os.path.basename(fn)); print(open(fn, encoding="utf-8").read()[:1500])
+    must(found, "Startansicht (CAPBridgeViewController) weder im Code noch in Main.storyboard gefunden")
+    print("Startansicht ersetzt in:", ", ".join(found))
     subprocess.run(["ruby", os.path.join(ROOT, "tools", "ios_widget.rb")], check=True)
     print("iOS-Widget vorbereitet: Startansicht CarlumeViewController, Ziel CarlumeWidget")
 
