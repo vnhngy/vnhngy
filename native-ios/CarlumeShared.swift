@@ -81,6 +81,7 @@ struct RawStation: Decodable {
 }
 
 struct RegionRow: Decodable {
+    var key: String?
     var ts: Double?
     var stations: [RawStation]?
 }
@@ -109,18 +110,34 @@ enum CarlumeAPI {
         "r\(rad <= 5 ? 10 : 15)-\(Int(floor(lat / 0.06)))-\(Int(floor(lng / 0.09)))"
     }
 
-    static func region(_ key: String) async throws -> RegionRow? {
+    /// Regionen rund um einen Punkt: die eigene Zelle und die acht Nachbarn, je für 10 und 15 km.
+    /// So findet das Widget Preise auch dann, wenn sein Mittelpunkt etwas neben dem der App liegt.
+    static func keysAround(lat: Double, lng: Double, rad: Double) -> [String] {
+        let i = Int(floor(lat / 0.06)), j = Int(floor(lng / 0.09))
+        var out = [regionKey(lat: lat, lng: lng, rad: rad)]
+        for r in [10, 15] {
+            for di in -1...1 {
+                for dj in -1...1 {
+                    let k = "r\(r)-\(i + di)-\(j + dj)"
+                    if !out.contains(k) { out.append(k) }
+                }
+            }
+        }
+        return out
+    }
+
+    static func regions(_ keys: [String]) async throws -> [RegionRow] {
         var comp = URLComponents(string: base + "/rest/v1/regions")!
         comp.queryItems = [
-            URLQueryItem(name: "key", value: "eq." + key),
-            URLQueryItem(name: "select", value: "ts:data->ts,stations:data->stations"),
+            URLQueryItem(name: "key", value: "in.(" + keys.map { "\"\($0)\"" }.joined(separator: ",") + ")"),
+            URLQueryItem(name: "select", value: "key,ts:data->ts,stations:data->stations"),
         ]
         var req = URLRequest(url: comp.url!, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 20)
         req.setValue(apiKey, forHTTPHeaderField: "apikey")
         req.setValue("application/json", forHTTPHeaderField: "Accept")
         let (data, resp) = try await URLSession.shared.data(for: req)
         if let h = resp as? HTTPURLResponse, h.statusCode != 200 { throw URLError(.badServerResponse) }
-        return try JSONDecoder().decode([RegionRow].self, from: data).first
+        return try JSONDecoder().decode([RegionRow].self, from: data)
     }
 
     static func distKm(_ a: Double, _ b: Double, _ c: Double, _ d: Double) -> Double {
@@ -129,20 +146,27 @@ enum CarlumeAPI {
         return 12742 * asin(min(1, sqrt(h)))
     }
 
-    static func compute(_ row: RegionRow, lat: Double, lng: Double, rad: Double, fuel: String, place: String) -> WData {
+    static func compute(_ rows: [RegionRow], lat: Double, lng: Double, rad: Double, fuel: String, place: String) -> WData {
         var list: [WRow] = []
-        for s in row.stations ?? [] {
-            guard let sl = s.lat, let sg = s.lng, s.open, let p = s.price[fuel] else { continue }
-            let d = distKm(lat, lng, sl, sg)
-            guard d <= rad + 1e-9 else { continue }
-            let brand = CarlumeText.tcase(s.brand, brand: s.brand)
-            let title = brand.isEmpty ? CarlumeText.tcase(s.name, brand: s.brand) : brand
-            let street = CarlumeText.tcase([s.street, s.nr].filter { !$0.isEmpty }.joined(separator: " "), brand: s.brand)
-            let sub = street.isEmpty ? CarlumeText.tcase(s.city, brand: s.brand) : street
-            list.append(WRow(title: title, sub: sub, price: p, dist: d))
+        var seen = Set<String>()
+        for row in rows.sorted(by: { ($0.ts ?? 0) > ($1.ts ?? 0) }) {
+            for s in row.stations ?? [] {
+                let sid = s.id.isEmpty ? "\(s.name)|\(s.lat ?? 0)|\(s.lng ?? 0)" : s.id
+                guard !seen.contains(sid) else { continue }
+                seen.insert(sid)
+                guard let sl = s.lat, let sg = s.lng, s.open, let p = s.price[fuel] else { continue }
+                let d = distKm(lat, lng, sl, sg)
+                guard d <= rad + 1e-9 else { continue }
+                let brand = CarlumeText.tcase(s.brand, brand: s.brand)
+                let title = brand.isEmpty ? CarlumeText.tcase(s.name, brand: s.brand) : brand
+                let street = CarlumeText.tcase([s.street, s.nr].filter { !$0.isEmpty }.joined(separator: " "), brand: s.brand)
+                let sub = street.isEmpty ? CarlumeText.tcase(s.city, brand: s.brand) : street
+                list.append(WRow(title: title, sub: sub, price: p, dist: d))
+            }
         }
         list.sort { $0.price != $1.price ? $0.price < $1.price : $0.dist < $1.dist }
-        let ts = row.ts.map { Date(timeIntervalSince1970: $0 / 1000) } ?? Date()
+        let newest = rows.compactMap { $0.ts }.max()
+        let ts = newest.map { Date(timeIntervalSince1970: $0 / 1000) } ?? Date()
         return WData(place: place, fuel: fuel, rows: Array(list.prefix(4)), count: list.count, ts: ts)
     }
 }
@@ -249,10 +273,11 @@ enum CarlumeLoader {
         let key = CarlumeAPI.regionKey(lat: lat, lng: lng, rad: rad)
         let cacheKey = "w:\(key):\(fuel):\(Int(rad)):\(label)"
         do {
-            guard let row = try await CarlumeAPI.region(key), row.stations != nil else {
+            let rows = try await CarlumeAPI.regions(CarlumeAPI.keysAround(lat: lat, lng: lng, rad: rad)).filter { $0.stations != nil }
+            guard !rows.isEmpty else {
                 return msg("Für \(label) hat Carlume noch keine Preise. Öffne den Ort einmal in der App.", "Carlume has no prices for \(label) yet. Open the place once in the app.")
             }
-            let d = CarlumeAPI.compute(row, lat: lat, lng: lng, rad: rad, fuel: fuel, place: label)
+            let d = CarlumeAPI.compute(rows, lat: lat, lng: lng, rad: rad, fuel: fuel, place: label)
             if let enc = try? JSONEncoder().encode(d) { UserDefaults.standard.set(enc, forKey: cacheKey) }
             if d.rows.isEmpty {
                 return msg("Gerade keine offene Tankstelle mit \(CarlumeText.fuelShort(fuel)) im Umkreis von \(Int(rad)) km.", "No open station with \(CarlumeText.fuelShort(fuel)) within \(Int(rad)) km right now.")

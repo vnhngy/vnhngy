@@ -39,9 +39,13 @@ jobs:
           npx capacitor-assets generate --ios --assetPath assets
           python3 tools/patch_native.py ios
           npx cap sync ios
-          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator \
-            -destination 'generic/platform=iOS Simulator' -derivedDataPath build-ios CODE_SIGNING_ALLOWED=NO build > xb.log 2>&1 \
-            || { grep -E "error:|fatal error" xb.log | sort -u | head -40 | sed 's/^/::error::/'; tail -n 40 xb.log; exit 1; }
+          # Lokal signiert (ad hoc), damit die App-Gruppe im Simulator wirkt (App → Widget); sonst ohne Signatur
+          xb() { xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath build-ios "$@"; }
+          if ! xb CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=YES DEVELOPMENT_TEAM= build > xb.log 2>&1; then
+            echo "::warning::Signierter Simulator-Bau ging nicht – baue ohne Signatur"; grep -E "error:" xb.log | sort -u | head -8
+            xb CODE_SIGNING_ALLOWED=NO build > xb.log 2>&1 \
+              || { grep -E "error:|fatal error" xb.log | sort -u | head -40 | sed 's/^/::error::/'; tail -n 40 xb.log; exit 1; }
+          fi
           tail -n 5 xb.log
       - name: Im Simulator starten und fotografieren
         run: |

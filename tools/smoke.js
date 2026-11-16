@@ -13,7 +13,9 @@
     const FSP = window.Capacitor?.Plugins?.Filesystem;
     if (FSP) FSP.stat({ path: "drivo/data.json", directory: "DATA" }).then(r => { d.textContent += "\nfs data.json " + r.size + " B · " + String(r.uri).slice(-60); })
       .catch(e => { d.textContent += "\nfs fehler " + (e && e.message || e); });
-    else d.textContent += "\nfs plugin fehlt"; };
+    else d.textContent += "\nfs plugin fehlt";
+    if (FSP) FSP.writeFile({ path: "drivo/_probe.txt", data: "x", directory: "DATA", encoding: "utf8", recursive: true })
+      .then(() => { d.textContent += "\nfs schreiben ok"; }).catch(e => { d.textContent += "\nfs schreiben fehler " + (e && e.message || e); }); };
   await w(4000); diag("Start +4s"); await w(5000);   // Foto 1 bei ~8 s: Willkommen
   const q = document.querySelector("#splashQuery");
   if (q && q.offsetParent) { q.value = "74072"; q.dispatchEvent(new Event("input", { bubbles: true })); btn(/Preise zeigen|Show prices/)?.click(); }
