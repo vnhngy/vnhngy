@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gegenwert</title>
+<meta name="description" content="Was kostet das wirklich? Preise in Arbeitszeit, Tankfüllungen und deinen eigenen Einheiten – mit Bedenkzeit gegen Spontankäufe.">
+<meta name="theme-color" content="#101318">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gegenwert">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<style>
+  :root {
+    --bg: #f4f2ee; --card: #ffffff; --ink: #16181d; --muted: #6b6f78; --line: #e4e1db;
+    --accent: #c8862a; --accent-ink: #ffffff; --good: #2f8a5b; --bad: #b4473c; --soft: #f7efe2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #101318; --card: #1a1e25; --ink: #eef0f3; --muted: #9298a3; --line: #2a2f38;
+      --accent: #e3a548; --accent-ink: #1a1306; --good: #5cc28c; --bad: #e27a6e; --soft: #2a2215;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #101318; --card: #1a1e25; --ink: #eef0f3; --muted: #9298a3; --line: #2a2f38;
+    --accent: #e3a548; --accent-ink: #1a1306; --good: #5cc28c; --bad: #e27a6e; --soft: #2a2215;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); }
+  body { font: 17px/1.4 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  header { padding: calc(env(safe-area-inset-top) + 14px) 20px 6px; }
+  header h1 { font-size: 30px; margin: 0; letter-spacing: -.02em; }
+  header p { margin: 2px 0 0; color: var(--muted); font-size: 15px; }
+  main { padding: 0 16px calc(env(safe-area-inset-bottom) + 100px); max-width: 560px; margin: 0 auto; }
+  section.view { display: none; } section.view.on { display: block; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 16px; margin: 12px 0; }
+  .muted { color: var(--muted); } .small { font-size: 14px; }
+  h2 { font-size: 20px; margin: 22px 4px 4px; }
+  label { display: block; margin: 10px 0; font-size: 14px; color: var(--muted); }
+  input, select { width: 100%; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; margin-top: 4px; }
+  input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  button { font: inherit; border: 0; border-radius: 12px; padding: 12px 16px; background: var(--soft); color: var(--ink); cursor: pointer; }
+  button.primary { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  button.ghost { background: transparent; color: var(--accent); padding: 8px 4px; }
+  button.wide { width: 100%; }
+  .row { display: flex; gap: 10px; align-items: center; }
+  .row > * { flex: 1; }
+  .price-wrap { position: relative; }
+  .price-wrap input { font-size: 44px; font-weight: 700; padding: 10px 52px 10px 14px; letter-spacing: -.02em; text-align: right; }
+  .price-wrap span { position: absolute; right: 16px; top: 50%; transform: translateY(-38%); font-size: 30px; color: var(--muted); }
+  .seg { display: flex; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 3px; margin-top: 10px; }
+  .seg button { flex: 1; padding: 8px; background: transparent; border-radius: 9px; font-size: 15px; }
+  .seg button.on { background: var(--card); box-shadow: 0 1px 3px rgba(0,0,0,.15); font-weight: 600; }
+  .hero { text-align: center; padding: 22px 16px; }
+  .hero .big { font-size: 42px; font-weight: 800; letter-spacing: -.03em; line-height: 1.05; }
+  .hero .sub { color: var(--muted); margin-top: 6px; }
+  .units { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .unit { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 14px; min-width: 0; }
+  .unit .v { font-size: 24px; font-weight: 700; letter-spacing: -.02em; }
+  .unit .n { color: var(--muted); font-size: 14px; overflow-wrap: anywhere; }
+  .unit .e { font-size: 22px; }
+  .bar { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; margin-top: 8px; }
+  .bar > i { display: block; height: 100%; background: var(--accent); border-radius: 4px; }
+  .wish { display: flex; gap: 12px; align-items: center; }
+  .wish .t { flex: 1; min-width: 0; }
+  .wish .t b { display: block; overflow-wrap: anywhere; }
+  .ring { width: 54px; height: 54px; flex: none; }
+  .actions { display: flex; gap: 8px; margin-top: 12px; }
+  .actions button { flex: 1; }
+  .tag { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 99px; background: var(--soft); color: var(--muted); }
+  .tag.good { color: var(--good); } .tag.bad { color: var(--bad); }
+  .empty { text-align: center; color: var(--muted); padding: 26px 10px; }
+  .empty .e { font-size: 40px; }
+  nav.tabs { position: fixed; left: 10px; right: 10px; bottom: max(10px, env(safe-area-inset-bottom)); max-width: 540px; margin: 0 auto; display: flex; background: color-mix(in srgb, var(--card) 88%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--line); border-radius: 22px; padding: 6px; z-index: 5; }
+  nav.tabs button { flex: 1; background: transparent; padding: 8px 2px; font-size: 12px; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 2px; border-radius: 16px; }
+  nav.tabs button .i { font-size: 20px; line-height: 1; }
+  nav.tabs button > span:last-child { white-space: nowrap; }
+  nav.tabs button.on { color: var(--accent); background: var(--soft); font-weight: 600; }
+  .badge { background: var(--bad); color: #fff; border-radius: 99px; font-size: 11px; padding: 0 6px; margin-left: 2px; }
+  .list-unit { display: flex; gap: 8px; align-items: end; margin: 8px 0; }
+  .list-unit input { margin: 0; }
+  .list-unit .em { flex: 0 0 56px; text-align: center; }
+  .list-unit .nm { flex: 2; } .list-unit .pr { flex: 1.2; }
+  .list-unit button { flex: 0 0 auto; padding: 11px 12px; }
+  .src { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  dialog { border: 0; border-radius: 22px; padding: 20px; background: var(--card); color: var(--ink); width: min(92vw, 440px); }
+  dialog::backdrop { background: rgba(0,0,0,.45); }
+  .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(max(10px, env(safe-area-inset-bottom)) + 84px); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 99px; font-size: 15px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 9; max-width: 90vw; }
+  .toast.on { opacity: 1; }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="title">Gegenwert</h1>
+  <p id="subtitle">Was kostet das wirklich?</p>
+</header>
+
+<main>
+  <!-- Rechnen -->
+  <section class="view on" id="view-calc">
+    <div class="card">
+      <div class="price-wrap"><input id="price" inputmode="decimal" placeholder="0" autocomplete="off" aria-label="Preis in Euro"><span>€</span></div>
+      <div class="seg" id="mode">
+        <button data-m="once" class="on">Einmalig</button>
+        <button data-m="month">Pro Monat</button>
+        <button data-m="year">Pro Jahr</button>
+      </div>
+    </div>
+    <div id="result"></div>
+  </section>
+
+  <!-- Bedenkzeit -->
+  <section class="view" id="view-wait">
+    <div class="card small muted">Du willst etwas kaufen? Leg es hier ab. Je mehr Arbeitszeit es kostet, desto länger wartest du: <b>1 Tag je angefangene 2 Arbeitsstunden</b>, höchstens 30 Tage. Danach entscheidest du mit kühlem Kopf.</div>
+    <button class="primary wide" id="addWish">＋ Wunsch hinzufügen</button>
+    <div id="wishes"></div>
+  </section>
+
+  <!-- Bilanz -->
+  <section class="view" id="view-sum">
+    <div id="summary"></div>
+  </section>
+
+  <!-- Einstellungen -->
+  <section class="view" id="view-set">
+    <h2>Dein Einkommen</h2>
+    <div class="card">
+      <label>Netto pro Monat (€)<input id="net" inputmode="decimal" placeholder="z. B. 2.400"></label>
+      <label>Arbeitsstunden pro Woche<input id="hours" inputmode="decimal" placeholder="z. B. 40"></label>
+      <div class="src" id="rateInfo"></div>
+    </div>
+
+    <h2>Dein Auto</h2>
+    <div class="card">
+      <div id="drivoInfo" class="small"></div>
+      <label>Spritpreis (€ pro Liter)<input id="ppl" inputmode="decimal" placeholder="automatisch"></label>
+      <label>Verbrauch (l / 100 km)<input id="cons" inputmode="decimal" placeholder="automatisch"></label>
+      <label>Tankgröße (Liter)<input id="tank" inputmode="decimal" placeholder="automatisch"></label>
+      <label>Name des Autos<input id="carName" placeholder="automatisch"></label>
+      <div class="src">Leere Felder werden aus Drivo übernommen, wenn Drivo auf derselben Seite (github.io) installiert ist.</div>
+    </div>
+
+    <h2>Deine Einheiten</h2>
+    <div class="card">
+      <div class="small muted">Dinge, in denen du denkst: dein Döner, dein Kinoabend, deine Monatsmiete …</div>
+      <div id="unitList"></div>
+      <button class="ghost" id="addUnit">＋ Einheit hinzufügen</button>
+    </div>
+
+    <h2>Daten</h2>
+    <div class="card">
+      <div class="row"><button id="export">Sichern</button><button id="import">Wiederherstellen</button></div>
+      <input type="file" id="importFile" accept="application/json,.json" hidden>
+      <div class="src">Alles bleibt auf deinem iPhone. Nichts wird hochgeladen.</div>
+    </div>
+  </section>
+</main>
+
+<nav class="tabs" id="tabs">
+  <button data-v="calc" class="on"><span class="i">⚖︎</span>Rechnen</button>
+  <button data-v="wait"><span class="i">⏳</span><span>Bedenkzeit<span id="due"></span></span></button>
+  <button data-v="sum"><span class="i">◎</span>Bilanz</button>
+  <button data-v="set"><span class="i">⚙︎</span>Ich</button>
+</nav>
+
+<dialog id="wishDlg">
+  <form method="dialog" id="wishForm">
+    <h2 style="margin-top:0">Neuer Wunsch</h2>
+    <label>Was willst du?<input name="name" required placeholder="z. B. Kopfhörer"></label>
+    <label>Preis (€)<input name="price" inputmode="decimal" required placeholder="0"></label>
+    <div class="src" id="wishPreview"></div>
+    <div class="actions"><button value="cancel" formnovalidate>Abbrechen</button><button class="primary" value="ok">Ablegen</button></div>
+  </form>
+</dialog>
+
+<dialog id="onboard">
+  <form method="dialog" id="onboardForm">
+    <h2 style="margin-top:0">Willkommen bei Gegenwert</h2>
+    <p class="muted small">Preise sind abstrakt. Deine Zeit nicht. Zwei Angaben, dann rechnet die App jeden Preis in dein Leben um.</p>
+    <label>Netto pro Monat (€)<input name="net" inputmode="decimal" required placeholder="z. B. 2.400"></label>
+    <label>Arbeitsstunden pro Woche<input name="hours" inputmode="decimal" required placeholder="40" value="40"></label>
+    <div class="actions"><button class="primary" value="ok">Los geht's</button></div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+/* ---------- Speicher ---------- */
+const STORE_KEY = 'gegenwert-v1';
+const DRIVO_KEY = 'autobuch-v1'; // Drivo speichert unter dem alten Namen
+const DAY = 864e5;
+
+function fresh() {
+  return {
+    net: null, hours: 40, car: { ppl: null, cons: null, tank: null, name: '' },
+    units: [
+      { id: 'u1', emoji: '🥙', name: 'Döner', price: 8 },
+      { id: 'u2', emoji: '☕️', name: 'Kaffee unterwegs', price: 3.8 },
+      { id: 'u3', emoji: '🎬', name: 'Kinoabende', price: 16 },
+    ],
+    wishes: [], mode: 'once', onboarded: false,
+  };
+}
+function load() {
+  try { const raw = localStorage.getItem(STORE_KEY); return raw ? { ...fresh(), ...JSON.parse(raw) } : fresh(); }
+  catch (e) { return fresh(); }
+}
+let state = load();
+function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* Speicher voll oder gesperrt */ } }
+
+/* ---------- Hilfen ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const uid = () => Math.random().toString(36).slice(2, 10);
+// Deutsche Zahlen: "1.234,50" → 1234.5, "12.5" → 12.5
+function num(v) {
+  if (v == null) return null;
+  let s = String(v).trim().replace(/[€\s]/g, '');
+  if (!s) return null;
+  if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.');
+  else if (/^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, '');
+  const n = parseFloat(s);
+  return isFinite(n) ? n : null;
+}
+const fmt = (n, d = 2) => n.toLocaleString('de-DE', { minimumFractionDigits: d, maximumFractionDigits: d });
+const eur = (n) => fmt(n, n % 1 && Math.abs(n) < 1000 ? 2 : 0) + ' €';
+function nice(n) { // gut lesbare Menge
+  if (n >= 100) return fmt(Math.round(n), 0);
+  if (n >= 10) return fmt(n, 1).replace(/,0$/, '');
+  return fmt(n, n < 1 ? 2 : 1).replace(/,0+$/, '');
+}
+function dur(hours) { // Arbeitszeit lesbar: 7 h 20 min / 3 Arbeitstage
+  const min = Math.round(hours * 60);
+  if (min < 1) return 'unter 1 Minute';
+  if (min < 60) return min + '\u00a0min';
+  const dayH = weeklyHours() / 5;
+  if (hours >= dayH * 3) {
+    const days = hours / dayH;
+    if (days >= 5 * 4.33 * 2) return nice(days / (5 * 4.33)) + ' Arbeitsmonate';
+    if (days >= 10) return nice(days / 5) + ' Arbeitswochen';
+    return nice(days) + ' Arbeitstage';
+  }
+  const h = Math.floor(min / 60), m = min % 60;
+  return (h + ' h' + (m ? ' ' + m + ' min' : '')).replace(/ /g, '\u00a0');
+}
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('on'), 2200); }
+
+/* ---------- Drivo-Daten ---------- */
+function readDrivo() {
+  let d;
+  try { d = JSON.parse(localStorage.getItem(DRIVO_KEY) || 'null'); } catch (e) { return null; }
+  if (!d || !d.car) return null;
+  const fills = (d.fuel || []).filter((f) => f.liters > 0 && f.km != null).sort((a, b) => a.km - b.km);
+  const byDate = [...fills].sort((a, b) => String(a.date).localeCompare(String(b.date)));
+  const last = byDate[byDate.length - 1];
+  let L = 0, km = 0, acc = 0, prev = null;
+  for (const f of fills) { // Verbrauch zwischen vollen Tankfüllungen
+    acc += f.liters;
+    if (!f.full) continue;
+    if (prev && f.km > prev.km) { L += acc; km += f.km - prev.km; }
+    prev = f; acc = 0;
+  }
+  return {
+    name: d.car.name || '', tank: d.car.tank || null,
+    ppl: last && last.total ? last.total / last.liters : null,
+    cons: km > 0 ? L / km * 100 : null, fills: fills.length,
+  };
+}
+
+/* ---------- Kennzahlen ---------- */
+const weeklyHours = () => state.hours > 0 ? state.hours : 40;
+const hourly = () => state.net > 0 ? state.net / (weeklyHours() * 52 / 12) : null;
+function car() {
+  const d = readDrivo() || {};
+  const c = state.car;
+  const out = {
+    ppl: c.ppl || d.ppl || null, cons: c.cons || d.cons || null, tank: c.tank || d.tank || null,
+    name: c.name || d.name || 'deinem Auto', fromDrivo: !!readDrivo(),
+  };
+  out.perKm = out.ppl && out.cons ? out.ppl * out.cons / 100 : null;
+  out.fill = out.ppl && out.tank ? out.ppl * out.tank : null;
+  return out;
+}
+// Bedenkzeit: 1 Tag je angefangene 2 Arbeitsstunden, 1 bis 30 Tage
+function coolDays(price) {
+  const h = hourly() ? price / hourly() : price / 20;
+  return Math.max(1, Math.min(30, Math.ceil(h / 2)));
+}
+
+/* ---------- Rechnen ---------- */
+const MODES = { once: 1, month: 12, year: 1 };
+function renderCalc() {
+  const p = num($('#price').value);
+  const box = $('#result');
+  document.querySelectorAll('#mode button').forEach((b) => b.classList.toggle('on', b.dataset.m === state.mode));
+  if (!p || p <= 0) {
+    box.innerHTML = `<div class="empty"><div class="e">⚖︎</div>Gib einen Preis ein.<br><span class="small">Zum Beispiel das, was gerade in deinem Warenkorb liegt.</span></div>`;
+    return;
+  }
+  const total = p * MODES[state.mode]; // bei Abos: aufs Jahr gerechnet
+  const per = state.mode === 'once' ? '' : ' im Jahr';
+  const r = hourly(), c = car();
+  let hero = `<div class="big">${eur(total)}</div><div class="sub">${per ? 'im Jahr' : ''}</div>`;
+  if (r) {
+    const share = total / (state.mode === 'once' ? state.net : state.net * 12) * 100;
+    hero = `<div class="small muted">Das kostet dich${per}</div><div class="big">${dur(total / r)}</div>
+      <div class="sub">Arbeit · ${eur(total)}</div>
+      <div class="bar"><i style="width:${Math.min(100, share)}%"></i></div>
+      <div class="small muted" style="margin-top:6px">${nice(share)} % ${state.mode === 'once' ? 'deines Monatsnettos' : 'deines Jahresnettos'}</div>`;
+  }
+  const tiles = [];
+  if (c.fill) tiles.push({ e: '⛽️', v: nice(total / c.fill), n: 'Tankfüllungen' });
+  if (c.perKm) tiles.push({ e: '🚗', v: nice(total / c.perKm) + ' km', n: 'mit ' + c.name });
+  if (c.ppl && !c.fill) tiles.push({ e: '⛽️', v: nice(total / c.ppl) + ' l', n: 'Sprit' });
+  for (const u of state.units) if (u.price > 0) tiles.push({ e: u.emoji || '•', v: nice(total / u.price), n: u.name });
+  if (state.mode === 'once' && r) tiles.push({ e: '📅', v: nice(total / (state.net / 30.4)), n: 'Kalendertage Einkommen' });
+  if (state.mode !== 'once') tiles.push({ e: '🔟', v: eur(total * 10), n: 'in 10 Jahren' });
+  box.innerHTML = `<div class="card hero">${hero}</div>
+    <div class="units">${tiles.map((t) => `<div class="unit"><div class="e">${esc(t.e)}</div><div class="v">${t.v}</div><div class="n">${esc(t.n)}</div></div>`).join('')}</div>
+    ${!r ? `<div class="card small">Trag unter <b>Ich</b> dein Netto ein, dann siehst du, wie lange du dafür arbeitest.</div>` : ''}
+    ${state.mode === 'once' ? `<button class="primary wide" id="toWait" style="margin-top:12px">⏳ Erst mal drüber schlafen (${coolDays(total)} ${coolDays(total) === 1 ? 'Tag' : 'Tage'})</button>` : ''}`;
+  const tw = $('#toWait');
+  if (tw) tw.onclick = () => openWish('', total);
+}
+
+/* ---------- Bedenkzeit ---------- */
+function ring(frac) {
+  const R = 22, C = 2 * Math.PI * R;
+  return `<svg class="ring" viewBox="0 0 54 54" aria-hidden="true"><circle cx="27" cy="27" r="${R}" fill="none" stroke="var(--line)" stroke-width="5"/>
+    <circle cx="27" cy="27" r="${R}" fill="none" stroke="var(--accent)" stroke-width="5" stroke-linecap="round"
+    stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - Math.max(0, Math.min(1, frac)))}" transform="rotate(-90 27 27)"/></svg>`;
+}
+function dueCount() { const now = Date.now(); return state.wishes.filter((w) => w.status === 'wait' && w.until <= now).length; }
+function renderWait() {
+  const now = Date.now(), r = hourly();
+  const open = state.wishes.filter((w) => w.status === 'wait').sort((a, b) => a.until - b.until);
+  const done = state.wishes.filter((w) => w.status !== 'wait').sort((a, b) => b.decided - a.decided).slice(0, 20);
+  let h = '';
+  if (!open.length) h += `<div class="empty"><div class="e">⏳</div>Nichts auf der Liste.<br><span class="small">Leg den nächsten Spontankauf hier ab.</span></div>`;
+  for (const w of open) {
+    const ready = w.until <= now;
+    const left = Math.ceil((w.until - now) / DAY);
+    h += `<div class="card"><div class="wish">${ring(ready ? 1 : (now - w.added) / (w.until - w.added))}
+      <div class="t"><b>${esc(w.name)}</b><span class="muted small">${eur(w.price)}${r ? ' · ' + dur(w.price / r) + ' Arbeit' : ''}</span><br>
+      ${ready ? '<span class="tag good">Bedenkzeit vorbei</span>' : `<span class="tag">noch ${left} ${left === 1 ? 'Tag' : 'Tage'}</span>`}</div></div>
+      ${ready ? `<p class="small" style="margin:12px 0 0">Willst du das immer noch?</p>
+      <div class="actions"><button data-act="skip" data-id="${w.id}">Nein, verzichten</button><button class="primary" data-act="buy" data-id="${w.id}">Ja, kaufen</button></div>`
+      : `<div class="actions"><button class="ghost" data-act="skip" data-id="${w.id}">Hat sich erledigt</button><button class="ghost" data-act="del" data-id="${w.id}">Löschen</button></div>`}</div>`;
+  }
+  if (done.length) {
+    h += `<h2>Entschieden</h2><div class="card">` + done.map((w) => `<div class="wish" style="margin:6px 0"><div class="t">${esc(w.name)} <span class="muted small">· ${eur(w.price)}</span></div>
+      <span class="tag ${w.status === 'skipped' ? 'good' : 'bad'}">${w.status === 'skipped' ? 'verzichtet' : 'gekauft'}</span></div>`).join('') + `</div>`;
+  }
+  $('#wishes').innerHTML = h;
+}
+function decide(id, act) {
+  const w = state.wishes.find((x) => x.id === id);
+  if (!w) return;
+  if (act === 'del') state.wishes = state.wishes.filter((x) => x.id !== id);
+  else { w.status = act === 'buy' ? 'bought' : 'skipped'; w.decided = Date.now(); }
+  save(); renderAll();
+  if (act === 'skip') { const r = hourly(); toast('Gespart: ' + eur(w.price) + (r ? ' = ' + dur(w.price / r) + ' Freizeit' : '')); }
+  if (act === 'buy') toast('Gönn dir. Du hast es dir überlegt.');
+}
+function openWish(name, price) {
+  const f = $('#wishForm');
+  f.reset(); f.name.value = name || ''; f.price.value = price ? fmt(price, 2) : '';
+  previewWish(); $('#wishDlg').showModal();
+  setTimeout(() => (name ? f.price : f.name).focus(), 50);
+}
+function previewWish() {
+  const p = num($('#wishForm').price.value);
+  $('#wishPreview').textContent = p > 0 ? `Bedenkzeit: ${coolDays(p)} ${coolDays(p) === 1 ? 'Tag' : 'Tage'}` + (hourly() ? ` · entspricht ${dur(p / hourly())} Arbeit` : '') : '';
+}
+
+/* ---------- Bilanz ---------- */
+function renderSum() {
+  const r = hourly(), c = car();
+  const sk = state.wishes.filter((w) => w.status === 'skipped');
+  const bo = state.wishes.filter((w) => w.status === 'bought');
+  const saved = sk.reduce((s, w) => s + w.price, 0);
+  const spent = bo.reduce((s, w) => s + w.price, 0);
+  const decided = sk.length + bo.length;
+  if (!decided) {
+    $('#summary').innerHTML = `<div class="empty"><div class="e">◎</div>Noch keine Entscheidungen.<br><span class="small">Sobald die erste Bedenkzeit vorbei ist, siehst du hier, was dir das Warten gebracht hat.</span></div>`;
+    return;
+  }
+  const tiles = [];
+  if (r) tiles.push({ e: '🕰', v: dur(saved / r), n: 'Arbeitszeit gespart' });
+  if (c.fill) tiles.push({ e: '⛽️', v: nice(saved / c.fill), n: 'Tankfüllungen' });
+  if (c.perKm) tiles.push({ e: '🚗', v: nice(saved / c.perKm) + ' km', n: 'mit ' + c.name });
+  for (const u of state.units) if (u.price > 0) tiles.push({ e: u.emoji || '•', v: nice(saved / u.price), n: u.name });
+  const rate = sk.length / decided * 100;
+  $('#summary').innerHTML = `<div class="card hero"><div class="small muted">Durch Warten gespart</div><div class="big" style="color:var(--good)">${eur(saved)}</div>
+    <div class="sub">${sk.length} von ${decided} Wünschen haben die Bedenkzeit nicht überlebt</div>
+    <div class="bar"><i style="width:${rate}%;background:var(--good)"></i></div></div>
+    <div class="units">${tiles.map((t) => `<div class="unit"><div class="e">${esc(t.e)}</div><div class="v">${t.v}</div><div class="n">${esc(t.n)}</div></div>`).join('')}</div>
+    <div class="card small">Bewusst gekauft: <b>${eur(spent)}</b> in ${bo.length} ${bo.length === 1 ? 'Kauf' : 'Käufen'}.${r ? ` Dafür hast du ${dur(spent / r)} gearbeitet – und es dir gut überlegt.` : ''}</div>`;
+}
+
+/* ---------- Einstellungen ---------- */
+function renderSet() {
+  const r = hourly(), d = readDrivo(), c = car();
+  $('#rateInfo').textContent = r ? `Deine Stunde ist ${eur(r)} wert (netto).` : 'Noch kein Einkommen eingetragen.';
+  $('#drivoInfo').innerHTML = d
+    ? `✅ Drivo gefunden: <b>${esc(d.name)}</b>${d.ppl ? ` · zuletzt ${fmt(d.ppl, 3)} €/l` : ''}${d.cons ? ` · Ø ${fmt(d.cons, 1)} l/100 km` : ''}${d.tank ? ` · ${d.tank} l Tank` : ''}`
+    : `<span class="muted">Drivo nicht gefunden – trag die Werte selbst ein.</span>`;
+  if (c.perKm) $('#drivoInfo').innerHTML += `<div class="src">1 km kostet dich ${fmt(c.perKm, 2)} € Sprit${c.fill ? `, eine Tankfüllung ${eur(c.fill)}` : ''}.</div>`;
+  $('#unitList').innerHTML = state.units.map((u) => `<div class="list-unit" data-id="${u.id}">
+    <input class="em" data-k="emoji" value="${esc(u.emoji)}" aria-label="Symbol">
+    <input class="nm" data-k="name" value="${esc(u.name)}" aria-label="Name">
+    <input class="pr" data-k="price" inputmode="decimal" value="${u.price ? fmt(u.price, 2) : ''}" placeholder="€" aria-label="Preis">
+    <button data-del="${u.id}" aria-label="Entfernen">✕</button></div>`).join('');
+}
+function fillSettings() {
+  $('#net').value = state.net ? fmt(state.net, 0) : '';
+  $('#hours').value = state.hours ? String(state.hours).replace('.', ',') : '';
+  $('#ppl').value = state.car.ppl ? fmt(state.car.ppl, 3) : '';
+  $('#cons').value = state.car.cons ? fmt(state.car.cons, 1) : '';
+  $('#tank').value = state.car.tank || '';
+  $('#carName').value = state.car.name || '';
+}
+
+/* ---------- Ablauf ---------- */
+function renderAll() {
+  renderCalc(); renderWait(); renderSum(); renderSet();
+  const n = dueCount();
+  $('#due').innerHTML = n ? ` <span class="badge">${n}</span>` : '';
+}
+function showView(v) {
+  document.querySelectorAll('section.view').forEach((s) => s.classList.toggle('on', s.id === 'view-' + v));
+  document.querySelectorAll('#tabs button').forEach((b) => b.classList.toggle('on', b.dataset.v === v));
+  const sub = { calc: 'Was kostet das wirklich?', wait: 'Erst warten, dann entscheiden', sum: 'Was dir das Warten gebracht hat', set: 'Deine Maßstäbe' };
+  $('#subtitle').textContent = sub[v];
+  window.scrollTo(0, 0);
+}
+
+$('#tabs').onclick = (e) => { const b = e.target.closest('button'); if (b) showView(b.dataset.v); };
+$('#price').oninput = renderCalc;
+$('#mode').onclick = (e) => { const b = e.target.closest('button'); if (!b) return; state.mode = b.dataset.m; save(); renderCalc(); };
+$('#addWish').onclick = () => openWish('', null);
+$('#wishForm').price.oninput = previewWish;
+$('#wishForm').onsubmit = (e) => {
+  if (e.submitter && e.submitter.value === 'cancel') return;
+  const f = e.target, p = num(f.price.value), name = f.name.value.trim();
+  if (!name || !(p > 0)) { e.preventDefault(); toast('Name und Preis bitte'); return; }
+  const now = Date.now();
+  state.wishes.push({ id: uid(), name, price: p, added: now, until: now + coolDays(p) * DAY, status: 'wait', decided: null });
+  save(); renderAll(); showView('wait');
+  toast(`Abgelegt. Wir fragen dich in ${coolDays(p)} ${coolDays(p) === 1 ? 'Tag' : 'Tagen'} wieder.`);
+};
+$('#wishes').onclick = (e) => { const b = e.target.closest('button[data-act]'); if (b) decide(b.dataset.id, b.dataset.act); };
+
+const setNum = (id, fn) => { $(id).onchange = (e) => { fn(num(e.target.value)); save(); renderAll(); }; };
+setNum('#net', (v) => { state.net = v; });
+setNum('#hours', (v) => { state.hours = v; });
+setNum('#ppl', (v) => { state.car.ppl = v; });
+setNum('#cons', (v) => { state.car.cons = v; });
+setNum('#tank', (v) => { state.car.tank = v; });
+$('#carName').onchange = (e) => { state.car.name = e.target.value.trim(); save(); renderAll(); };
+$('#unitList').onchange = (e) => {
+  const row = e.target.closest('.list-unit'); if (!row) return;
+  const u = state.units.find((x) => x.id === row.dataset.id); if (!u) return;
+  const k = e.target.dataset.k;
+  u[k] = k === 'price' ? num(e.target.value) : e.target.value.trim();
+  save(); renderCalc(); renderSum();
+};
+$('#unitList').onclick = (e) => {
+  const b = e.target.closest('button[data-del]'); if (!b) return;
+  state.units = state.units.filter((u) => u.id !== b.dataset.del); save(); renderAll();
+};
+$('#addUnit').onclick = () => {
+  state.units.push({ id: uid(), emoji: '⭐️', name: 'Neue Einheit', price: null }); save(); renderSet();
+  const rows = document.querySelectorAll('#unitList .nm'); rows[rows.length - 1].select();
+};
+$('#export').onclick = async () => {
+  const blob = new Blob([JSON.stringify(state, null, 1)], { type: 'application/json' });
+  const file = new File([blob], `gegenwert-${new Date().toISOString().slice(0, 10)}.json`, { type: 'application/json' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file] }); return; } catch (e) { return; } }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = file.name; a.click();
+};
+$('#import').onclick = () => $('#importFile').click();
+$('#importFile').onchange = async (e) => {
+  const f = e.target.files[0]; if (!f) return;
+  try {
+    const d = JSON.parse(await f.text());
+    if (!d || !Array.isArray(d.wishes)) throw new Error();
+    if (!confirm('Aktuelle Daten durch die Sicherung ersetzen?')) return;
+    state = { ...fresh(), ...d }; save(); fillSettings(); renderAll(); toast('Wiederhergestellt');
+  } catch (err) { toast('Das ist keine Gegenwert-Sicherung'); }
+  e.target.value = '';
+};
+$('#onboardForm').onsubmit = (e) => {
+  const f = e.target, net = num(f.net.value), h = num(f.hours.value);
+  if (!(net > 0)) { e.preventDefault(); toast('Bitte dein Netto eintragen'); return; }
+  state.net = net; state.hours = h > 0 ? h : 40; state.onboarded = true;
+  save(); fillSettings(); renderAll(); $('#price').focus();
+};
+document.addEventListener('visibilitychange', () => { if (!document.hidden) renderAll(); }); // Bedenkzeit läuft ab, während die App zu ist
+
+fillSettings(); renderAll();
+if (!state.onboarded) $('#onboard').showModal();
+if (dueCount()) showView('wait');
+if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>
