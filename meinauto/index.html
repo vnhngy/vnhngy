@@ -112,6 +112,7 @@ main.band{padding-bottom:120px}
 @media (orientation:landscape) and (max-height:600px){.gfull{grid-template-columns:minmax(0,1fr) minmax(200px,36%);grid-template-rows:auto minmax(0,1fr)}.gfull .gfh{grid-column:1/-1}.gfull .gfv{grid-template-columns:1fr;align-content:center}}
 .phv{position:fixed;inset:0;z-index:35;background:rgb(0 0 0/.9);display:grid;grid-template-rows:minmax(0,1fr) auto;gap:1rem;padding:max(16px,3vw);justify-items:center;align-items:center}.phv img{max-width:100%;max-height:100%;object-fit:contain;border-radius:14px}.phv .rowb{--g:30 30 34;--ink:#fff}
 .fbt{overflow-x:auto;margin:0 -.25rem}.fbt table{min-width:620px}.fbt select,.fbt input{min-height:38px;padding:.25rem .55rem;font-size:.88rem;border-radius:12px}.fbt input{width:100%;min-width:150px}
+.sycode{font-size:clamp(20px,5vw,28px);letter-spacing:.06em;font-variant-numeric:tabular-nums;word-break:break-all}
 .palarm{display:grid;gap:.55rem;margin-top:.2rem;padding-top:.75rem;border-top:1px solid var(--track)}
 .setup{align-items:flex-start;padding:1.1rem 1.2rem}.setup .sx{flex:1 1 300px;min-width:0;display:grid;gap:.45rem}.setup .sx b{font-size:1.08rem}.setup .sx small{color:var(--mute);font-weight:400;line-height:1.45;font-size:.9rem}.setup .sul{list-style:none;margin:0 0 .3rem;padding:0;display:grid;gap:.3rem;font-weight:400;font-size:.92rem}.setup .sul li::before{content:"✓ ";color:var(--acc);font-weight:700}.setup .sul li.no::before{content:"! ";color:var(--warn)}.setup .inl{grid-template-columns:minmax(0,1fr) auto}
 .banner{display:flex;align-items:center;justify-content:space-between;gap:.6rem 1rem;flex-wrap:wrap;padding:.8rem .8rem .8rem 1.2rem;border-radius:22px;font-weight:500}
@@ -873,6 +874,57 @@ function btPick(){let r='';try{r=APP.btDevices()}catch(e){}
 window.__bt=on=>{if(on){if(!S.tripLive){tripStart();S.tripLive.bt=1;save()}if(page!=='cockpit')go('cockpit')}else if(S.tripLive&&S.tripLive.bt&&S.bt.stop!==false)tripStop()};
 window.__appAct=()=>{let a='';try{a=APP.takeAct()}catch(e){}if(a==='tripstart')window.__bt(1);else if(a==='sprit'){go('auto');loadSprit(true)}};
 
+/* ---------- Abgleich zwischen Geräten (Ende-zu-Ende verschlüsselt, gespeichert bei Supabase) ---------- */
+const CLOUD={url:'https://mcihdwskqdljescdiinr.supabase.co',key:'sb_publishable_ijaVxe5ZB9EP-11GiY9-cQ_VCOocDVo',anon:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jaWhkd3NrcWRsamVzY2RpaW5yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1MjA4MzIsImV4cCI6MjEwODA5NjgzMn0.hNJR2C5xJ7hxelM_eRQrVSg5vKECdmOqL2pcs_dCq-I'};
+const SYKEY='startseite-sync',SYA='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const SY_LOCAL=['bt','cockpit','tripLive','setup','notify','autoBak','lastBak','gpsPlace','timer','sw'];
+const SY_ARR=['fuel','costs','maint','tasks','events','trips','projects','tiresets','links'];
+let SY={code:'',ver:0,dirty:false,at:0,err:''},syBusy=false,syAgain=false,syT=0,syApplying=false,syK=null,syArm='',syPend='',syLast='';
+try{Object.assign(SY,JSON.parse(localStorage.getItem(SYKEY)||'{}'))}catch(e){}
+const syOk=()=>!!(window.crypto&&crypto.subtle&&window.fetch&&window.TextEncoder);
+function sySave(){try{localStorage.setItem(SYKEY,JSON.stringify(SY))}catch(e){}}
+function syNewCode(){const b=crypto.getRandomValues(new Uint8Array(20));let c='';for(let i=0;i<20;i++)c+=SYA[b[i]&31];return c}
+const syNorm=c=>String(c||'').toUpperCase().split('').filter(ch=>SYA.includes(ch)).join('');
+const syFmt=c=>syNorm(c).replace(/(.{4})(?=.)/g,'$1-');
+async function syKeys(){const c=syNorm(SY.code);if(syK&&syK.c===c)return syK;const te=new TextEncoder(),h=async t=>new Uint8Array(await crypto.subtle.digest('SHA-256',te.encode(t)));
+ const idb=await h('meinauto:id:'+c),kb=await h('meinauto:key:'+c),key=await crypto.subtle.importKey('raw',kb,'AES-GCM',false,['encrypt','decrypt']);
+ syK={c,id:Array.from(idb,x=>x.toString(16).padStart(2,'0')).join(''),key};return syK}
+const syB64=u=>{let t='';for(let i=0;i<u.length;i+=32768)t+=String.fromCharCode.apply(null,u.subarray(i,i+32768));return btoa(t)};
+const syUnB64=t=>Uint8Array.from(atob(t),c=>c.charCodeAt(0));
+async function syZip(u,de){if(typeof CompressionStream==='undefined'||typeof DecompressionStream==='undefined')return null;const st=new Blob([u]).stream().pipeThrough(de?new DecompressionStream('gzip'):new CompressionStream('gzip'));return new Uint8Array(await new Response(st).arrayBuffer())}
+async function syEnc(obj){const k=await syKeys(),raw=new TextEncoder().encode(JSON.stringify(obj));let z=null;try{z=await syZip(raw)}catch(e){z=null}
+ const iv=crypto.getRandomValues(new Uint8Array(12)),ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},k.key,z||raw)),all=new Uint8Array(12+ct.length);all.set(iv);all.set(ct,12);return(z?'g1:':'p1:')+syB64(all)}
+async function syDec(txt){const k=await syKeys(),m=/^(g1|p1):(.+)$/.exec(txt||'');if(!m)throw new Error('format');const all=syUnB64(m[2]);
+ const pt=new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:all.subarray(0,12)},k.key,all.subarray(12))),raw=m[1]==='g1'?await syZip(pt,true):pt;if(!raw)throw new Error('gzip');return JSON.parse(new TextDecoder().decode(raw))}
+async function syRpc(fn,args){const go=h=>fetch(CLOUD.url+'/rest/v1/rpc/'+fn,{method:'POST',cache:'no-store',headers:Object.assign({'Content-Type':'application/json'},h),body:JSON.stringify(args)});
+ let r=await go({apikey:CLOUD.key});if(r.status===401||r.status===403)r=await go({apikey:CLOUD.anon,Authorization:'Bearer '+CLOUD.anon});
+ if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
+function syOut(){const o=JSON.parse(JSON.stringify(S));for(const k of SY_LOCAL)delete o[k];return o}
+function syMerge(local,remote){const o=Object.assign({},remote,local);for(const k of SY_ARR){const a=Array.isArray(local[k])?local[k]:[],b=Array.isArray(remote[k])?remote[k]:[],ids=new Set(a.map(x=>x&&x.id));o[k]=a.concat(b.filter(x=>x&&x.id&&!ids.has(x.id)))}return o}
+function syAdopt(remote){const keep={};for(const k of SY_LOCAL)if(k in S)keep[k]=S[k];syApplying=true;try{S=merge(Object.assign({},remote,keep));S.trips.sort((a,b)=>b.s-a.s);save()}finally{syApplying=false}syLast=JSON.stringify(syOut());if(!busy())render();else pend=true;if(!$('#set').hidden&&!$('#pane').contains(document.activeElement))renderSet()}
+function syDirty(){if(!SY.code||syApplying)return;const j=JSON.stringify(syOut());if(j===syLast&&!SY.dirty)return;syLast=j;if(!SY.dirty){SY.dirty=true;sySave()}clearTimeout(syT);syT=setTimeout(syRun,2500)}
+async function syRun(){if(!SY.code||!syOk())return;if(syBusy){syAgain=true;return}syBusy=true;syAgain=false;syUi();let got=false;
+ try{for(let round=0;round<3;round++){const k=await syKeys(),rows=await syRpc('meinauto_get',{p_id:k.id}),row=Array.isArray(rows)?rows[0]:null;
+   if(row&&+row.ver!==+SY.ver){const remote=await syDec(row.data);if(SY.dirty)syAdopt(syMerge(syOut(),remote));else{syAdopt(remote);got=true}SY.ver=+row.ver}
+   if(!row||SY.dirty){const v=await syRpc('meinauto_put',{p_id:k.id,p_data:await syEnc(syOut()),p_base:+SY.ver||0});if(v==null)continue;SY.ver=+v;SY.dirty=false;syLast=JSON.stringify(syOut())}
+   break}
+  SY.at=Date.now();SY.err='';if(got&&SY.at0)toast('Neue Daten vom anderen Gerät übernommen');SY.at0=SY.at}
+ catch(e){SY.err=/HTTP 5|fetch|Failed|Load|network|NetworkError/i.test(String(e&&e.message||e))?'offline':'fehler'}
+ finally{syBusy=false;sySave();syUi();if(syAgain)setTimeout(syRun,300)}}
+function syStatus(){return syBusy?'Wird abgeglichen …':SY.err==='offline'?'Gerade keine Verbindung – wird nachgeholt':SY.err?'Abgleich hat nicht geklappt – tippe auf „Jetzt abgleichen“':SY.at?`Zuletzt abgeglichen ${iso(new Date(SY.at))===iso(new Date())?'heute':fmt(new Date(SY.at),{day:'numeric',month:'short'})} um ${hm(new Date(SY.at))} Uhr`:'Noch nicht abgeglichen'}
+function syUi(){const e=$('#syStat');if(e)e.textContent=syStatus()}
+async function syJoin(c){SY={code:c,ver:0,dirty:false,at:0,err:''};syK=null;syArm='';syPend='';
+ try{const k=await syKeys(),rows=await syRpc('meinauto_get',{p_id:k.id});if(!Array.isArray(rows)||!rows.length){SY.code='';sySave();renderSet();toast('Zu diesem Code gibt es keine Daten – prüf ihn nochmal.');return}
+  await syDec(rows[0].data)}catch(e){SY.code='';sySave();renderSet();toast(/HTTP|fetch|Failed|Load|network/i.test(String(e&&e.message||e))?'Keine Verbindung – versuch es gleich nochmal.':'Der Code passt nicht.');return}
+ SY.at0=0;sySave();await syRun();renderSet();toast('Verbunden – beide Geräte haben jetzt dieselben Daten')}
+function setSyncHtml(){if(!syOk())return'<section class="fs" id="set-sync"><h3>Abgleich zwischen Geräten</h3><p class="note">Auf diesem Gerät geht der Abgleich leider nicht.</p></section>';
+ if(!SY.code)return`<section class="fs" id="set-sync"><h3>Abgleich zwischen Geräten</h3><p class="note">Damit Tablet und iPhone dieselben Daten haben. Alles wird auf dem Gerät verschlüsselt, bevor es ins Internet geht – lesen kann es nur, wer deinen Code hat.</p>
+ <div class="tile fs" style="gap:.6rem"><b>Erstes Gerät</b><p class="note">Hier einschalten. Du bekommst einen Code für dein zweites Gerät.</p><div class="rowb" style="justify-content:flex-start"><button type="button" class="pri" id="syNew">Abgleich einschalten</button></div></div>
+ <div class="tile fs" style="gap:.6rem"><b>Zweites Gerät</b><p class="note">Code vom anderen Gerät eingeben. Die Daten auf diesem Gerät werden dabei durch die gemeinsamen Daten ersetzt.</p><label>Code<input id="syIn" value="${esc(syFmt(syPend))}" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="XXXX-XXXX-XXXX-XXXX-XXXX"></label><div class="rowb" style="justify-content:flex-start"><button type="button" id="syJoin" class="${syArm==='join'?'pri':''}">${syArm==='join'?'Ja, Daten von dort übernehmen':'Verbinden'}</button></div></div></section>`;
+ return`<section class="fs" id="set-sync"><h3>Abgleich zwischen Geräten</h3><p class="mini"><b>Status:</b> <span id="syStat">${esc(syStatus())}</span></p>
+ <div class="tile fs" style="gap:.5rem"><span class="k">Dein Code – auf dem anderen Gerät unter Anpassen → Abgleich → „Zweites Gerät“ eingeben</span><b class="sycode">${esc(syFmt(SY.code))}</b><div class="rowb" style="justify-content:flex-start"><button type="button" id="syCopy">Code kopieren</button><button type="button" id="syNow">Jetzt abgleichen</button><button type="button" id="syOff">${syArm==='off'?'Wirklich trennen?':'Trennen'}</button></div></div>
+ <p class="note">Gemeinsam: Auto, Tankbuch, Kosten, Wartung, Reifen, Fahrten, Termine, Aufgaben, Notizen, Garage, Notfalldaten und Aussehen. Nur auf dem jeweiligen Gerät: Fotos, eigenes Hintergrundbild, laufende Fahrt, Timer und Bluetooth. Halte den Code geheim.</p></section>`}
+
 /* Einrichtung in einem Schritt */
 const SU={busy:false,msg:'',res:null};
 function setupBan(){if(!HAS2||page!=='start'||(S.setup|0)>=2)return'';
@@ -1042,7 +1094,7 @@ setInterval(()=>{if(S.sw.t0){const e=$('#swT');if(e)e.textContent=swFmt(swEl())}
 /* Speichern */
 let ref=null,wref=null,writing=false,again=false,saveT;
 let syncTxt='Wird geladen …';function setSync(s){const m={ok:['ok','In deinem Konto gespeichert – auf allen Geräten gleich'],local:['','Nur auf diesem Gerät gespeichert'],load:['','Wird geladen …'],slow:['warn','Speicher gerade nicht erreichbar'],full:['warn','Speicher voll']}[s];syncTxt=m[1];const e=$('#sync');e.className='sync glass '+m[0];e.lastElementChild.textContent=m[1];e.hidden=m[0]!=='warn';const x=$('#syncTxt');if(x)x.textContent=m[1]}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}clearTimeout(saveT);saveT=setTimeout(flush,700);syncSoon();bgSoon()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}clearTimeout(saveT);saveT=setTimeout(flush,700);syncSoon();bgSoon();syDirty()}
 async function flush(){if(!ref)return;if(writing){again=true;return}writing=true;again=false;const body=JSON.parse(JSON.stringify(S));
  for(let i=0;i<2;i++){try{await ref.set(body);setSync('ok');break}catch(e){const c=e&&e.code;if(c==='unavailable'&&i===0){await new Promise(r=>setTimeout(r,800+Math.random()*1200));continue}setSync(c==='quota_exceeded'?'full':'local');break}}
  writing=false;if(again)flush()}
@@ -1158,7 +1210,7 @@ $('#standby').addEventListener('click',closeSB);
 
 /* Einstellungen */
 const SW=(k,l,sub)=>`<label class="tg"><span>${l}${sub?`<small>${sub}</small>`:''}</span><input type="checkbox" role="switch" data-sw="${k}"${S[k]?' checked':''}></label>`;
-function renderSet(){const c=S.car,p=S.place,city=CITIES.find(x=>x[0]===p.n&&Math.abs(x[1]-p.lat)<.01),secs=[['set-look','Aussehen'],['set-gen','Allgemein'],...(APP?[['set-app','App']]:[]),['set-ber','Bereiche'],['set-auto','Auto'],['set-bk','Sicherung']];
+function renderSet(){const c=S.car,p=S.place,city=CITIES.find(x=>x[0]===p.n&&Math.abs(x[1]-p.lat)<.01),secs=[['set-look','Aussehen'],['set-gen','Allgemein'],...(APP?[['set-app','App']]:[]),['set-ber','Bereiche'],['set-auto','Auto'],['set-sync','Abgleich'],['set-bk','Sicherung']];
  $('#pane').innerHTML=`<div class="head"><div class="hd"><h2 id="setT">Anpassen</h2><button class="pri" type="button" id="closeSet">Fertig</button></div><div class="seg" role="group" aria-label="Abschnitte">${secs.map(([i,n])=>`<button type="button" data-go="${i}">${n}</button>`).join('')}</div></div>
  <section class="fs" id="set-look"><h3>Aussehen</h3>
  <div><span class="k">Hintergrund</span><div class="walls" style="margin-top:.4rem">${WALLS.map(w=>`<button type="button" class="wp" data-wall="${w[0]}" aria-pressed="${S.wall===w[0]}"><i style="background:${w[3]}"></i>${w[1]}</button>`).join('')}<button type="button" class="wp" data-act="photo" aria-pressed="${S.wall==='foto'}"><i style="${wallImg?`background:center/cover url('${wallImg}')`:'background:rgb(var(--g)/.4);display:grid;place-items:center;font-size:1.6rem'}">${wallImg?'':'+'}</i>Eigenes Foto</button></div>
@@ -1184,6 +1236,7 @@ function renderSet(){const c=S.car,p=S.place,city=CITIES.find(x=>x[0]===p.n&&Mat
  <div class="two"><label>Letzte Inspektion bei km<input data-car="svcKm" inputmode="numeric" value="${esc(c.svcKm)}"></label><label>Inspektion alle … km<input data-car="svcInt" inputmode="numeric" value="${esc(c.svcInt)}"></label></div>
  <label>Aufgezogene Reifen<select data-car="tires">${TIRES.map(([v,n])=>`<option value="${v}"${c.tires===v?' selected':''}>${n}</option>`).join('')}</select></label></section>
 
+ ${setSyncHtml()}
  <section class="fs" id="set-bk"><h3>Sicherung</h3><p class="mini"><b>Status:</b> <span id="syncTxt">${esc(syncTxt)}</span></p><p class="note">Alles speichert automatisch. Zusätzlich kannst du deine Daten als Text kopieren und später hier wieder einfügen (ohne Hintergrundfoto).</p><div class="rowb" style="justify-content:flex-start"><button type="button" id="bkCopy">Daten kopieren</button></div><label>Gesicherten Text einfügen<textarea id="bkIn" rows="3"></textarea></label><div class="rowb" style="justify-content:flex-start"><button type="button" id="bkRes">Wiederherstellen</button><button type="button" id="resetAll">${resetArm?'Wirklich alles zurücksetzen?':'Alles zurücksetzen'}</button></div>${APP&&!WEBAPP?'<div class="tile fs" style="gap:.5rem"><b>App-Oberfläche</b><span class="note">Hast du eine neue index.html bekommen? Hier auswählen – deine Daten bleiben erhalten.</span><div><button type="button" id="appUpd">Neue Version laden</button></div></div>':''}</section>`}
 const openSet=()=>{resetArm=false;renderSet();$('#set').hidden=false;setupLens();$('#closeSet').focus()};
 const closeSet=()=>{$('#set').hidden=true;$('#openSet').focus()};
@@ -1208,6 +1261,11 @@ P.addEventListener('click',async e=>{if(e.target===P)return closeSet();const b=e
  if(ds.mv){const i=+ds.mv,d=+ds.d,j=i+d;if(j<0||j>=S.widgets.length)return;[S.widgets[i],S.widgets[j]]=[S.widgets[j],S.widgets[i]];commit(true);refocus(`[data-mv="${j}"][data-d="${d}"]:not(:disabled)`);return}
  if(b.id==='appUpd'){try{APP.pickPage()}catch(err){}return}
  if(b.id==='bakFile'){backupNow(false);renderSet();return}
+ if(b.id==='syNew'){if(!syOk())return;SY={code:syNewCode(),ver:0,dirty:true,at:0,err:'',at0:0};syK=null;syArm='';sySave();renderSet();syRun().then(()=>{if(!SY.err)toast('Abgleich ist an – gib den Code auf dem zweiten Gerät ein')});return}
+ if(b.id==='syJoin'){const inp=$('#syIn'),c=syNorm(inp?inp.value:syPend);if(c.length!==20){toast('Der Code hat 20 Zeichen, zum Beispiel ABCD-EFGH-JKLM-NPQR-STUV.');return}if(syArm!=='join'){syArm='join';syPend=c;renderSet();refocus('#syJoin');return}syJoin(c);return}
+ if(b.id==='syCopy'){const t=syFmt(SY.code);try{if(APP)APP.copy(t);else navigator.clipboard.writeText(t)}catch(err){}toast('Code kopiert');return}
+ if(b.id==='syNow'){syRun();return}
+ if(b.id==='syOff'){if(syArm!=='off'){syArm='off';renderSet();refocus('#syOff');return}SY={code:'',ver:0,dirty:false,at:0,err:''};syK=null;syArm='';sySave();renderSet();toast('Abgleich getrennt – die Daten bleiben auf diesem Gerät');return}
  if(b.id==='bakShare'){const d=new Date(),name=`MeinAuto-Sicherung-${iso(d)}.json`;let ok=false;try{ok=APP.shareFile(name,'application/json',JSON.stringify(S))}catch(err){}if(!ok)toast('Teilen klappt hier nicht – nutze „Jetzt als Datei sichern“.');return}
  if(b.id==='btPick'){btPick();return}
  if(b.id==='btClear'){S.bt={a:'',n:'',stop:true};btList=null;try{APP.btWatch('')}catch(err){}commit(true);toast('Bluetooth-Start ist ausgeschaltet');return}
@@ -1241,6 +1299,9 @@ document.body.insertAdjacentHTML('beforeend','<input type="file" id="phFile" acc
 if(window.indexedDB)setTimeout(phGC,8000);
 if(HAS3){try{APP.btWatch(S.bt.a||'')}catch(e){}bgSoon();setTimeout(()=>window.__appAct(),400)}
 if(WEBAPP&&'serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+if(SY.code){syLast=JSON.stringify(syOut());setTimeout(syRun,900)}
+document.addEventListener('visibilitychange',()=>{if(SY.code)syRun()});addEventListener('online',()=>{if(SY.code)syRun()});
+setInterval(()=>{if(SY.code&&document.visibilityState==='visible')syRun()},45000);
 }
 </script>
 </body>
