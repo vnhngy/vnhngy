@@ -113,6 +113,7 @@ main.band{padding-bottom:120px}
 .phv{position:fixed;inset:0;z-index:35;background:rgb(0 0 0/.9);display:grid;grid-template-rows:minmax(0,1fr) auto;gap:1rem;padding:max(16px,3vw);justify-items:center;align-items:center}.phv img{max-width:100%;max-height:100%;object-fit:contain;border-radius:14px}.phv .rowb{--g:30 30 34;--ink:#fff}
 .fbt{overflow-x:auto;margin:0 -.25rem}.fbt table{min-width:620px}.fbt select,.fbt input{min-height:38px;padding:.25rem .55rem;font-size:.88rem;border-radius:12px}.fbt input{width:100%;min-width:150px}
 .sycode{font-size:clamp(20px,5vw,28px);letter-spacing:.06em;font-variant-numeric:tabular-nums;word-break:break-all}
+.syhl{display:grid;gap:.4rem}.syh{display:grid;gap:.5rem;padding:.5rem .5rem .5rem .8rem;border-radius:14px;background:rgb(255 255 255/.05)}.syh.on{background:rgb(255 255 255/.09)}.syhr{display:flex;align-items:center;justify-content:space-between;gap:.6rem}.syh .note{margin:0}
 .palarm{display:grid;gap:.55rem;margin-top:.2rem;padding-top:.75rem;border-top:1px solid var(--track)}
 .setup{align-items:flex-start;padding:1.1rem 1.2rem}.setup .sx{flex:1 1 300px;min-width:0;display:grid;gap:.45rem}.setup .sx b{font-size:1.08rem}.setup .sx small{color:var(--mute);font-weight:400;line-height:1.45;font-size:.9rem}.setup .sul{list-style:none;margin:0 0 .3rem;padding:0;display:grid;gap:.3rem;font-weight:400;font-size:.92rem}.setup .sul li::before{content:"✓ ";color:var(--acc);font-weight:700}.setup .sul li.no::before{content:"! ";color:var(--warn)}.setup .inl{grid-template-columns:minmax(0,1fr) auto}
 .banner{display:flex;align-items:center;justify-content:space-between;gap:.6rem 1rem;flex-wrap:wrap;padding:.8rem .8rem .8rem 1.2rem;border-radius:22px;font-weight:500}
@@ -791,7 +792,7 @@ const PH={p:null,url:new Map(),
  put(id,b){return this.run('readwrite',s=>s.put(b,id))},get(id){return this.run('readonly',s=>s.get(id))},keys(){return this.run('readonly',s=>s.getAllKeys())},
  del(id){const u=this.url.get(id);if(u){URL.revokeObjectURL(u);this.url.delete(id)}return this.run('readwrite',s=>s.delete(id))},
  async src(id){if(this.url.has(id))return this.url.get(id);const b=await this.get(id);if(!b)return'';const u=URL.createObjectURL(b);this.url.set(id,u);return u}};
-function fillPhotos(){if(!window.indexedDB)return;for(const im of document.querySelectorAll('img[data-phid]:not([src])'))PH.src(im.dataset.phid).then(u=>{if(u)im.src=u;else im.closest('.ph')?.classList.add('miss')}).catch(()=>im.closest('.ph')?.classList.add('miss'))}
+function fillPhotos(){if(!window.indexedDB)return;for(const im of document.querySelectorAll('img[data-phid]:not([src])'))PH.src(im.dataset.phid).then(u=>{const w=im.closest('.ph');if(u){im.src=u;if(w)w.classList.remove('miss')}else if(w)w.classList.add('miss')}).catch(()=>im.closest('.ph')?.classList.add('miss'))}
 async function addPhoto(file){const p=S.projects.find(x=>x.id===phTarget);if(!p||!file)return;toast('Foto wird gespeichert …');
  try{const url=URL.createObjectURL(file),img=new Image();img.src=url;await img.decode();const k=Math.min(1,1600/Math.max(img.naturalWidth,img.naturalHeight)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.naturalWidth*k));c.height=Math.max(1,Math.round(img.naturalHeight*k));c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);
   const blob=await new Promise(r=>c.toBlob(r,'image/jpeg',.82));if(!blob)throw 0;const id='ph'+uid();await PH.put(id,blob);
@@ -802,7 +803,7 @@ function phView(pid,id){const p=S.projects.find(x=>x.id===pid),f=p&&p.ph.find(x=
  o.hidden=false;PH.src(id).then(u=>{const im=o.querySelector('img');if(im&&u)im.src=u}).catch(()=>{});o.querySelector('[data-x=close]').focus()}
 function phvClick(e){const o=e.currentTarget,b=e.target.closest('button');if(e.target===o||(b&&b.dataset.x==='close')){o.hidden=true;return}if(!b)return;const p=S.projects.find(x=>x.id===o.dataset.pid);if(!p)return;const id=o.dataset.id,f=p.ph.find(x=>x.id===id);
  if(b.dataset.tag!=null){if(f)f.tag=b.dataset.tag;commit();phView(p.id,id);return}
- if(b.dataset.x==='del'){p.ph=p.ph.filter(x=>x.id!==id);commit();o.hidden=true;PH.del(id).catch(()=>{});toast('Foto gelöscht')}}
+ if(b.dataset.x==='del'){p.ph=p.ph.filter(x=>x.id!==id);commit();o.hidden=true;PH.del(id).catch(()=>{});foDel(id);toast('Foto gelöscht')}}
 async function phGC(){try{const used=new Set(S.projects.flatMap(p=>p.ph.map(f=>f.id))),ks=await PH.keys();for(const k of ks)if(!used.has(k))await PH.del(k)}catch(e){}}
 
 /* ---------- Fahrtenbuch ---------- */
@@ -902,7 +903,7 @@ async function syDec(txt){const k=await syKeys(),m=/^(g1|p1):(.+)$/.exec(txt||''
  const pt=new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:all.subarray(0,12)},k.key,all.subarray(12))),raw=m[1]==='g1'?await syZip(pt,true):pt;if(!raw)throw new Error('gzip');return JSON.parse(new TextDecoder().decode(raw))}
 async function syRpc(fn,args){const go=h=>fetch(CLOUD.url+'/rest/v1/rpc/'+fn,{method:'POST',cache:'no-store',headers:Object.assign({'Content-Type':'application/json'},h),body:JSON.stringify(args)});
  let r=await go({apikey:CLOUD.key});if(r.status===401||r.status===403)r=await go({apikey:CLOUD.anon,Authorization:'Bearer '+CLOUD.anon});
- if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
+ if(!r.ok){let m='';try{m=(await r.json()).message||''}catch(e){}throw new Error('HTTP '+r.status+' '+m)}return r.json()}
 function syOut(){const o=JSON.parse(JSON.stringify(S));for(const k of SY_LOCAL)delete o[k];return o}
 function syMerge(local,remote){const o=Object.assign({},remote,local);for(const k of SY_ARR){const a=Array.isArray(local[k])?local[k]:[],b=Array.isArray(remote[k])?remote[k]:[],ids=new Set(a.map(x=>x&&x.id));o[k]=a.concat(b.filter(x=>x&&x.id&&!ids.has(x.id)))}return o}
 function syAdopt(remote){const keep={};for(const k of SY_LOCAL)if(k in S)keep[k]=S[k];syApplying=true;try{S=merge(Object.assign({},remote,keep));S.trips.sort((a,b)=>b.s-a.s);save()}finally{syApplying=false}syLast=JSON.stringify(syOut());if(!busy())render();else pend=true;if(!$('#set').hidden&&!$('#pane').contains(document.activeElement))renderSet()}
@@ -912,7 +913,7 @@ async function syRun(){if(!SY.code||!syOk())return;if(syBusy){syAgain=true;retur
    if(row&&+row.ver!==+SY.ver){const remote=await syDec(row.data);if(SY.dirty)syAdopt(syMerge(syOut(),remote));else{syAdopt(remote);got=true}SY.ver=+row.ver}
    if(!row||SY.dirty){const v=await syRpc('meinauto_put',{p_id:k.id,p_data:await syEnc(syOut()),p_base:+SY.ver||0});if(v==null)continue;SY.ver=+v;SY.dirty=false;syLast=JSON.stringify(syOut())}
    break}
-  SY.at=Date.now();SY.err='';if(got&&SY.at0)toast('Neue Daten vom anderen Gerät übernommen');SY.at0=SY.at}
+  SY.at=Date.now();SY.err='';if(got&&SY.at0)toast('Neue Daten vom anderen Gerät übernommen');SY.at0=SY.at;setTimeout(syFotos,50)}
  catch(e){SY.err=/HTTP 5|fetch|Failed|Load|network|NetworkError/i.test(String(e&&e.message||e))?'offline':'fehler'}
  finally{syBusy=false;sySave();syUi();if(syAgain)setTimeout(syRun,300)}}
 function syStatus(){return syBusy?'Wird abgeglichen …':SY.err==='offline'?'Gerade keine Verbindung – wird nachgeholt':SY.err?'Abgleich hat nicht geklappt – tippe auf „Jetzt abgleichen“':SY.at?`Zuletzt abgeglichen ${iso(new Date(SY.at))===iso(new Date())?'heute':fmt(new Date(SY.at),{day:'numeric',month:'short'})} um ${hm(new Date(SY.at))} Uhr`:'Noch nicht abgeglichen'}
@@ -921,13 +922,52 @@ async function syJoin(c){SY={code:c,ver:0,dirty:false,at:0,err:''};syK=null;syAr
  try{const k=await syKeys(),rows=await syRpc('meinauto_get',{p_id:k.id});if(!Array.isArray(rows)||!rows.length){SY.code='';sySave();renderSet();toast('Zu diesem Code gibt es keine Daten – prüf ihn nochmal.');return}
   await syDec(rows[0].data)}catch(e){SY.code='';sySave();renderSet();toast(/HTTP|fetch|Failed|Load|network/i.test(String(e&&e.message||e))?'Keine Verbindung – versuch es gleich nochmal.':'Der Code passt nicht.');return}
  SY.at0=0;sySave();await syRun();renderSet();toast('Verbunden – beide Geräte haben jetzt dieselben Daten')}
+/* Fotos abgleichen: verschlüsselt, Name ist ein Hash */
+let foBusy=false,FO={n:0,open:0,full:false};
+async function syFid(id){const k=await syKeys(),h=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode('meinauto:foto:'+k.c+':'+id)));return Array.from(h,x=>x.toString(16).padStart(2,'0')).join('')}
+async function phShrink(b){if(b.size<=450000)return b;try{const u=URL.createObjectURL(b),img=new Image();img.src=u;await img.decode();const k=Math.min(1,1280/Math.max(img.naturalWidth,img.naturalHeight)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.naturalWidth*k));c.height=Math.max(1,Math.round(img.naturalHeight*k));c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);const o=await new Promise(r=>c.toBlob(r,'image/jpeg',.8));return o&&o.size<b.size?o:b}catch(e){return b}}
+async function foEnc(b){const k=await syKeys(),raw=new Uint8Array(await b.arrayBuffer()),iv=crypto.getRandomValues(new Uint8Array(12)),ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},k.key,raw)),all=new Uint8Array(12+ct.length);all.set(iv);all.set(ct,12);return'f1:'+syB64(all)}
+async function foDec(t){const k=await syKeys(),m=/^f1:(.+)$/.exec(t||'');if(!m)throw new Error('format');const all=syUnB64(m[1]);return new Blob([await crypto.subtle.decrypt({name:'AES-GCM',iv:all.subarray(0,12)},k.key,all.subarray(12))],{type:'image/jpeg'})}
+async function syFotos(){if(!SY.code||!syOk()||!window.indexedDB||foBusy)return;foBusy=true;let got=0,more=false;
+ try{const k=await syKeys(),ids=[...new Set(S.projects.flatMap(p=>(p.ph||[]).map(f=>f.id)))];
+  const rows=await syRpc('meinauto_foto_list',{p_sid:k.id}),rem=new Set((Array.isArray(rows)?rows:[]).map(r=>r.fid)),loc=new Set(await PH.keys());
+  const todo=[];for(const id of ids){const fid=await syFid(id),up=loc.has(id)&&!rem.has(fid),down=!loc.has(id)&&rem.has(fid);if(up||down)todo.push({id,fid,up})}
+  FO.n=ids.filter(id=>loc.has(id)).length;FO.open=todo.length;FO.full=false;foUi();
+  for(const t of todo.slice(0,10)){
+   if(t.up){const b=await PH.get(t.id);if(b){const d=await foEnc(await phShrink(b));if(d.length<=1200000){
+     try{await syRpc('meinauto_foto_put',{p_sid:k.id,p_fid:t.fid,p_data:d})}catch(e){if(/full/.test(String(e&&e.message))){FO.full=true;break}throw e}}}}
+   else{const d=await syRpc('meinauto_foto_get',{p_sid:k.id,p_fid:t.fid});if(typeof d==='string'&&d){await PH.put(t.id,await foDec(d));got++;FO.n++}}
+   FO.open--;foUi()}
+  more=FO.open>0&&!FO.full}
+ catch(e){}finally{foBusy=false;foUi();if(got)fillPhotos();if(more)setTimeout(syFotos,1500)}}
+async function foDel(id){if(!SY.code||!syOk())return;try{const k=await syKeys();await syRpc('meinauto_foto_del',{p_sid:k.id,p_fid:await syFid(id)})}catch(e){}}
+const foStatus=()=>FO.full?'Fotos: Der Platz für Fotos ist voll (300 Fotos). Lösch alte Fotos in der Garage.':FO.open?`Fotos: ${FO.open} ${FO.open>1?'werden':'wird'} noch übertragen …`:FO.n?`Fotos: ${FO.n>1?'alle '+FO.n:'1 Foto'} abgeglichen`:'Fotos: noch keine in der Garage';
+function foUi(){const e=$('#syFoto');if(e)e.textContent=foStatus()}
+
+/* Ältere Stände zurückholen */
+let syH=null;
+const syWhen=t=>{const d=new Date(t),y=new Date();y.setDate(y.getDate()-1);return(iso(d)===iso(new Date())?'Heute':iso(d)===iso(y)?'Gestern':fmt(d,{weekday:'short',day:'numeric',month:'short'}))+', '+hm(d)+' Uhr'};
+function syPrevHtml(o){const n=k=>Array.isArray(o[k])?o[k].length:0,q=(k,a,b)=>{const x=n(k);return nf(x)+' '+(x===1?a:b)},c=o.car||{},name=[c.name,c.model].filter(Boolean).join(' ');
+ return`<p class="note">${[name?esc(name):'',+c.km?nf(+c.km)+' km':'',q('fuel','Tankfüllung','Tankfüllungen'),q('trips','Fahrt','Fahrten'),q('costs','Ausgabe','Ausgaben'),q('maint','Wartungspunkt','Wartungspunkte'),q('events','Termin','Termine'),q('tasks','Aufgabe','Aufgaben'),q('projects','Projekt','Projekte')].filter(Boolean).join(' · ')}</p>
+ <div class="rowb" style="justify-content:flex-start"><button type="button" id="syRest" class="${syArm==='rest'?'pri':''}">${syArm==='rest'?'Ja, diesen Stand zurückholen':'Diesen Stand zurückholen'}</button></div>${syArm==='rest'?'<p class="note">Er gilt dann auf beiden Geräten. Dein jetziger Stand wird vorher gemerkt – du kannst also auch wieder zurück.</p>':''}`}
+function syHistHtml(){if(!syH)return'';if(syH.load)return'<p class="note">Wird geladen …</p>';if(syH.err)return`<p class="note">${esc(syH.err)}</p>`;
+ if(!syH.list.length)return'<p class="note">Noch keine älteren Stände. Ab jetzt merkt sich der Abgleich bei Änderungen höchstens alle 10 Minuten einen Stand – die letzten 30 und für 60 Tage je einen pro Tag.</p>';
+ return`<div class="syhl">${syH.list.map(r=>{const v=+r.ver,o=syH.open===v;return`<div class="syh${o?' on':''}"><div class="syhr"><span>${esc(syWhen(r.saved_at))}</span><button type="button" data-syh="${v}" aria-expanded="${o}">${o?'Zuklappen':'Ansehen'}</button></div>${o?(syH.prev?syPrevHtml(syH.prev):'<p class="note">Wird geladen …</p>'):''}</div>`}).join('')}</div>`}
+function syHistUi(){const e=$('#syHistBox');if(e)e.innerHTML=syHistHtml();const b=$('#syHist');if(b&&syH)b.textContent='Liste neu laden'}
+async function syHistLoad(){syH={load:true,list:[]};syHistUi();try{const k=await syKeys(),rows=await syRpc('meinauto_hist_list',{p_id:k.id});syH={list:Array.isArray(rows)?rows:[]}}catch(e){syH={list:[],err:'Gerade keine Verbindung – versuch es gleich nochmal.'}}syHistUi()}
+async function syHistOpen(v){syArm='';if(!syH)return;if(syH.open===v){syH.open=null;syH.prev=null;syHistUi();return}syH.open=v;syH.prev=null;syHistUi();
+ try{const k=await syKeys(),d=await syRpc('meinauto_hist_get',{p_id:k.id,p_ver:v});if(!syH||syH.open!==v)return;syH.prev=await syDec(d)}catch(e){if(!syH||syH.open!==v)return;syH.open=null;syH.prev=null;toast('Dieser Stand konnte nicht geladen werden.')}syHistUi()}
+async function syRestore(){const o=syH&&syH.prev,r=syH&&syH.list.find(x=>+x.ver===syH.open);if(!o||!r)return;syArm='';
+ try{const k=await syKeys();await syRpc('meinauto_snap',{p_id:k.id})}catch(e){syHistUi();toast('Gerade keine Verbindung – versuch es gleich nochmal.');return}
+ syAdopt(o);SY.dirty=true;sySave();await syRun();toast(`Stand von ${syWhen(r.saved_at)} zurückgeholt`);syHistLoad()}
 function setSyncHtml(){if(!syOk())return'<section class="fs" id="set-sync"><h3>Abgleich zwischen Geräten</h3><p class="note">Auf diesem Gerät geht der Abgleich leider nicht.</p></section>';
  if(!SY.code)return`<section class="fs" id="set-sync"><h3>Abgleich zwischen Geräten</h3><p class="note">Damit Tablet und iPhone dieselben Daten haben. Alles wird auf dem Gerät verschlüsselt, bevor es ins Internet geht – lesen kann es nur, wer deinen Code hat.</p>
  <div class="tile fs" style="gap:.6rem"><b>Erstes Gerät</b><p class="note">Hier einschalten. Du bekommst einen Code für dein zweites Gerät.</p><div class="rowb" style="justify-content:flex-start"><button type="button" class="pri" id="syNew">Abgleich einschalten</button></div></div>
  <div class="tile fs" style="gap:.6rem"><b>Zweites Gerät</b><p class="note">Code vom anderen Gerät eingeben. Die Daten auf diesem Gerät werden dabei durch die gemeinsamen Daten ersetzt.</p><label>Code<input id="syIn" value="${esc(syFmt(syPend))}" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="XXXX-XXXX-XXXX-XXXX-XXXX"></label><div class="rowb" style="justify-content:flex-start"><button type="button" id="syJoin" class="${syArm==='join'?'pri':''}">${syArm==='join'?'Ja, Daten von dort übernehmen':'Verbinden'}</button></div></div></section>`;
- return`<section class="fs" id="set-sync"><h3>Abgleich zwischen Geräten</h3><p class="mini"><b>Status:</b> <span id="syStat">${esc(syStatus())}</span></p>
+ return`<section class="fs" id="set-sync"><h3>Abgleich zwischen Geräten</h3><p class="mini"><b>Status:</b> <span id="syStat">${esc(syStatus())}</span><br><span id="syFoto">${esc(foStatus())}</span></p>
  <div class="tile fs" style="gap:.5rem"><span class="k">Dein Code – auf dem anderen Gerät unter Anpassen → Abgleich → „Zweites Gerät“ eingeben</span><b class="sycode">${esc(syFmt(SY.code))}</b><div class="rowb" style="justify-content:flex-start"><button type="button" id="syCopy">Code kopieren</button><button type="button" id="syNow">Jetzt abgleichen</button><button type="button" id="syOff">${syArm==='off'?'Wirklich trennen?':'Trennen'}</button></div></div>
- <p class="note">Gemeinsam: Auto, Tankbuch, Kosten, Wartung, Reifen, Fahrten, Termine, Aufgaben, Notizen, Garage, Notfalldaten und Aussehen. Nur auf dem jeweiligen Gerät: Fotos, eigenes Hintergrundbild, laufende Fahrt, Timer und Bluetooth. Halte den Code geheim.</p></section>`}
+ <div class="tile fs" style="gap:.5rem"><b>Ältere Stände</b><p class="note">Falls aus Versehen etwas gelöscht oder überschrieben wurde, holst du hier einen früheren Stand zurück – auf beiden Geräten.</p><div class="rowb" style="justify-content:flex-start"><button type="button" id="syHist">${syH?'Liste neu laden':'Ältere Stände anzeigen'}</button></div><div id="syHistBox">${syHistHtml()}</div></div>
+ <p class="note">Gemeinsam: Auto, Tankbuch, Kosten, Wartung, Reifen, Fahrten, Termine, Aufgaben, Notizen, Garage mit Fotos, Notfalldaten und Aussehen. Nur auf dem jeweiligen Gerät: eigenes Hintergrundbild, laufende Fahrt, Timer und Bluetooth. Halte den Code geheim.</p></section>`}
 
 /* Einrichtung in einem Schritt */
 const SU={busy:false,msg:'',res:null};
@@ -1269,7 +1309,10 @@ P.addEventListener('click',async e=>{if(e.target===P)return closeSet();const b=e
  if(b.id==='syJoin'){const inp=$('#syIn'),c=syNorm(inp?inp.value:syPend);if(c.length!==20){toast('Der Code hat 20 Zeichen, zum Beispiel ABCD-EFGH-JKLM-NPQR-STUV.');return}if(syArm!=='join'){syArm='join';syPend=c;renderSet();refocus('#syJoin');return}syJoin(c);return}
  if(b.id==='syCopy'){const t=syFmt(SY.code);try{if(APP)APP.copy(t);else navigator.clipboard.writeText(t)}catch(err){}toast('Code kopiert');return}
  if(b.id==='syNow'){syRun();return}
- if(b.id==='syOff'){if(syArm!=='off'){syArm='off';renderSet();refocus('#syOff');return}SY={code:'',ver:0,dirty:false,at:0,err:''};syK=null;syArm='';sySave();renderSet();toast('Abgleich getrennt – die Daten bleiben auf diesem Gerät');return}
+ if(b.id==='syHist'){syArm='';syHistLoad();return}
+ if(ds.syh!=null){syHistOpen(+ds.syh);return}
+ if(b.id==='syRest'){if(syArm!=='rest'){syArm='rest';syHistUi();refocus('#syRest');return}syRestore();return}
+ if(b.id==='syOff'){if(syArm!=='off'){syArm='off';renderSet();refocus('#syOff');return}SY={code:'',ver:0,dirty:false,at:0,err:''};syK=null;syArm='';syH=null;FO={n:0,open:0,full:false};sySave();renderSet();toast('Abgleich getrennt – die Daten bleiben auf diesem Gerät');return}
  if(b.id==='bakShare'){const d=new Date(),name=`MeinAuto-Sicherung-${iso(d)}.json`;let ok=false;try{ok=APP.shareFile(name,'application/json',JSON.stringify(S))}catch(err){}if(!ok)toast('Teilen klappt hier nicht – nutze „Jetzt als Datei sichern“.');return}
  if(b.id==='btPick'){btPick();return}
  if(b.id==='btClear'){S.bt={a:'',n:'',stop:true};btList=null;try{APP.btWatch('')}catch(err){}commit(true);toast('Bluetooth-Start ist ausgeschaltet');return}
