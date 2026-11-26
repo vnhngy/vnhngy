@@ -703,7 +703,7 @@ const MORE=[["garage","Garage","Bastelprojekte, Teile, Einkaufsliste und Fotos",
 function moreHtml(){return MORE.map(([id,n,d,ic])=>`<button type="button" class="card glass lens mtile" data-go="${id}"><span class="mic">${IC[ic]}</span><b>${n}</b><span class="k">${d}</span></button>`).join('')+`<button type="button" class="card glass lens mtile" data-act="settings"><span class="mic">${IC.sliders}</span><b>Anpassen</b><span class="k">Aussehen, Bereiche, Auto, Sicherung</span></button>`}
 
 /* ---------- App-Brücke v2: GPS, Internet, Erinnerungen, Sicherung ---------- */
-const AV=(()=>{try{return APP&&typeof APP.appVersion==='function'?+APP.appVersion():APP?1:0}catch(e){return APP?1:0}})(),HAS2=AV>=2,HAS3=AV>=3;
+const AV=(()=>{try{return APP&&typeof APP.appVersion==='function'?+APP.appVersion():APP?1:0}catch(e){return APP?1:0}})(),HAS2=AV>=2,HAS3=AV>=3,HAS4=AV>=4;
 const upNote=()=>APP&&!HAS2?'<p class="note">Für diese Funktion braucht die App ein kleines Update des App-Codes (MainActivity.java).</p>':'';
 let httpN=0;const httpCb={};window.__http=(id,ok,body)=>{const f=httpCb[id];delete httpCb[id];if(f)f(ok,body)};
 function getJSON(url){return new Promise((res,rej)=>{if(HAS2){const id=++httpN;httpCb[id]=(ok,b)=>{if(!ok)return rej(new Error(String(b).slice(0,120)));try{res(JSON.parse(b))}catch(e){rej(e)}};try{APP.httpGet(url,id)}catch(e){delete httpCb[id];rej(e)}}else fetch(url).then(r=>{if(!r.ok)throw new Error('http '+r.status);return r.json()}).then(res,rej)})}
@@ -854,7 +854,7 @@ function paBlock(){if(!HAS3)return APP&&!WEBAPP?`<div class="palarm">${upNote3()
 let paLast='',wgLast='',bgT=0;
 function paSync(){const lim=pDec(S.palarm.limit),ok=S.palarm.on&&UUIDRE.test(S.tk.key||'')&&lim>0.5&&lim<5,j=JSON.stringify(ok?{on:true,key:S.tk.key,type:spType(),label:spLabel(),rad:clamp(+S.tk.rad,1,25,5),lat:+S.place.lat,lng:+S.place.lon,limit:lim}:{on:false});if(j===paLast)return;paLast=j;try{APP.setPriceAlarm(j)}catch(e){}}
 function wgSync(){const t=new Date(),c=S.car,U=upcoming(t,400).filter(e=>e.k!=='h'),u=U.find(e=>e.k==='c')||U[0],o=SP.data?SP.data.filter(s=>s.isOpen!==false)[0]:null;
- const j=JSON.stringify({t:[c.name,c.model].filter(Boolean).join(' · ')||'Mein Auto',km:nf(carKm())+' km',next:u?`${u.n} · ${fmt(u.d,{day:'numeric',month:'short',year:'numeric'})}`:'',hint:UUIDRE.test(S.tk.key||'')?'Spritpreis: App kurz öffnen':'Spritpreise: in der App einrichten',pr:o?{p:+o.price,n:String(o.brand||o.name||'').trim(),ft:spLabel(),at:SP.at}:null});
+ const j=JSON.stringify({trip:S.tripLive?S.tripLive.s:0,t:[c.name,c.model].filter(Boolean).join(' · ')||'Mein Auto',km:nf(carKm())+' km',next:u?`${u.n} · ${fmt(u.d,{day:'numeric',month:'short',year:'numeric'})}`:'',hint:UUIDRE.test(S.tk.key||'')?'Spritpreis: App kurz öffnen':'Spritpreise: in der App einrichten',pr:o?{p:+o.price,n:String(o.brand||o.name||'').trim(),ft:spLabel(),at:SP.at}:null});
  if(j===wgLast)return;wgLast=j;try{APP.setWidget(j)}catch(e){}}
 function bgSoon(){if(!HAS3)return;clearTimeout(bgT);bgT=setTimeout(()=>{paSync();wgSync()},1200)}
 let btList=null;
@@ -865,14 +865,18 @@ function set3(){if(WEBAPP)return`<p class="note">„Jetzt als Datei sichern“ �
  ${S.bt.a?`<p class="mini">Gekoppelt mit: <b>${esc(S.bt.n||S.bt.a)}</b></p><label class="tg"><span>Fahrt beim Trennen beenden</span><input type="checkbox" role="switch" data-btstop${S.bt.stop!==false?' checked':''}></label>`:''}
  <div class="rowb" style="justify-content:flex-start"><button type="button" id="btPick">${S.bt.a?'Anderes Gerät wählen':'Auto-Gerät wählen'}</button>${S.bt.a?'<button type="button" id="btClear">Ausschalten</button>':''}</div>
  ${btList?btList.length?`<div class="chips">${btList.map((d,i)=>`<button type="button" class="sm" data-bti="${i}">${esc(d.n)}</button>`).join('')}</div>`:'<p class="note">Keine gekoppelten Geräte gefunden. Koppel das Tablet zuerst in den Android-Einstellungen mit dem Auto.</p>':''}
- <h4 style="margin:.5rem 0 0">Widget für den Startbildschirm</h4><p class="note">Halte eine freie Stelle auf dem Startbildschirm gedrückt, tippe auf „Widgets“ und zieh „Mein Auto“ auf den Bildschirm. Es zeigt Spritpreis, Kilometerstand und den nächsten Termin.</p>`}
+ <h4 style="margin:.5rem 0 0">${HAS4?'Widgets':'Widget'} für den Startbildschirm</h4><p class="note">Halte eine freie Stelle auf dem Startbildschirm gedrückt, tippe auf „Widgets“ und dann auf „Mein Auto“. ${HAS4?'Es gibt drei: „Mein Auto“ mit Spritpreis, Kilometerstand und nächstem Termin, die runde „Uhr“ und die „Schnellknöpfe“ für Tanken, Fahrt, Cockpit und Garage.':'Zieh „Mein Auto“ auf den Bildschirm. Es zeigt Spritpreis, Kilometerstand und den nächsten Termin.'}</p>`}
 function btPick(){let r='';try{r=APP.btDevices()}catch(e){}
  if(r==='perm'){window.__btPerm=ok=>{window.__btPerm=null;if(ok)btPick();else toast('Ohne die Erlaubnis „Geräte in der Nähe“ geht das leider nicht.')};return}
  if(r==='off'){toast('Bluetooth ist aus – schalte es ein und tippe nochmal.');return}
  if(!r||r==='none'){toast('Auf diesem Gerät wurde kein Bluetooth gefunden.');return}
  try{btList=JSON.parse(r)}catch(e){btList=[]}renderSet();refocus(btList.length?'[data-bti="0"]':'#btPick')}
 window.__bt=on=>{if(on){if(!S.tripLive){tripStart();S.tripLive.bt=1;save()}if(page!=='cockpit')go('cockpit')}else if(S.tripLive&&S.tripLive.bt&&S.bt.stop!==false)tripStop()};
-window.__appAct=()=>{let a='';try{a=APP.takeAct()}catch(e){}if(a==='tripstart')window.__bt(1);else if(a==='sprit'){go('auto');loadSprit(true)}};
+window.__appAct=()=>{let a='';try{a=APP.takeAct()}catch(e){}if(!a)return;
+ if(a==='tripstart')window.__bt(1);else if(a==='sprit'){go('auto');loadSprit(true)}
+ else if(a==='tanken'){go('auto');if(!openF.fuel){openF.fuel=true;renderCard('tank')}setTimeout(()=>{const c=$('#w-tank');if(c)c.scrollIntoView({block:'start',behavior:'smooth'});const i=$('[data-form="fuel"] [name=km]');if(i)i.focus({preventScroll:true})},150)}
+ else if(a==='fahrt'){go('cockpit');if(S.tripLive)toast('Fahrt läuft schon');else tripStart()}
+ else if(a==='cockpit'||a==='garage')go(a)};
 
 /* ---------- Abgleich zwischen Geräten (Ende-zu-Ende verschlüsselt, gespeichert bei Supabase) ---------- */
 const CLOUD={url:'https://mcihdwskqdljescdiinr.supabase.co',key:'sb_publishable_ijaVxe5ZB9EP-11GiY9-cQ_VCOocDVo',anon:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jaWhkd3NrcWRsamVzY2RpaW5yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1MjA4MzIsImV4cCI6MjEwODA5NjgzMn0.hNJR2C5xJ7hxelM_eRQrVSg5vKECdmOqL2pcs_dCq-I'};
