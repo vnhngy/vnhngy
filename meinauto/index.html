@@ -601,9 +601,13 @@ function icsText(L){const e=x=>String(x).replace(/[\;,]/g,m=>'\\'+m).replace(/\r
  return['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Mein Auto//DE','CALSCALE:GREGORIAN','METHOD:PUBLISH','X-WR-CALNAME:Mein Auto',...ev,'END:VCALENDAR'].map(fold).join('\r\n')+'\r\n'}
 function calExport(all){const t=new Date(),sent=new Set(all?[]:S.calSent||[]),L=calItems(t),N=L.filter(x=>!sent.has(x.uid));
  if(!N.length){toast(L.length?'Alle kommenden Termine sind schon übergeben. Mit „Alle nochmal“ geht es erneut.':'In den nächsten Monaten steht nichts an.');return}
- dl('MeinAuto-Termine.ics','text/calendar',icsText(N));
- S.calSent=[...new Set([...(all?[]:S.calSent||[]),...N.map(x=>x.uid)])].slice(-300);save();
- toast(`${N.length} ${N.length>1?'Termine':'Termin'} für den Kalender – dort auf „Alle hinzufügen“ tippen`)}
+ if(WEBAPP&&!navigator.onLine){toast('Dafür braucht das iPhone kurz Internet.');return}
+ const done=()=>{S.calSent=[...new Set([...(all?[]:S.calSent||[]),...N.map(x=>x.uid)])].slice(-300);save()};
+ if(!WEBAPP){dl('MeinAuto-Termine.ics','text/calendar',icsText(N));done();toast(`${N.length} ${N.length>1?'Termine':'Termin'} für den Kalender`);return}
+ // iPhone: Web-Apps dürfen keine Dateien laden – Safari öffnet die Termine über einen Link und bietet „Alle hinzufügen“ an
+ icsLink(icsText(N)).then(u=>{done();toast(`${N.length} ${N.length>1?'Termine':'Termin'} – gleich auf „Alle hinzufügen“ tippen`);setTimeout(()=>{location.href=u},350)}).catch(()=>toast('Das hat gerade nicht geklappt – versuch es gleich nochmal.'))}
+async function icsLink(txt){const raw=new TextEncoder().encode(txt);let z=null;try{z=await syZip(raw)}catch(e){z=null}
+ return CLOUD.url+'/functions/v1/meinauto-ics?'+(z?'':'z=0&')+'d='+syB64(z||raw).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
 const calBtn=()=>WEBAPP?`<button type="button" class="sm" data-act="ics">In Kalender</button>`:'';
 
 /* ---------- Wetter (nur in der App: Live-Daten von Open-Meteo) ---------- */
