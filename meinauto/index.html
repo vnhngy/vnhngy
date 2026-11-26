@@ -105,6 +105,11 @@ main.band{padding-bottom:120px}
 .st{flex:none;font-size:.76rem;font-weight:700;padding:.3rem .7rem;border-radius:99px;background:rgb(var(--g)/.55);color:var(--ink);box-shadow:inset 0 0 0 1px rgb(255 255 255/.16)}.st-laeuft{background:var(--acc);color:var(--on)}.st-fertig{color:var(--mute)}
 .pjb{display:grid;gap:.9rem;padding:.2rem 1rem 1rem}.pjb textarea{width:100%}
 .phs{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:.5rem;margin-top:.45rem}.ph{position:relative;aspect-ratio:1;padding:0;overflow:hidden;border-radius:14px;min-height:0}.ph img{width:100%;height:100%;object-fit:cover;display:block}.ph i{position:absolute;left:.3rem;bottom:.3rem;font-style:normal;font-size:.68rem;font-weight:700;padding:.15rem .45rem;border-radius:99px;background:rgb(0 0 0/.66);color:#fff}.ph.add{font-size:1.9rem;font-weight:400;display:grid;place-items:center}.ph.miss::after{content:"Foto fehlt";position:absolute;inset:0;display:grid;place-items:center;font-size:.7rem;color:var(--mute)}
+.gfull{position:fixed;inset:0;z-index:36;background:radial-gradient(70% 55% at 50% 40%,#2a0408,#050102 70%);color:#fff;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:14px;padding:calc(14px + env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));--track:rgb(255 255 255/.18);--mute:rgb(255 255 255/.6)}
+.gfull .gfh{display:flex;justify-content:space-between;align-items:center;gap:12px}.gfull .gfh>b{font-size:1.4rem}
+.gfull .dial{width:100%;height:100%;max-height:100%;min-height:0;justify-self:center;align-self:center}
+.gfull .gfv{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;text-align:center}.gfull .gfv span{display:block;color:var(--mute);font-size:.9rem}.gfull .gfv b{white-space:nowrap;font-size:clamp(30px,9vw,58px);font-variant-numeric:tabular-nums;letter-spacing:-.02em}.gfull .gfv p{grid-column:1/-1;margin:0;color:var(--mute);font-size:.9rem}
+@media (orientation:landscape) and (max-height:600px){.gfull{grid-template-columns:minmax(0,1fr) minmax(200px,36%);grid-template-rows:auto minmax(0,1fr)}.gfull .gfh{grid-column:1/-1}.gfull .gfv{grid-template-columns:1fr;align-content:center}}
 .phv{position:fixed;inset:0;z-index:35;background:rgb(0 0 0/.9);display:grid;grid-template-rows:minmax(0,1fr) auto;gap:1rem;padding:max(16px,3vw);justify-items:center;align-items:center}.phv img{max-width:100%;max-height:100%;object-fit:contain;border-radius:14px}.phv .rowb{--g:30 30 34;--ink:#fff}
 .fbt{overflow-x:auto;margin:0 -.25rem}.fbt table{min-width:620px}.fbt select,.fbt input{min-height:38px;padding:.25rem .55rem;font-size:.88rem;border-radius:12px}.fbt input{width:100%;min-width:150px}
 .palarm{display:grid;gap:.55rem;margin-top:.2rem;padding-top:.75rem;border-top:1px solid var(--track)}
@@ -288,6 +293,7 @@ const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const KEY='startseite-v1',WKEY='startseite-wall',WEB=mkWeb(),APP=window.AndroidApp||WEB||null,WEBAPP=!!WEB&&!window.AndroidApp;
 const IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const DEVW=/iPhone|iPod/.test(navigator.userAgent)?'iPhone':IOS?'iPad':/Mobi/.test(navigator.userAgent)&&!window.AndroidApp?'Handy':'Tablet';
 /* Kein Zoomen: Pinch-Gesten und Doppeltipp-Zoom abfangen */
 for(const ev of['gesturestart','gesturechange','gestureend'])document.addEventListener(ev,e=>e.preventDefault(),{passive:false});
 document.addEventListener('touchmove',e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
@@ -591,7 +597,7 @@ function wReifen(t){const TT=[['winter','Winter'],['sommer','Sommer'],['ganzjahr
 const SEN={on:false,got:false,none:false,lat:0,lon:0,mx:{l:0,a:0,b:0},tr:[],roll:0,pitch:0,head:null,raf:0,lin:false};
 const scrAng=()=>{try{return(screen.orientation&&screen.orientation.angle)||+window.orientation||0}catch(e){return 0}};
 function toScreen(x,y){const a=((scrAng()%360)+360)%360;return a===90?[-y,x]:a===180?[-x,-y]:a===270?[y,-x]:[x,y]}
-function onMot(e){let g=e.accelerationIncludingGravity,a=e.acceleration;if(!g||g.x==null)return;SEN.got=true;SEN.none=false;
+function onMot(e){let g=e.accelerationIncludingGravity,a=e.acceleration;if(!g||g.x==null)return;if(!SEN.got){SEN.got=true;SEN.none=false;if(document.querySelector('[data-act=senperm]'))renderCard('gmeter')}SEN.none=false;
  if(IOS){if(!SEN.sg){const[tx,ty]=toScreen(g.x,g.y),v=[tx,ty,g.z||0],m=v.reduce((p,c)=>Math.abs(c)>Math.abs(p)?c:p,0);if(Math.abs(m)>6)SEN.sg=m<0?-1:1}const k=SEN.sg||1;if(k<0){g={x:-g.x,y:-g.y,z:-(g.z||0)};if(a&&a.x!=null)a={x:-a.x,y:-a.y,z:-(a.z||0)}}}
  const C=S.cockpit,up=C.mount!=='flach',[gx,gy]=toScreen(g.x,g.y),gz=g.z||0;
  const roll=(up?Math.atan2(gx,gy):Math.atan2(gx,gz))*180/Math.PI-C.cr,pitch=(up?Math.atan2(gz,gy):Math.atan2(gy,gz))*180/Math.PI-C.cp;SEN.roll+=(roll-SEN.roll)*.15;SEN.pitch+=(pitch-SEN.pitch)*.15;
@@ -601,30 +607,38 @@ function onMot(e){let g=e.accelerationIncludingGravity,a=e.acceleration;if(!g||g
 function onAbs(e){if(e.alpha==null)return;SEN.got=true;let h=(360-e.alpha+scrAng())%360;if(h<0)h+=360;SEN.head=h;if(!SEN.raf)SEN.raf=requestAnimationFrame(drawSen)}
 function onOri(e){if(e.webkitCompassHeading!=null&&!isNaN(e.webkitCompassHeading)){SEN.got=true;SEN.none=false;SEN.head=(e.webkitCompassHeading+scrAng()+360)%360;if(!SEN.raf)SEN.raf=requestAnimationFrame(drawSen);return}if(e.absolute&&e.alpha!=null)onAbs(e)}
 function senStart(){if(SEN.on)return;SEN.on=true;SEN.got=false;addEventListener('devicemotion',onMot);addEventListener('deviceorientationabsolute',onAbs);addEventListener('deviceorientation',onOri);
- try{if(APP)APP.keepOn(true)}catch(e){}setTimeout(()=>{if(SEN.on&&!SEN.got){SEN.none=true;for(const id of['gmeter','neigung','kompass'])renderCard(id)}},3000)}
+ try{if(APP)APP.keepOn(true)}catch(e){}setTimeout(()=>{if(SEN.on&&!SEN.got){SEN.none=true;renderCard('gmeter')}},3000)}
 function senStop(){if(!SEN.on)return;SEN.on=false;removeEventListener('devicemotion',onMot);removeEventListener('deviceorientationabsolute',onAbs);removeEventListener('deviceorientation',onOri);try{if(APP&&$('#standby').hidden)APP.keepOn(false)}catch(e){}}
 const DIRS=['N','NNO','NO','ONO','O','OSO','SO','SSO','S','SSW','SW','WSW','W','WNW','NW','NNW'];
 const sgn=v=>(v>0?'+':v<0?'−':'')+nf(Math.abs(v),2);
 function drawSen(){SEN.raf=0;if(!SEN.on)return;const T=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
- const dot=document.getElementById('gDot');if(dot&&SEN.lin){const k=88,x=Math.max(-100,Math.min(100,SEN.lat*k)),y=Math.max(-100,Math.min(100,-SEN.lon*k));dot.setAttribute('cx',x.toFixed(1));dot.setAttribute('cy',y.toFixed(1));
-  SEN.tr.push([x,y]);if(SEN.tr.length>40)SEN.tr.shift();const tr=document.getElementById('gTr');if(tr)tr.setAttribute('points',SEN.tr.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' '));
-  T('gLat',sgn(SEN.lat)+' g');T('gLon',(SEN.lon>=0?'Beschleunigen ':'Bremsen ')+nf(Math.abs(SEN.lon),2)+' g');T('gMx',`max. seitlich ${nf(SEN.mx.l,2)} g · Gas ${nf(SEN.mx.a,2)} g · Bremse ${nf(SEN.mx.b,2)} g`)}
+ if(SEN.lin){const k=88,x=Math.max(-100,Math.min(100,SEN.lat*k)),y=Math.max(-100,Math.min(100,-SEN.lon*k));SEN.tr.push([x,y]);if(SEN.tr.length>40)SEN.tr.shift();const pts=SEN.tr.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ');
+  for(const px of['g','gf']){const dot=document.getElementById(px+'Dot');if(!dot)continue;dot.setAttribute('cx',x.toFixed(1));dot.setAttribute('cy',y.toFixed(1));const tr=document.getElementById(px+'Tr');if(tr)tr.setAttribute('points',pts);
+   T(px+'Lat',sgn(SEN.lat)+' g');if(px==='gf'){T('gfLon',nf(Math.abs(SEN.lon),2)+' g');T('gfDir',SEN.lon>=0?'Gas':'Bremse')}else T(px+'Lon',(SEN.lon>=0?'Gas ':'Bremse ')+nf(Math.abs(SEN.lon),2)+' g');T(px+'Mx',`max. seitlich ${nf(SEN.mx.l,2)} g · Gas ${nf(SEN.mx.a,2)} g · Bremse ${nf(SEN.mx.b,2)} g`)}}
  const r=document.getElementById('nRoll'),p=document.getElementById('nPitch');if(r)r.setAttribute('transform',`rotate(${(-SEN.roll).toFixed(1)})`);if(p)p.setAttribute('transform',`rotate(${(-SEN.pitch).toFixed(1)})`);
  const cls=v=>Math.abs(v)>35?'bad':Math.abs(v)>25?'warn':'';T('nRv',nf(Math.abs(SEN.roll))+'°');T('nPv',nf(Math.abs(SEN.pitch))+'°');
  const rv=document.getElementById('nRv'),pv=document.getElementById('nPv');if(rv)rv.className=cls(SEN.roll);if(pv)pv.className=cls(SEN.pitch);
  if(SEN.head!=null){const rose=document.getElementById('kRose');if(rose)rose.setAttribute('transform',`rotate(${(-SEN.head).toFixed(1)})`);T('kDeg',nf(SEN.head)+'°');T('kDir',DIRS[Math.round(SEN.head/22.5)%16])}}
-const senAsk=()=>WEBAPP&&!SEN.perm&&typeof DeviceMotionEvent!=='undefined'&&typeof DeviceMotionEvent.requestPermission==='function';
-function senNote(){return!APP?'<p class="note">Die Sensoren gibt es nur in der Android-App. Öffne die App auf dem Tablet.</p>':senAsk()?'<div class="rowb" style="justify-content:flex-start"><button type="button" class="pri" data-act="senperm">Bewegungssensoren erlauben</button></div><p class="note">Das iPhone fragt einmal nach, ob die Seite Bewegung und Ausrichtung lesen darf.</p>':SEN.none?'<p class="note">Dein Gerät liefert gerade keine Bewegungsdaten.</p>':''}
-function wGmeter(){const C=S.cockpit,rings=[.25,.5,.75,1].map(g=>`<circle r="${g*88}" fill="none" stroke="var(--track)" stroke-width="${g===1?2:1}"/>`).join('');
- return`<div class="ch"><h2 id="h-gmeter">G-Kraft-Messer</h2><button type="button" class="sm" data-act="greset">Zurücksetzen</button></div>${senNote()}
- <svg class="dial" viewBox="-110 -110 220 220" aria-label="G-Kraft-Anzeige">${rings}<line x1="-100" y1="0" x2="100" y2="0" stroke="var(--track)"/><line x1="0" y1="-100" x2="0" y2="100" stroke="var(--track)"/>
+const senAsk=()=>WEBAPP&&!SEN.perm&&!SEN.got&&typeof DeviceMotionEvent!=='undefined'&&typeof DeviceMotionEvent.requestPermission==='function';
+function senNote(){return!APP?'<p class="note">Die Sensoren gibt es nur in der Android-App. Öffne die App auf dem Tablet.</p>':senAsk()?'<div class="rowb" style="justify-content:flex-start"><button type="button" class="pri" data-act="senperm">Bewegungssensoren erlauben</button></div><p class="note">Das '+DEVW+' fragt einmal nach, ob die App die Bewegungssensoren lesen darf.</p>':SEN.none?'<p class="note">Dein Gerät liefert gerade keine Bewegungsdaten.</p>':''}
+function gDial(px){const rings=[.25,.5,.75,1].map(g=>`<circle r="${g*88}" fill="none" stroke="var(--track)" stroke-width="${g===1?2:1}"/>`).join('');
+ return`<svg class="dial" viewBox="-110 -110 220 220" aria-label="G-Kraft-Anzeige">${rings}<line x1="-100" y1="0" x2="100" y2="0" stroke="var(--track)"/><line x1="0" y1="-100" x2="0" y2="100" stroke="var(--track)"/>
  <text x="0" y="-94" text-anchor="middle" font-size="9" fill="var(--mute)">GAS</text><text x="0" y="102" text-anchor="middle" font-size="9" fill="var(--mute)">BREMSE</text><text x="44" y="-3" font-size="8" fill="var(--mute)">0,5 g</text>
- <polyline id="gTr" fill="none" stroke="var(--acc)" stroke-opacity=".45" stroke-width="2" stroke-linejoin="round" points=""/><circle id="gDot" r="9" fill="var(--acc)" stroke="#fff" stroke-width="2"/></svg>
+ <polyline id="${px}Tr" fill="none" stroke="var(--acc)" stroke-opacity=".45" stroke-width="2" stroke-linejoin="round" points=""/><circle id="${px}Dot" r="9" fill="var(--acc)" stroke="#fff" stroke-width="2"/></svg>`}
+function wGmeter(){const C=S.cockpit;
+ return`<div class="ch"><h2 id="h-gmeter">G-Kraft-Messer</h2><div class="chips"><button type="button" class="sm" data-act="greset">Zurücksetzen</button><button type="button" class="sm pri" data-act="gfull">Vollbild</button></div></div>${senNote()}
+ ${gDial('g')}
  <div class="facts" style="grid-template-columns:1fr 1fr"><div><span class="k">Seitlich</span><b id="gLat">0,00 g</b></div><div><span class="k">Längs</span><b id="gLon" style="font-size:1.05rem">–</b></div></div>
  <p class="note" id="gMx">max. seitlich 0,00 g · Gas 0,00 g · Bremse 0,00 g</p>
- <div class="seg" role="group" aria-label="Halterung">${[['aufrecht','Tablet aufrecht'],['flach','Tablet liegt flach']].map(([k,n])=>`<button type="button" data-mount="${k}" aria-pressed="${C.mount===k}">${n}</button>`).join('')}</div>
+ <div class="seg" role="group" aria-label="Halterung">${[['aufrecht',DEVW+' steht aufrecht'],['flach',DEVW+' liegt flach']].map(([k,n])=>`<button type="button" data-mount="${k}" aria-pressed="${C.mount===k}">${n}</button>`).join('')}</div>
  <label class="ck"><input type="checkbox" data-cock="inv"${C.inv?' checked':''}>Gas und Bremse vertauscht? Hier umdrehen</label>
- <p class="note">Nur als Beifahrer oder im Stand bedienen – Augen auf die Straße.</p>`}
+ <p class="note">${DEVW==='Tablet'?'':`„Aufrecht“ heißt: ${DEVW} hochkant oder quer in einer Halterung, Bildschirm zu dir. `}Nur als Beifahrer oder im Stand bedienen – Augen auf die Straße.</p>`}
+/* G-Kraft im Vollbild */
+function gFullOpen(){let o=$('#gfull');if(!o){o=document.createElement('div');o.id='gfull';o.className='gfull';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','G-Kraft im Vollbild');document.body.appendChild(o);
+  o.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.gf==='close')gFullClose();else if(b.dataset.gf==='reset'){SEN.mx={l:0,a:0,b:0};SEN.tr=[];drawSen()}})}
+ o.innerHTML=`<div class="gfh"><b>G-Kraft</b><div class="chips"><button type="button" data-gf="reset">Zurücksetzen</button><button type="button" class="pri" data-gf="close">Schließen</button></div></div>${gDial('gf')}<div class="gfv"><div><span>Seitlich</span><b id="gfLat">0,00 g</b></div><div><span>Längs · <em id="gfDir" style="font-style:normal">–</em></span><b id="gfLon">0,00 g</b></div><p id="gfMx">max. seitlich 0,00 g · Gas 0,00 g · Bremse 0,00 g</p></div>`;
+ o.hidden=false;SEN.tr=[];if(!SEN.on)senStart();drawSen();o.querySelector('[data-gf=close]').focus()}
+function gFullClose(){const o=$('#gfull');if(o&&!o.hidden){o.hidden=true;if(page!=='cockpit')senStop()}}
 /* ---------- Statistik ---------- */
 function monthKeys(t,n){const a=[];for(let i=n-1;i>=0;i--){const d=new Date(t.getFullYear(),t.getMonth()-i,1);a.push({k:iso(d).slice(0,7),l:fmt(d,{month:'short'}).replace('.','')})}return a}
 function statData(t){const M=monthKeys(t,12),F=[...S.fuel].sort((a,b)=>a.km-b.km),fuel={},other={},km={};
@@ -995,7 +1009,7 @@ function render(){const t=new Date();applyLook();header(t);renderTabs();lastDay=
  $('#grid').innerHTML=setupBan()+ban+(on.length?on.map(([id,sz])=>`<section class="card glass lens${sz?' '+sz:''}${id==='timer'&&timerDone()?' alarm':''}" id="w-${id}" aria-labelledby="h-${id}">${W[id](t)}</section>`).join(''):'<p class="glass empty full">Auf dieser Seite sind alle Bereiche ausgeblendet – unter „Anpassen“ schaltest du sie wieder ein.</p>');
  setNeedle(t);setupLens();fillPhotos();if(page==='cockpit'){senStart();gpsNeed('tacho',true);updTacho()}else{senStop();gpsNeed('tacho',false)}if(page==='auto')loadSprit();drawCharts()}
 function go(p){if(!PAGES.some(x=>x[0]===p))p='start';if(p!==page){page=p;swept=false;render();window.scrollTo(0,0)}try{if(location.hash.slice(1)!==p)location.hash=p}catch(e){}}
-window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h!==page&&PAGES.some(x=>x[0]===h)){page=h;swept=false;render();window.scrollTo(0,0)}});
+window.addEventListener('hashchange',()=>gFullClose());addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h!==page&&PAGES.some(x=>x[0]===h)){page=h;swept=false;render();window.scrollTo(0,0)}});
 {const h=location.hash.slice(1);if(PAGES.some(x=>x[0]===h))page=h}
 $('#tabbar').addEventListener('click',e=>{const b=e.target.closest('[data-page]');if(b)go(b.dataset.page)});
 function renderCard(id){const s=$('#w-'+id);if(!s)return;s.innerHTML=W[id](new Date());if(s.querySelector('.fig[data-chart]'))drawCharts();if(id==='timer')s.classList.toggle('alarm',timerDone());if(id==='uhr')setNeedle(new Date());fillPhotos()}
@@ -1085,7 +1099,8 @@ G.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!G.cont
  else if(a==='tripadd'){const x=S.trips.find(y=>y.id===ds.id);if(!x)return;const km=Math.round(x.km);S.car.km=carKm()+km;x.add=1;S.car.sample=false;commit();toast(`${nf(km)} km zum Kilometerstand addiert`,()=>{S.car.km=pInt(S.car.km)-km;delete x.add;commit()})}
  else if(a==='sprit')loadSprit(true);
  else if(a==='setupgo')setupGo();
- else if(a==='senperm'){const asks=[DeviceMotionEvent.requestPermission()];if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function')asks.push(DeviceOrientationEvent.requestPermission());Promise.all(asks).then(r=>{if(r.every(x=>x==='granted')){SEN.perm=true;SEN.none=false;senStop();senStart();for(const id of['gmeter','neigung','kompass'])renderCard(id)}else toast('Ohne Erlaubnis gehen G-Kraft, Neigung und Kompass leider nicht.')}).catch(()=>toast('Das hat nicht geklappt – lade die Seite neu und versuch es nochmal.'))}
+ else if(a==='gfull'){if(senAsk()){DeviceMotionEvent.requestPermission().then(r=>{if(r==='granted'){SEN.perm=true;senStop();senStart();renderCard('gmeter')}}).catch(()=>{})}gFullOpen()}
+ else if(a==='senperm'){const asks=[DeviceMotionEvent.requestPermission()];if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function')asks.push(DeviceOrientationEvent.requestPermission());Promise.all(asks).then(r=>{if(r.every(x=>x==='granted')){SEN.perm=true;SEN.none=false;senStop();senStart();renderCard('gmeter')}else toast('Ohne Erlaubnis geht der G-Kraft-Messer leider nicht. Erlauben kannst du es, wenn du die App neu startest.')}).catch(()=>toast('Das hat nicht geklappt – lade die Seite neu und versuch es nochmal.'))}
  else if(a==='fbcsv')fbExport('csv');
  else if(a==='fbshare')fbExport('share');
  else if(a==='fbpdf')fbExport('pdf');
@@ -1166,7 +1181,7 @@ function renderSet(){const c=S.car,p=S.place,city=CITIES.find(x=>x[0]===p.n&&Mat
 const openSet=()=>{resetArm=false;renderSet();$('#set').hidden=false;setupLens();$('#closeSet').focus()};
 const closeSet=()=>{$('#set').hidden=true;$('#openSet').focus()};
 $('#openSet').addEventListener('click',openSet);
-document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;const pv=$('#phv');if(pv&&!pv.hidden){pv.hidden=true;return}if(!$('#standby').hidden)closeSB();else if(!$('#set').hidden)closeSet()});
+document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;const gf=$('#gfull');if(gf&&!gf.hidden){gFullClose();return}const pv=$('#phv');if(pv&&!pv.hidden){pv.hidden=true;return}if(!$('#standby').hidden)closeSB();else if(!$('#set').hidden)closeSet()});
 async function loadPhoto(file){const url=URL.createObjectURL(file);try{const img=new Image();img.src=url;await img.decode();const sc=Math.min(1,1600/Math.max(img.naturalWidth,img.naturalHeight)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.naturalWidth*sc));c.height=Math.max(1,Math.round(img.naturalHeight*sc));c.getContext('2d').drawImage(img,0,0,c.width,c.height);
  let cv=c,q=.82,d=cv.toDataURL('image/jpeg',q);while(d.length>230000&&q>.4){q-=.08;d=cv.toDataURL('image/jpeg',q)}
  while(d.length>230000&&cv.width>320){const c2=document.createElement('canvas');c2.width=Math.round(cv.width*.75);c2.height=Math.round(cv.height*.75);c2.getContext('2d').drawImage(cv,0,0,c2.width,c2.height);cv=c2;d=cv.toDataURL('image/jpeg',.6)}
