@@ -153,9 +153,14 @@ td{padding:.2rem .5rem;border-bottom:1px solid var(--track)}
 td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 /* Uhr */
 .uhr{display:grid;gap:1.1rem;align-items:center;align-content:center;height:100%}
-@container (min-width:600px){.uhr{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}.uhr .bigclk{font-size:clamp(64px,17cqi,150px)}}
-.clkb{display:grid;gap:1rem;align-content:center}.clkb h2{margin:0}
-.bigclk{display:block;font-size:clamp(64px,30cqi,150px);font-weight:700;line-height:.9;letter-spacing:-.045em;font-variant-numeric:tabular-nums}
+@container (min-width:600px){.uhr{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}}
+.clkb{display:grid;place-items:center;min-width:0}
+.aclk{display:block;width:100%;max-width:min(320px,100%);aspect-ratio:1;margin:0 auto;overflow:visible}
+.aclk .face{fill:rgb(var(--g)/.35);stroke:var(--track);stroke-width:2}
+.aclk .hand{transform-box:view-box;transform-origin:0 0;transition:transform .45s cubic-bezier(.3,1.4,.5,1)}
+.aclk #hS{transition:transform .22s cubic-bezier(.3,1.9,.5,1)}.aclk #hS line{filter:drop-shadow(0 0 4px var(--acc))}
+.aclk .hub{fill:rgb(var(--g));stroke:var(--acc);stroke-width:3}
+@media(prefers-reduced-motion:reduce){.aclk .hand{transition:none}}
 .dbar{position:relative;height:8px;border-radius:99px;background:var(--track);margin-top:.3rem}.dbar i{position:absolute;display:block}.dbar .day{top:0;bottom:0;border-radius:99px;background:var(--sun)}
 .dbar .now{top:50%;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 3px rgb(var(--g)),0 0 14px var(--acc);transition:left .6s}
 .dlab{display:flex;justify-content:space-between;margin-top:.45rem;font-size:.78rem;color:var(--mute);font-variant-numeric:tabular-nums}
@@ -474,12 +479,20 @@ const moreBtn=(k,n,lim)=>n>lim?`<button type="button" class="sm more" data-more=
 const calc={vs:'14,4',vf:'2,0',ma:'20',n:'1',pers:'1',u:{}};
 
 /* Kacheln */
+function clkAng(t){const sec=t.getHours()*3600+t.getMinutes()*60+t.getSeconds();return[sec/120,sec/10,sec*6]}
+function aClock(t){const[ah,am,as]=clkAng(t);let tk='';
+ for(let i=0;i<60;i++){const a=i*6*Math.PI/180,big=i%5===0,q=i%15===0,r1=91,r2=q?75:big?80:86,x=Math.sin(a),y=-Math.cos(a);tk+=`<line x1="${(x*r1).toFixed(2)}" y1="${(y*r1).toFixed(2)}" x2="${(x*r2).toFixed(2)}" y2="${(y*r2).toFixed(2)}" stroke="var(--ink)" stroke-opacity="${big?.9:.3}" stroke-width="${q?3.4:big?2.4:1}" stroke-linecap="round"/>`}
+ return`<svg class="aclk" viewBox="-100 -100 200 200" role="img" aria-label="Uhr, jetzt ${hm(t)} Uhr"><circle r="97" class="face"/>${tk}
+ <g class="hand" id="hH" style="transform:rotate(${ah}deg)"><line x1="0" y1="12" x2="0" y2="-48" stroke="var(--ink)" stroke-width="7" stroke-linecap="round"/></g>
+ <g class="hand" id="hM" style="transform:rotate(${am}deg)"><line x1="0" y1="14" x2="0" y2="-74" stroke="var(--ink)" stroke-width="4.5" stroke-linecap="round"/></g>
+ <g class="hand" id="hS" style="transform:rotate(${as}deg)"><line x1="0" y1="22" x2="0" y2="-84" stroke="var(--acc)" stroke-width="2.6" stroke-linecap="round"/></g>
+ <circle class="hub" r="9"/><circle r="3" fill="var(--acc)"/></svg>`}
 function wUhr(t){const p=S.place,sn=sun(t,p.lat,p.lon),sy=sun(addD(t,-1),p.lat,p.lon),dm=Math.round((sn.len-sy.len)*60),mo=moon(t);
  const len=sn.rise?`${Math.floor(sn.len)}:${String(Math.round(sn.len%1*60)%60).padStart(2,'0')} h`:sn.polar==='tag'?'24 h':'0 h',pc=h=>(Math.max(0,Math.min(24,h))/24*100).toFixed(2);
  const day=sn.rise?`<i class="day" style="left:${pc(hrs(sn.rise))}%;width:${(pc(hrs(sn.set))-pc(hrs(sn.rise))).toFixed(2)}%"></i>`:sn.polar==='tag'?'<i class="day" style="left:0;width:100%"></i>':'';
- return`<div class="uhr"><div class="clkb"><h2 id="h-uhr">${esc(p.n)}</h2><b class="bigclk" id="clk">${hm(t)}</b>
- <div><div class="dbar" role="img" aria-label="${sn.rise?`Tageslicht von ${hm(sn.rise)} bis ${hm(sn.set)} Uhr`:'Tageslicht'}">${day}<i class="now" id="dNow" style="left:${pc(hrs(t))}%"></i></div><div class="dlab"><span>0</span><span>6</span><span>12</span><span>18</span><span>24</span></div></div></div>
- <div class="side"><div class="facts"><div><span class="k">Aufgang</span><b>${sn.rise?hm(sn.rise):'–'}</b></div><div><span class="k">Untergang</span><b>${sn.set?hm(sn.set):'–'}</b></div><div><span class="k">Tageslicht</span><b>${len}</b></div></div>
+ return`<div class="uhr"><div class="clkb">${aClock(t)}</div>
+ <div class="side"><h2 id="h-uhr">${esc(p.n)}</h2><div class="facts"><div><span class="k">Aufgang</span><b>${sn.rise?hm(sn.rise):'–'}</b></div><div><span class="k">Untergang</span><b>${sn.set?hm(sn.set):'–'}</b></div><div><span class="k">Tageslicht</span><b>${len}</b></div></div>
+ <div><div class="dbar" role="img" aria-label="${sn.rise?`Tageslicht von ${hm(sn.rise)} bis ${hm(sn.set)} Uhr`:'Tageslicht'}">${day}<i class="now" id="dNow" style="left:${pc(hrs(t))}%"></i></div><div class="dlab"><span>0</span><span>6</span><span>12</span><span>18</span><span>24</span></div></div>
  <p class="note">${sn.polar?(sn.polar==='tag'?'Die Sonne geht heute nicht unter':'Die Sonne geht heute nicht auf'):dm===0?'Etwa gleich lang wie gestern':`${Math.abs(dm)} Min. ${dm>0?'länger':'kürzer'} als gestern`}</p>
  <div class="mini">${moonSVG(mo.f,30)}<span><b>${mo.name}</b> · ${nf(mo.ill*100)} %</span></div>
 </div></div>`}
@@ -992,7 +1005,7 @@ let shR=0;document.addEventListener('pointermove',e=>{if(!S.shine)return;const g
 const greet=h=>h<5?'Gute Nacht':h<11?'Guten Morgen':h<18?'Guten Tag':h<22?'Guten Abend':'Gute Nacht';
 function header(t){const pg=PAGES.find(x=>x[0]===page)||PAGES[0];$('#greet').textContent=page==='start'?greet(t.getHours())+(S.name.trim()?', '+S.name.trim():''):pg[1];$('#dateline').textContent=`${fmt(t,{weekday:'long',day:'numeric',month:'long',year:'numeric'})} · KW ${isoWeek(t)}`}
 let swept=false,lastDay='',lastMin=-1;
-function setNeedle(t){const n=$('#dNow');if(n)n.style.left=(hrs(t)/24*100).toFixed(2)+'%'}
+function setNeedle(t){const n=$('#dNow');if(n)n.style.left=(hrs(t)/24*100).toFixed(2)+'%';const h=$('#hH');if(!h)return;const[ah,am,as]=clkAng(t);h.style.transform=`rotate(${ah}deg)`;$('#hM').style.transform=`rotate(${am}deg)`;$('#hS').style.transform=`rotate(${as}deg)`}
 const TABIC={start:'home',auto:'car',cockpit:'gauge',planen:'cal',mehr:'grid'};
 function renderTabs(){const act=MAIN.includes(page)?page:'mehr';$('#tabbar').innerHTML=MAIN.map(id=>`<button type="button" data-page="${id}" aria-current="${act===id?'page':'false'}">${IC[TABIC[id]]}<span>${(PAGES.find(x=>x[0]===id)||[0,id])[1]}</span></button>`).join('')}
 const hasSamples=()=>S.car.sample||S.fuel.some(f=>f.s)||S.costs.some(c=>c.s)||S.tiresets.some(r=>r.s)||S.maintSample;
