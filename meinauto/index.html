@@ -152,14 +152,13 @@ th{text-align:left;font-weight:600;color:var(--mute);font-size:.78rem;padding:.3
 td{padding:.2rem .5rem;border-bottom:1px solid var(--track)}
 td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 /* Uhr */
-.uhr{display:grid;gap:1.1rem;align-items:center}
-@container (min-width:600px){.uhr{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}}
-.gauge{width:100%;max-width:430px;margin:0 auto;display:block;aspect-ratio:400/330}
-.gauge text{fill:var(--ink);font-family:Inter,system-ui,sans-serif;font-variant-numeric:tabular-nums}
-.hub{fill:rgb(var(--g)/.92);stroke:var(--acc);stroke-width:4}
-#needle{transform-box:view-box;transform-origin:200px 190px;transition:transform 1.4s cubic-bezier(.2,.8,.2,1)}
-#needle line{filter:drop-shadow(0 0 5px var(--acc))}
-@media(prefers-reduced-motion:reduce){#needle{transition:none}}
+.uhr{display:grid;gap:1.1rem;align-items:center;align-content:center;height:100%}
+@container (min-width:600px){.uhr{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}.uhr .bigclk{font-size:clamp(64px,17cqi,150px)}}
+.clkb{display:grid;gap:1rem;align-content:center}.clkb h2{margin:0}
+.bigclk{display:block;font-size:clamp(64px,30cqi,150px);font-weight:700;line-height:.9;letter-spacing:-.045em;font-variant-numeric:tabular-nums}
+.dbar{position:relative;height:8px;border-radius:99px;background:var(--track);margin-top:.3rem}.dbar i{position:absolute;display:block}.dbar .day{top:0;bottom:0;border-radius:99px;background:var(--sun)}
+.dbar .now{top:50%;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 3px rgb(var(--g)),0 0 14px var(--acc);transition:left .6s}
+.dlab{display:flex;justify-content:space-between;margin-top:.45rem;font-size:.78rem;color:var(--mute);font-variant-numeric:tabular-nums}
 .side{display:grid;gap:.85rem}
 .facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.6rem}
 .facts b{display:block;font-size:1.4rem;font-weight:700;letter-spacing:-.02em;white-space:nowrap;font-variant-numeric:tabular-nums}
@@ -475,17 +474,12 @@ const moreBtn=(k,n,lim)=>n>lim?`<button type="button" class="sm more" data-more=
 const calc={vs:'14,4',vf:'2,0',ma:'20',n:'1',pers:'1',u:{}};
 
 /* Kacheln */
-function gauge(t,sn){const cx=200,cy=190,R=165,ang=h=>-135+h*11.25,pt=(h,r)=>{const a=ang(h)*Math.PI/180;return[cx+r*Math.sin(a),cy-r*Math.cos(a)]};
- const arc=(h1,h2,r)=>{const[x1,y1]=pt(h1,r),[x2,y2]=pt(h2,r);return`M${x1.toFixed(1)} ${y1.toFixed(1)}A${r} ${r} 0 ${(h2-h1)*11.25>180?1:0} 1 ${x2.toFixed(1)} ${y2.toFixed(1)}`};
- let s=`<svg class="gauge" viewBox="0 0 400 330" role="img" aria-label="24-Stunden-Uhr, jetzt ${hm(t)} Uhr"><path d="${arc(0,24,R)}" fill="none" stroke="var(--track)" stroke-width="16" stroke-linecap="round"/>`;
- if(sn.rise)s+=`<path d="${arc(hrs(sn.rise),hrs(sn.set),R)}" fill="none" stroke="var(--sun)" stroke-width="16" stroke-linecap="round"/>`;else if(sn.polar==='tag')s+=`<path d="${arc(0,24,R)}" fill="none" stroke="var(--sun)" stroke-width="16"/>`;
- for(let i=0;i<=48;i++){const big=i%6===0,[x1,y1]=pt(i/2,R-14),[x2,y2]=pt(i/2,R-(big?32:i%2?19:24));s+=`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="var(--ink)" stroke-opacity="${big?.9:.45}" stroke-width="${big?3:i%2?1.2:2}" stroke-linecap="round"/>`}
- for(let h=0;h<=24;h+=3){const[x,y]=pt(h,R-52);s+=`<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-size="21" font-weight="600">${h}</text>`}
- return s+`<g id="needle"><line x1="${cx}" y1="${cy+24}" x2="${cx}" y2="${cy-R+8}" stroke="var(--acc)" stroke-width="5" stroke-linecap="round"/></g><circle class="hub" cx="${cx}" cy="${cy}" r="15"/><circle cx="${cx}" cy="${cy}" r="4" fill="var(--acc)"/><text id="clk" x="${cx}" y="${cy+122}" text-anchor="middle" font-size="48" font-weight="700" letter-spacing="-2">${hm(t)}</text></svg>`}
 function wUhr(t){const p=S.place,sn=sun(t,p.lat,p.lon),sy=sun(addD(t,-1),p.lat,p.lon),dm=Math.round((sn.len-sy.len)*60),mo=moon(t);
- const len=sn.rise?`${Math.floor(sn.len)}:${String(Math.round(sn.len%1*60)%60).padStart(2,'0')} h`:sn.polar==='tag'?'24 h':'0 h';
- return`<div class="uhr">${gauge(t,sn)}<div class="side"><h2 id="h-uhr">${esc(p.n)}</h2>
- <div class="facts"><div><span class="k">Aufgang</span><b>${sn.rise?hm(sn.rise):'–'}</b></div><div><span class="k">Untergang</span><b>${sn.set?hm(sn.set):'–'}</b></div><div><span class="k">Tageslicht</span><b>${len}</b></div></div>
+ const len=sn.rise?`${Math.floor(sn.len)}:${String(Math.round(sn.len%1*60)%60).padStart(2,'0')} h`:sn.polar==='tag'?'24 h':'0 h',pc=h=>(Math.max(0,Math.min(24,h))/24*100).toFixed(2);
+ const day=sn.rise?`<i class="day" style="left:${pc(hrs(sn.rise))}%;width:${(pc(hrs(sn.set))-pc(hrs(sn.rise))).toFixed(2)}%"></i>`:sn.polar==='tag'?'<i class="day" style="left:0;width:100%"></i>':'';
+ return`<div class="uhr"><div class="clkb"><h2 id="h-uhr">${esc(p.n)}</h2><b class="bigclk" id="clk">${hm(t)}</b>
+ <div><div class="dbar" role="img" aria-label="${sn.rise?`Tageslicht von ${hm(sn.rise)} bis ${hm(sn.set)} Uhr`:'Tageslicht'}">${day}<i class="now" id="dNow" style="left:${pc(hrs(t))}%"></i></div><div class="dlab"><span>0</span><span>6</span><span>12</span><span>18</span><span>24</span></div></div></div>
+ <div class="side"><div class="facts"><div><span class="k">Aufgang</span><b>${sn.rise?hm(sn.rise):'–'}</b></div><div><span class="k">Untergang</span><b>${sn.set?hm(sn.set):'–'}</b></div><div><span class="k">Tageslicht</span><b>${len}</b></div></div>
  <p class="note">${sn.polar?(sn.polar==='tag'?'Die Sonne geht heute nicht unter':'Die Sonne geht heute nicht auf'):dm===0?'Etwa gleich lang wie gestern':`${Math.abs(dm)} Min. ${dm>0?'länger':'kürzer'} als gestern`}</p>
  <div class="mini">${moonSVG(mo.f,30)}<span><b>${mo.name}</b> · ${nf(mo.ill*100)} %</span></div>
 </div></div>`}
@@ -998,7 +992,7 @@ let shR=0;document.addEventListener('pointermove',e=>{if(!S.shine)return;const g
 const greet=h=>h<5?'Gute Nacht':h<11?'Guten Morgen':h<18?'Guten Tag':h<22?'Guten Abend':'Gute Nacht';
 function header(t){const pg=PAGES.find(x=>x[0]===page)||PAGES[0];$('#greet').textContent=page==='start'?greet(t.getHours())+(S.name.trim()?', '+S.name.trim():''):pg[1];$('#dateline').textContent=`${fmt(t,{weekday:'long',day:'numeric',month:'long',year:'numeric'})} · KW ${isoWeek(t)}`}
 let swept=false,lastDay='',lastMin=-1;
-function setNeedle(t){const g=$('#needle');if(!g)return;const a=-135+hrs(t)*11.25;if(!swept){swept=true;g.style.transform='rotate(-135deg)';requestAnimationFrame(()=>requestAnimationFrame(()=>{g.style.transform=`rotate(${a}deg)`}))}else g.style.transform=`rotate(${a}deg)`}
+function setNeedle(t){const n=$('#dNow');if(n)n.style.left=(hrs(t)/24*100).toFixed(2)+'%'}
 const TABIC={start:'home',auto:'car',cockpit:'gauge',planen:'cal',mehr:'grid'};
 function renderTabs(){const act=MAIN.includes(page)?page:'mehr';$('#tabbar').innerHTML=MAIN.map(id=>`<button type="button" data-page="${id}" aria-current="${act===id?'page':'false'}">${IC[TABIC[id]]}<span>${(PAGES.find(x=>x[0]===id)||[0,id])[1]}</span></button>`).join('')}
 const hasSamples=()=>S.car.sample||S.fuel.some(f=>f.s)||S.costs.some(c=>c.s)||S.tiresets.some(r=>r.s)||S.maintSample;
