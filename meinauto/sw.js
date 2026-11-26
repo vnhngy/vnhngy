@@ -1,5 +1,5 @@
 /* Mein Auto – Offline-Speicher: zeigt sofort die gespeicherte Version und holt im Hintergrund die neueste */
-const CACHE = 'meinauto-v1';
+const CACHE = 'meinauto-v2';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-180.png', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));
