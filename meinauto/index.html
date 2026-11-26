@@ -1093,7 +1093,7 @@ setInterval(()=>{if(S.sw.t0){const e=$('#swT');if(e)e.textContent=swFmt(swEl())}
 
 /* Speichern */
 let ref=null,wref=null,writing=false,again=false,saveT;
-let syncTxt='Wird geladen …';function setSync(s){const m={ok:['ok','In deinem Konto gespeichert – auf allen Geräten gleich'],local:['','Nur auf diesem Gerät gespeichert'],load:['','Wird geladen …'],slow:['warn','Speicher gerade nicht erreichbar'],full:['warn','Speicher voll']}[s];syncTxt=m[1];const e=$('#sync');e.className='sync glass '+m[0];e.lastElementChild.textContent=m[1];e.hidden=m[0]!=='warn';const x=$('#syncTxt');if(x)x.textContent=m[1]}
+let syncTxt='Wird geladen …';function setSync(s){const m={ok:['ok','In deinem Konto gespeichert – auf allen Geräten gleich'],local:['',(()=>{try{return(JSON.parse(localStorage.getItem('startseite-sync'))||{}).code}catch(e){}})()?'Auf diesem Gerät gespeichert und mit deinem anderen Gerät abgeglichen':'Nur auf diesem Gerät gespeichert'],load:['','Wird geladen …'],slow:['warn','Speicher gerade nicht erreichbar'],full:['warn','Speicher voll']}[s];syncTxt=m[1];const e=$('#sync');e.className='sync glass '+m[0];e.lastElementChild.textContent=m[1];e.hidden=m[0]!=='warn';const x=$('#syncTxt');if(x)x.textContent=m[1]}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}clearTimeout(saveT);saveT=setTimeout(flush,700);syncSoon();bgSoon();syDirty()}
 async function flush(){if(!ref)return;if(writing){again=true;return}writing=true;again=false;const body=JSON.parse(JSON.stringify(S));
  for(let i=0;i<2;i++){try{await ref.set(body);setSync('ok');break}catch(e){const c=e&&e.code;if(c==='unavailable'&&i===0){await new Promise(r=>setTimeout(r,800+Math.random()*1200));continue}setSync(c==='quota_exceeded'?'full':'local');break}}
