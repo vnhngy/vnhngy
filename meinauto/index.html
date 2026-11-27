@@ -128,6 +128,14 @@ details.siri code{display:block;font-size:.78rem;overflow-wrap:anywhere;padding:
 #alkF{display:grid;gap:.6rem}#alkPin{font-size:1.5rem;text-align:center;letter-spacing:.35em}#alkRec{display:grid;gap:.6rem}
 html.alk-on body{overflow:hidden}
 .note.warnt{color:var(--ink);border-left:3px solid var(--sun);padding-left:.6rem}
+/* Responsiv statt Zoom: nichts darf seitlich überstehen, sonst lässt sich die Seite verschieben */
+html,body{max-width:100%;overflow-x:clip}
+.aclk{overflow:hidden}
+.mt b{overflow-wrap:anywhere;-webkit-hyphens:auto;hyphens:auto}
+@media (max-width:374px){.tabbar button{min-width:0;width:calc((100vw - 34px)/5);padding:0 .1rem;font-size:.66rem}}
+.list .row>span,.list .row>div{min-width:0;overflow-wrap:anywhere}
+.figs b{font-size:clamp(1.05rem,6.6cqi,1.5rem)}
+@supports (-webkit-touch-callout:none){input,select,textarea{font-size:max(16px,1rem)}}
 .carseg{margin-bottom:.6rem;overflow-x:auto;flex-wrap:nowrap}.carseg button{white-space:nowrap}
 .accf{display:grid;gap:.75rem}.acch{margin:.6rem 0 0;font-size:1.02rem}.umst{display:grid;gap:2px;border-radius:14px;overflow:hidden}.umh,.umr{display:grid;grid-template-columns:minmax(0,1fr) 3.4rem 3.4rem;align-items:center;gap:.3rem;padding:.35rem .6rem}.umh{font-size:.82rem;color:var(--mute)}.umh b{text-align:center;font-weight:600}.umr{background:rgb(255 255 255/.05)}.umr:nth-child(odd){background:rgb(255 255 255/.03)}.umr input{justify-self:center;width:24px;height:24px;accent-color:var(--acc)}.sk{border-radius:14px;overflow:hidden;background:#fff}.sk canvas{display:block;width:100%;height:min(62vw,340px);touch-action:none;cursor:crosshair}.skdot{display:inline-block;width:.7rem;height:.7rem;border-radius:50%;margin-right:.35rem;vertical-align:-1px}
 .ckl{list-style:none;margin:0;padding:0;display:grid;gap:.45rem}.chk{display:flex;gap:.7rem;align-items:flex-start;padding:.6rem .75rem;border-radius:14px;background:rgb(255 255 255/.05)}.chk .k{overflow-wrap:anywhere}.cki{flex:none;width:1.5rem;height:1.5rem;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:.85rem;background:rgb(255 255 255/.1)}.chk.ok .cki{background:rgb(48 209 88/.2);color:#30d158}.chk.warn .cki{background:rgb(255 159 10/.22);color:#ff9f0a}
@@ -369,6 +377,11 @@ const DEVW=/iPhone|iPod/.test(navigator.userAgent)?'iPhone':IOS?'iPad':/Mobi/.te
 /* Kein Zoomen: Pinch-Gesten und Doppeltipp-Zoom abfangen */
 for(const ev of['gesturestart','gesturechange','gestureend'])document.addEventListener(ev,e=>e.preventDefault(),{passive:false});
 document.addEventListener('touchmove',e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
+addEventListener('wheel',e=>{if(e.ctrlKey)e.preventDefault()},{passive:false});
+addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&['+','-','=','0'].includes(e.key))e.preventDefault()});
+/* Falls das System doch einmal hineingezoomt hat (z.B. nach einem Eingabefeld), wieder auf 100 % zurück */
+if(window.visualViewport){const vm=document.querySelector('meta[name=viewport]'),unzoom=()=>{if(vm&&visualViewport.scale>1.01){const c=vm.content;vm.content=c.replace('maximum-scale=1','maximum-scale=1.0');setTimeout(()=>{vm.content=c},60)}};
+ visualViewport.addEventListener('resize',()=>setTimeout(unzoom,250));document.addEventListener('focusout',()=>setTimeout(unzoom,300))}
 /* Browser-Brücke: dieselben Funktionen wie die Android-App, nur mit Browser-Mitteln (iPhone-Home-Bildschirm, Safari, Chrome) */
 function mkWeb(){if(window.AndroidApp)return null;let top=true;try{top=window.top===window}catch(e){top=false}if(!top||location.protocol!=='https:')return null;
  let wid=null,wl=null,wantWl=false;const geo=navigator.geolocation;
@@ -836,7 +849,7 @@ function wRekorde(t){const s=fuelStats(t),u=s.u,N=UN[u],F=s.F,P=F.filter(f=>+f.e
   ['Bester Verbrauch',s.cons.length?nf(Math.min(...s.cons.map(c=>c.v)),1)+' '+N.c:'–'],['Weiteste Strecke pro '+N.fill,gaps.length?nf(Math.max(...gaps))+' km':'–'],
   ['Günstigster '+N.pp,P.length?nf(Math.min(...P.map(x=>x.p)),N.dec)+' €':'–'],['Teuerster '+N.pp,P.length?nf(Math.max(...P.map(x=>x.p)),N.dec)+' €':'–'],[N.stops,nf(F.length)]];
  if(isHy()){const K=S.fuel.filter(f=>fU(f)==='kwh'),E=K.reduce((a,f)=>a+(+f.eur||0),0);R.push(['Geladen insgesamt',nf(K.reduce((a,f)=>a+ +f.l,0))+' kWh'],['Fürs Laden bezahlt',nf(E)+' €'],['Ladevorgänge',nf(K.length)])}
- return`<div class="ch"><h2 id="h-rekorde">Rekorde</h2></div><ul class="list">${R.map(([k,v])=>`<li class="row tile" style="justify-content:space-between;min-height:44px;padding-right:.8rem"><span>${k}</span><b style="font-variant-numeric:tabular-nums;white-space:nowrap">${v}</b></li>`).join('')}</ul>`}
+ return`<div class="ch"><h2 id="h-rekorde">Rekorde</h2></div><ul class="list">${R.map(([k,v])=>`<li class="row tile" style="justify-content:space-between;min-height:44px;padding-right:.8rem"><span>${k}</span><b style="font-variant-numeric:tabular-nums;white-space:nowrap;flex:none">${v}</b></li>`).join('')}</ul>`}
 
 /* Berichte: kleiner PDF-Baustein ohne Bibliothek (A4, Helvetica, JPEG-Fotos) */
 const PDF_WA={'€':128,'‚':130,'„':132,'…':133,'‰':137,'‘':145,'’':146,'“':147,'”':148,'•':149,'–':150,'—':151,'™':153};
