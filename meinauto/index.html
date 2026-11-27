@@ -373,6 +373,9 @@ function vt(kind,fn){if(!VT||RM.matches||document.hidden){fn();return}const r=do
 function hideAnim(el,cb){if(!el||el.hidden){if(cb)cb();return}clearTimeout(el._ht);if(RM.matches){el.hidden=true;if(cb)cb();return}el.classList.add('out');el._ht=setTimeout(()=>{el.classList.remove('out');el.hidden=true;if(cb)cb()},190)}
 function showAnim(el){if(!el)return;clearTimeout(el._ht);el.classList.remove('out');el.hidden=false}
 const IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+/* Play-Store-Fassung: heißt „Autoheft“, lädt keine fremden Seiten als App-Code und zeigt Datenschutz & Impressum */
+const STORE=(()=>{try{return!!(window.AndroidApp&&AndroidApp.isStore&&AndroidApp.isStore())}catch(e){return false}})(),APPN=STORE?'Autoheft':'Mein Auto',PRIV_URL='https://vnhngy.github.io/vnhngy/autoheft/datenschutz.html',CONTACT='',FNM=STORE?'Autoheft':'MeinAuto';
+if(STORE)try{document.title=APPN}catch(e){}
 const DEVW=/iPhone|iPod/.test(navigator.userAgent)?'iPhone':IOS?'iPad':/Mobi/.test(navigator.userAgent)&&!window.AndroidApp?'Handy':'Tablet';
 /* Kein Zoomen: Pinch-Gesten und Doppeltipp-Zoom abfangen */
 for(const ev of['gesturestart','gesturechange','gestureend'])document.addEventListener(ev,e=>e.preventDefault(),{passive:false});
@@ -697,9 +700,9 @@ function calItems(t){const L=[],y=t.getFullYear(),add=(uid,d,n,car,rr)=>{if(d){c
  return L.sort((a,b)=>a.d-b.d)}
 function icsText(L){const e=x=>String(x).replace(/[\;,]/g,m=>'\\'+m).replace(/\r?\n/g,'\\n'),d8=d=>iso(d).replace(/-/g,''),st=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,'');
  const fold=l=>{let o='';while(l.length>72){o+=l.slice(0,72)+'\r\n ';l=l.slice(72)}return o+l},al=(tr,txt)=>['BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+e(txt),'TRIGGER:'+tr,'END:VALARM'];
- const ev=L.flatMap(x=>['BEGIN:VEVENT','UID:'+x.uid+'@meinauto.app','DTSTAMP:'+st,'DTSTART;VALUE=DATE:'+d8(x.d),'DTEND;VALUE=DATE:'+d8(addD(x.d,1)),'SUMMARY:'+e(x.n),'DESCRIPTION:'+e('Aus der App Mein Auto'),...(x.rr?['RRULE:FREQ=YEARLY']:[]),'TRANSP:TRANSPARENT',
+ const ev=L.flatMap(x=>['BEGIN:VEVENT','UID:'+x.uid+'@meinauto.app','DTSTAMP:'+st,'DTSTART;VALUE=DATE:'+d8(x.d),'DTEND;VALUE=DATE:'+d8(addD(x.d,1)),'SUMMARY:'+e(x.n),'DESCRIPTION:'+e('Aus der App '+APPN),...(x.rr?['RRULE:FREQ=YEARLY']:[]),'TRANSP:TRANSPARENT',
   ...(x.car?(x.x>=7?al('-P6DT15H',x.n+' – in einer Woche'):[]):al('PT8H',x.n+' – heute')),...(x.x>=1?al('-PT15H',x.n+' – morgen'):[]),'END:VEVENT']);
- return['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Mein Auto//DE','CALSCALE:GREGORIAN','METHOD:PUBLISH','X-WR-CALNAME:Mein Auto',...ev,'END:VCALENDAR'].map(fold).join('\r\n')+'\r\n'}
+ return['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Mein Auto//DE','CALSCALE:GREGORIAN','METHOD:PUBLISH','X-WR-CALNAME:'+APPN,...ev,'END:VCALENDAR'].map(fold).join('\r\n')+'\r\n'}
 function calExport(all){const t=new Date(),sent=new Set(all?[]:S.calSent||[]),L=calItems(t),N=L.filter(x=>!sent.has(x.uid));
  if(!N.length){toast(L.length?'Alle kommenden Termine sind schon übergeben. Mit „Alle nochmal“ geht es erneut.':'In den nächsten Monaten steht nichts an.');return}
  if(WEBAPP&&!navigator.onLine){toast('Dafür braucht das iPhone kurz Internet.');return}
@@ -890,7 +893,7 @@ function PdfDoc(meta){const W=595.28,H=841.89,ML=50,MR=50,MT=56,MB=60,CW=W-ML-MR
    imgs.forEach((im,i)=>obj(5+i,`<< /Type /XObject /Subtype /Image /Width ${im.w} /Height ${im.h} /ColorSpace /${im.c===1?'DeviceGray':im.c===4?'DeviceCMYK':'DeviceRGB'} /BitsPerComponent 8 /Filter /DCTDecode${im.c===4?' /Decode [1 0 1 0 1 0 1 0]':''} /Length ${im.bytes.length} >>`,im.bytes));
    const xo=imgs.length?`/XObject << ${imgs.map((im,i)=>`/Im${im.n} ${5+i} 0 R`).join(' ')} >>`:'';
    pages.forEach((p,i)=>{const c=enc(p.join('\n'));obj(first+i*2,`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> ${xo} >> /Contents ${first+i*2+1} 0 R >>`);obj(first+i*2+1,`<< /Length ${c.length} >>`,c)});
-   const infoN=first+pages.length*2;obj(infoN,`<< /Title <FEFF${Array.from(String(meta.title||''),ch=>{const c=ch.codePointAt(0);return c>0xFFFF?'003F':c.toString(16).padStart(4,'0')}).join('').toUpperCase()}> /Producer (Mein Auto) /CreationDate (D:${new Date().toISOString().replace(/[-:T]/g,'').slice(0,14)}) >>`);
+   const infoN=first+pages.length*2;obj(infoN,`<< /Title <FEFF${Array.from(String(meta.title||''),ch=>{const c=ch.codePointAt(0);return c>0xFFFF?'003F':c.toString(16).padStart(4,'0')}).join('').toUpperCase()}> /Producer (${APPN}) /CreationDate (D:${new Date().toISOString().replace(/[-:T]/g,'').slice(0,14)}) >>`);
    const xref=len,n=infoN+1;let x=`xref\n0 ${n}\n0000000000 65535 f \n`;for(let i=1;i<n;i++)x+=String(offs[i]).padStart(10,'0')+' 00000 n \n';
    put(enc(x+`trailer\n<< /Size ${n} /Root 1 0 R /Info ${infoN} 0 R >>\nstartxref\n${xref}\n%%EOF\n`));
    const out=new Uint8Array(len);let o=0;for(const u of parts){out.set(u,o);o+=u.length}return out}};
@@ -912,7 +915,7 @@ async function pdfShare(f,title){
  if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title});return}catch(e){if(e&&e.name==='AbortError')return;if(e&&e.name==='NotAllowedError'){pdfPend=f;toast('Das PDF ist fertig.',()=>{const g=pdfPend;pdfPend=null;if(g)navigator.share({files:[g],title}).catch(()=>{})},'Teilen');return}}}
  const u=URL.createObjectURL(f),a=document.createElement('a');a.href=u;a.download=f.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),30000);toast('Das PDF wird heruntergeladen')}
 let repBusy=false;
-async function reportOut(title,file,B){if(repBusy)return;repBusy=true;toast('Wird erstellt …');const foot=`Erstellt mit Mein Auto am ${fmt(new Date(),{day:'numeric',month:'long',year:'numeric'})}`;
+async function reportOut(title,file,B){if(repBusy)return;repBusy=true;toast('Wird erstellt …');const foot=`Erstellt mit ${APPN} am ${fmt(new Date(),{day:'numeric',month:'long',year:'numeric'})}`;
  try{if(APP&&!WEBAPP){if(!HAS3){toast('Dafür braucht die App das neue Update des App-Codes.');return}const H=[];for(const b of B){if(b[0]==='img'){try{H.push(['img',await blobURL(await pdfJpeg(b[1])),b[2]])}catch(e){}}else H.push(b)}printDoc(title,repHTML(title,H,foot));toast('Im Drucken-Fenster „Als PDF speichern“ wählen');return}
   const d=PdfDoc({title,foot});for(const[k,...a]of B){if(k==='img'){try{d.img(await blobBytes(await pdfJpeg(a[0])),a[1],a[2])}catch(e){logErr('PDF-Foto',e)}}else d[k](...a)}
   await pdfShare(new File([d.bytes()],file,{type:'application/pdf'}),title)}
@@ -1018,7 +1021,7 @@ async function saleBook(){const t=new Date(),c=S.car,km=carKm(),B=[],real=a=>a.f
  if(R.length)B.push(['h2','Reifen'],['table',['Satz','Größe','DOT','Profil','Status'],R.map(r=>{const P=(r.prof||[]).map(pDec).filter(x=>x>0);return[(TIRES.find(x=>x[0]===r.typ)||['',''])[1],r.size||'–',r.dot||'–',P.length?`ab ${nf(Math.min(...P),1)} mm`:'–',r.on?'aufgezogen':'eingelagert']}),[26,22,12,18,22]]);
  const D=S.docs.filter(x=>x.k==='rechn'||x.k==='gar').sort(byD);
  if(D.length)B.push(['h2','Rechnungen und Garantie'],['table',['Datum','Beleg','Betrag'],D.map(x=>{const co=x.cost&&S.costs.find(y=>y.id===x.cost);return[dd(x.d),dcName(x)+(x.k==='gar'&&x.n?' (Garantie)':''),co?nf(co.eur,2)+' €':'']}),[20,60,20]]);
- B.push(['gap',6],['p','Diese Angaben hat der Halter selbst in der App „Mein Auto“ geführt. Originalbelege auf Nachfrage.',{muted:true}]);
+ B.push(['gap',6],['p',`Diese Angaben hat der Halter selbst in der App „${APPN}“ geführt. Originalbelege auf Nachfrage.`,{muted:true}]);
  let first=true,n=0;for(const x of D)for(let i=0;i<x.ph.length&&n<24;i++){try{const b=await PH.get(x.ph[i].id);if(!b)continue;if(first){B.push(['pb'],['h2','Belegfotos']);first=false}B.push(['img',b,`${dcName(x)}${x.d?' · '+dd(x.d):''}${x.ph.length>1?` (${i+1}/${x.ph.length})`:''}`,560]);n++}catch(e){}}
  await reportOut('Fahrzeugmappe',`Fahrzeugmappe-${String(c.name||'Auto').replace(/[^\wäöüÄÖÜß-]+/g,'-').slice(0,30)}-${iso(t)}.pdf`,B)}
 
@@ -1066,8 +1069,8 @@ async function yearPdf(y){const c=S.car,F=S.fuel.filter(f=>!f.s).sort((a,b)=>a.k
   ['h2','Nach Monaten'],['table',['Monat',fuelN,'Sonstiges','Gesamt','km'],months.filter(m=>m.d.tot>0||m.d.km>0).map(m=>[m.n,nf(m.d.fuelE,2)+' €',nf(m.d.other,2)+' €',nf(m.d.tot,2)+' €',m.d.km?nf(m.d.km):'–']),[22,20,20,20,18]]];
  if(co.length)B.push(['h2','Alle Ausgaben'],['table',['Datum','Bereich','Notiz','Betrag'],co.map(x=>[ddmy(x.d),(CATS.find(k=>k[0]===x.c)||['','Sonstiges'])[1],x.n||'',nf(x.eur,2)+' €']),[16,22,44,18]]);
  if(fy.length)B.push(['h2',bookName()],['table',['Datum','km',isHy()?'Menge':N.q,'Betrag','Preis'],fy.slice().sort((a,b)=>String(a.d).localeCompare(String(b.d))||a.km-b.km).map(f=>[ddmy(f.d),nf(f.km),nf(f.l,1)+(isHy()?' '+UN[fU(f)].s:''),+f.eur?nf(f.eur,2)+' €':'–',+f.eur&&+f.l?nf(f.eur/f.l,UN[fU(f)].dec)+' €':'–']),[18,18,20,22,22]]);
- B.push(['gap',6],['p',`Erstellt mit Mein Auto am ${fmt(new Date(),{day:'numeric',month:'long',year:'numeric'})}.${S.cars.length>1?' Gilt nur für dieses Fahrzeug.':''}`,{muted:true}]);
- await reportOut(`Jahresübersicht ${y}`,`MeinAuto-Jahresuebersicht-${y}-${String(c.name||'Auto').replace(/[^\wäöüÄÖÜß-]+/g,'-').slice(0,30)}.pdf`,B)}
+ B.push(['gap',6],['p',`Erstellt mit ${APPN} am ${fmt(new Date(),{day:'numeric',month:'long',year:'numeric'})}.${S.cars.length>1?' Gilt nur für dieses Fahrzeug.':''}`,{muted:true}]);
+ await reportOut(`Jahresübersicht ${y}`,`${FNM}-Jahresuebersicht-${y}-${String(c.name||'Auto').replace(/[^\wäöüÄÖÜß-]+/g,'-').slice(0,30)}.pdf`,B)}
 
 /* ---------- Siri & Kurzbefehle: Einträge warten auf dem Server, bis die App sie abholt ---------- */
 let inAt=0,inBusy=false,inArm=false;
@@ -1097,6 +1100,13 @@ function siriHtml(){const tok=/^[0-9a-f]{32}$/.test(S.inbox||''),ev=isEV(),many=
  <p class="note">Die Adressen enthalten einen geheimen Schlüssel – gib sie nicht weiter. Auf dem Server liegen die Werte nur, bis die App sie abholt, höchstens 30 Tage.</p>
  <div class="rowb" style="justify-content:flex-start;flex-wrap:wrap"><button type="button" id="inGet">Jetzt abholen</button><button type="button" id="inNew">${inArm?'Wirklich? Alte Kurzbefehle gehen dann nicht mehr':'Neuen Schlüssel erzeugen'}</button></div>`}</section>`}
 
+/* ---------- Über die App, Datenschutz, Quellen ---------- */
+function aboutHtml(){return`<section class="fs" id="set-about"><h3>Über ${esc(APPN)}</h3>
+ <p class="note">Version vom ${esc(APPV)}. ${esc(APPN)} speichert alles auf deinem Gerät. Nur wenn du den Abgleich einschaltest, gehen deine Daten verschlüsselt auf einen Server in der EU – der Server kann sie nicht lesen.</p>
+ <div class="rowb" style="justify-content:flex-start;flex-wrap:wrap"><a class="btn" href="${PRIV_URL}" target="_blank" rel="noopener">Datenschutzerklärung ↗</a>${CONTACT?`<a class="btn" href="mailto:${esc(CONTACT)}">Kontakt</a>`:''}</div>
+ <p class="note"><b>Deine Daten löschen:</b> Auf diesem Gerät unter Sicherung → „Alles zurücksetzen“. Auf dem Server unter Abgleich → „Trennen und vom Server löschen“. Ungenutzte Abgleich-Daten löscht der Server nach 18 Monaten von selbst.</p>
+ <p class="note"><b>Quellen:</b> Spritpreise von Tankerkönig (Markttransparenzstelle für Kraftstoffe, CC BY 4.0). Wetter von Open-Meteo (CC BY 4.0). Ladesäulen über Google Maps und die Bundesnetzagentur. Alle Angaben ohne Gewähr.</p></section>`}
+
 /* ---------- App-Sperre (Face ID / Fingerabdruck und PIN) ---------- */
 const ALKK='meinauto-sperre',alkB64=u=>btoa(String.fromCharCode(...new Uint8Array(u))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''),alkUnb64=t=>Uint8Array.from(atob(t.replace(/-/g,'+').replace(/_/g,'/')+'='.repeat((4-t.length%4)%4)),c=>c.charCodeAt(0));
 let ALK=(()=>{try{const o=JSON.parse(localStorage.getItem(ALKK)||'{}');return o&&typeof o==='object'?o:{}}catch(e){return{}}})(),alkOK=false,alkStep='',alkTmp='',alkOn=false,alkRec=false;
@@ -1104,7 +1114,7 @@ const alkSave=()=>{try{localStorage.setItem(ALKK,JSON.stringify(ALK))}catch(e){}
 (async()=>{try{alkOK=!!(window.PublicKeyCredential&&PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable&&await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable())}catch(e){}})();
 async function alkHash(pin,salt){return alkB64(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(salt+':'+pin)))}
 function alkEl(){let e=$('#alk');if(e)return e;e=document.createElement('div');e.id='alk';e.hidden=true;e.setAttribute('role','dialog');e.setAttribute('aria-modal','true');e.setAttribute('aria-labelledby','alkT');
- e.innerHTML=`<div class="alkc"><div class="alki" aria-hidden="true">🔒</div><h2 id="alkT">Mein Auto ist gesperrt</h2><button type="button" class="pri" id="alkBio">Mit ${BIO} entsperren</button><form id="alkF" autocomplete="off"><label>PIN<input id="alkPin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="off"></label><button class="pri" id="alkGo">Entsperren</button></form><p class="note" id="alkMsg" role="status"></p><button type="button" class="sm" id="alkForgot">PIN vergessen?</button><div id="alkRec" hidden></div></div>`;
+ e.innerHTML=`<div class="alkc"><div class="alki" aria-hidden="true">🔒</div><h2 id="alkT">${APPN} ist gesperrt</h2><button type="button" class="pri" id="alkBio">Mit ${BIO} entsperren</button><form id="alkF" autocomplete="off"><label>PIN<input id="alkPin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="off"></label><button class="pri" id="alkGo">Entsperren</button></form><p class="note" id="alkMsg" role="status"></p><button type="button" class="sm" id="alkForgot">PIN vergessen?</button><div id="alkRec" hidden></div></div>`;
  document.body.appendChild(e);
  e.addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;if(b.id==='alkBio')alkBio();else if(b.id==='alkForgot')alkForgot();else if(b.id==='alkRecGo')alkRecover();else if(b.id==='alkWipe')alkWipe()});
  e.querySelector('#alkF').addEventListener('submit',ev=>{ev.preventDefault();alkPin()});return e}
@@ -1122,7 +1132,7 @@ function alkForgot(){const r=$('#alkRec');alkRec=!alkRec;r.hidden=!alkRec;if(!al
  const f=$('#alkCode');if(f)f.focus()}
 function alkRecover(){const v=String(($('#alkCode')||{}).value||'').replace(/[^a-z0-9]/gi,'').toLowerCase();if(v&&v===String(SY.code||'').replace(/[^a-z0-9]/gi,'').toLowerCase()){ALK={};alkSave();alkUnlock();toast('Sperre aufgehoben – richte sie unter Anpassen → Sperre neu ein.')}else $('#alkMsg').textContent='Der Code passt nicht.'}
 function alkWipe(){if(String(($('#alkCode')||{}).value||'').trim().toUpperCase()!=='LÖSCHEN'){$('#alkMsg').textContent='Tippe LÖSCHEN ein, um zu bestätigen.';return}try{localStorage.removeItem(KEY);localStorage.removeItem(ALKK)}catch(e){}location.reload()}
-async function alkBioSetup(){try{const c=await navigator.credentials.create({publicKey:{rp:{name:'Mein Auto',id:location.hostname},user:{id:crypto.getRandomValues(new Uint8Array(16)),name:'Mein Auto',displayName:'Mein Auto – App-Sperre'},challenge:crypto.getRandomValues(new Uint8Array(32)),pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required',residentKey:'discouraged'},timeout:60000,attestation:'none'}});
+async function alkBioSetup(){try{const c=await navigator.credentials.create({publicKey:{rp:{name:APPN,id:location.hostname},user:{id:crypto.getRandomValues(new Uint8Array(16)),name:APPN,displayName:APPN+' – App-Sperre'},challenge:crypto.getRandomValues(new Uint8Array(32)),pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required',residentKey:'discouraged'},timeout:60000,attestation:'none'}});
  ALK.cred=alkB64(c.rawId);alkSave();toast(`${BIO} ist eingerichtet`);return true}catch(e){toast(e&&e.name==='NotAllowedError'?'Abgebrochen.':`${BIO} ließ sich nicht einrichten – die PIN reicht auch.`);return false}}
 function lockHtml(){const on=!!ALK.on,A=+ALK.after||0;
  const pinForm=(title,btn)=>`<p class="note">${title}</p><div class="two"><label>Neue PIN (4–8 Ziffern)<input id="alkP1" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="new-password"></label><label>Nochmal<input id="alkP2" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="new-password"></label></div><div class="rowb" style="justify-content:flex-start"><button type="button" class="pri" id="alkPinOk">${btn}</button><button type="button" id="alkCancel">Abbrechen</button></div>`;
@@ -1362,7 +1372,7 @@ function set3(){if(WEBAPP)return`<p class="note">„Jetzt als Datei sichern“ �
  ${S.bt.a?`<p class="mini">Gekoppelt mit: <b>${esc(S.bt.n||S.bt.a)}</b></p><label class="tg"><span>Fahrt beim Trennen beenden</span><input type="checkbox" role="switch" data-btstop${S.bt.stop!==false?' checked':''}></label>`:''}
  <div class="rowb" style="justify-content:flex-start"><button type="button" id="btPick">${S.bt.a?'Anderes Gerät wählen':'Auto-Gerät wählen'}</button>${S.bt.a?'<button type="button" id="btClear">Ausschalten</button>':''}</div>
  ${btList?btList.length?`<div class="chips">${btList.map((d,i)=>`<button type="button" class="sm" data-bti="${i}">${esc(d.n)}</button>`).join('')}</div>`:'<p class="note">Keine gekoppelten Geräte gefunden. Koppel das Tablet zuerst in den Android-Einstellungen mit dem Auto.</p>':''}
- <h4 style="margin:.5rem 0 0">${HAS4?'Widgets':'Widget'} für den Startbildschirm</h4><p class="note">Halte eine freie Stelle auf dem Startbildschirm gedrückt, tippe auf „Widgets“ und dann auf „Mein Auto“. ${HAS4?'Es gibt drei: „Mein Auto“ mit Spritpreis, Kilometerstand und nächstem Termin, die runde „Uhr“ und die „Schnellknöpfe“ für Tanken, Fahrt, Cockpit und Garage.':'Zieh „Mein Auto“ auf den Bildschirm. Es zeigt Spritpreis, Kilometerstand und den nächsten Termin.'}</p>`}
+ <h4 style="margin:.5rem 0 0">${HAS4?'Widgets':'Widget'} für den Startbildschirm</h4><p class="note">Halte eine freie Stelle auf dem Startbildschirm gedrückt, tippe auf „Widgets“ und dann auf „${APPN}“. ${HAS4?'Es gibt drei: „'+APPN+'“ mit Spritpreis, Kilometerstand und nächstem Termin, die runde „Uhr“ und die „Schnellknöpfe“ für Tanken, Fahrt, Cockpit und Garage.':'Zieh „'+APPN+'“ auf den Bildschirm. Es zeigt Spritpreis, Kilometerstand und den nächsten Termin.'}</p>`}
 function btPick(){let r='';try{r=APP.btDevices()}catch(e){}
  if(r==='perm'){window.__btPerm=ok=>{window.__btPerm=null;if(ok)btPick();else toast('Ohne die Erlaubnis „Geräte in der Nähe“ geht das leider nicht.')};return}
  if(r==='off'){toast('Bluetooth ist aus – schalte es ein und tippe nochmal.');return}
@@ -1384,9 +1394,9 @@ let SY={code:'',ver:0,dirty:false,at:0,err:''},syBusy=false,syAgain=false,syT=0,
 try{Object.assign(SY,JSON.parse(localStorage.getItem(SYKEY)||'{}'))}catch(e){}
 const syOk=()=>!!(window.crypto&&crypto.subtle&&window.fetch&&window.TextEncoder);
 function sySave(){try{localStorage.setItem(SYKEY,JSON.stringify(SY))}catch(e){}}
-async function syKeep(){const t=`Mein Auto – Code für den Abgleich:\n${syFmt(SY.code)}\n\nDamit holst du deine Daten auf ein neues Gerät: Anpassen → Abgleich → „Zweites Gerät“. Gut aufheben und niemandem geben.`;let ok=false;
- try{if(navigator.share){await navigator.share({title:'Mein Auto – Abgleich-Code',text:t});ok=true}}catch(e){if(e&&e.name==='AbortError')return}
- if(!ok&&APP&&!WEBAPP){try{APP.shareFile('MeinAuto-Abgleich-Code.txt','text/plain',t);ok=true}catch(e){}}
+async function syKeep(){const t=`${APPN} – Code für den Abgleich:\n${syFmt(SY.code)}\n\nDamit holst du deine Daten auf ein neues Gerät: Anpassen → Abgleich → „Zweites Gerät“. Gut aufheben und niemandem geben.`;let ok=false;
+ try{if(navigator.share){await navigator.share({title:APPN+' – Abgleich-Code',text:t});ok=true}}catch(e){if(e&&e.name==='AbortError')return}
+ if(!ok&&APP&&!WEBAPP){try{APP.shareFile(FNM+'-Abgleich-Code.txt','text/plain',t);ok=true}catch(e){}}
  if(!ok){try{if(APP)APP.copy(t);else await navigator.clipboard.writeText(t);ok=true;toast('Code samt Anleitung kopiert – füg ihn in deine Notizen ein')}catch(e){}}
  if(ok){SY.saved=1;sySave();renderSet();refocus('#syKeep')}else toast('Schreib dir den Code am besten ab.')}
 function syNewCode(){const b=crypto.getRandomValues(new Uint8Array(20));let c='';for(let i=0;i<20;i++)c+=SYA[b[i]&31];return c}
@@ -1497,7 +1507,7 @@ async function ckRun(){CK={run:true,res:[]};ckUi();const R=[],add=(l,a,b)=>R.pus
  if(SY.code&&SY.old)add('warn','Anderes Gerät','Hat zuletzt mit einer älteren App-Version Daten geändert – bitte dort aktualisieren.');
  add('info','Version',`Seite vom ${APPV}`+(WEBAPP?' · iPhone-Web-App':APP?' · Android-App':''));
  CK={run:false,res:R,at:Date.now()};ckUi()}
-async function ckCopy(){const L=ckLog(),txt=['Mein Auto – Fehlerprotokoll','Seite '+APPV+(WEBAPP?' · iPhone':APP?' · Android':''),navigator.userAgent,...L.map(x=>new Date(x.t).toLocaleString('de-DE')+' · '+x.w+' · '+x.m+(x.s?' · '+x.s:''))].join('\n');
+async function ckCopy(){const L=ckLog(),txt=[APPN+' – Fehlerprotokoll','Seite '+APPV+(WEBAPP?' · iPhone':APP?' · Android':''),navigator.userAgent,...L.map(x=>new Date(x.t).toLocaleString('de-DE')+' · '+x.w+' · '+x.m+(x.s?' · '+x.s:''))].join('\n');
  try{await navigator.clipboard.writeText(txt);toast('Kopiert – füg es im Chat ein')}catch(e){const a=document.createElement('textarea');a.value=txt;a.setAttribute('readonly','');a.style.cssText='position:fixed;opacity:0';document.body.appendChild(a);a.select();let ok=false;try{ok=document.execCommand('copy')}catch(x){}a.remove();toast(ok?'Kopiert – füg es im Chat ein':'Kopieren ging nicht')}}
 
 /* iPhone-Mitteilungen (Web Push): auf dem Server liegen nur Uhrzeiten und anonyme Schlüssel, die Texte bleiben im Gerät */
@@ -1555,7 +1565,7 @@ function setSyncHtml(){if(!syOk())return'<section class="fs" id="set-sync"><h3>A
  <div class="tile fs" style="gap:.6rem"><b>Erstes Gerät</b><p class="note">Hier einschalten. Du bekommst einen Code für dein zweites Gerät.</p><div class="rowb" style="justify-content:flex-start"><button type="button" class="pri" id="syNew">Abgleich einschalten</button></div></div>
  <div class="tile fs" style="gap:.6rem"><b>Zweites Gerät</b><p class="note">Code vom anderen Gerät eingeben. Die Daten auf diesem Gerät werden dabei durch die gemeinsamen Daten ersetzt.</p><label>Code<input id="syIn" value="${esc(syFmt(syPend))}" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="XXXX-XXXX-XXXX-XXXX-XXXX"></label><div class="rowb" style="justify-content:flex-start"><button type="button" id="syJoin" class="${syArm==='join'?'pri':''}">${syArm==='join'?'Ja, Daten von dort übernehmen':'Verbinden'}</button></div></div></section>`;
  return`<section class="fs" id="set-sync"><h3>Abgleich zwischen Geräten</h3><p class="mini"><b>Status:</b> <span id="syStat">${esc(syStatus())}</span><br><span id="syFoto">${esc(foStatus())}</span></p>
- <div class="tile fs" style="gap:.5rem"><span class="k">Dein Code – auf dem anderen Gerät unter Anpassen → Abgleich → „Zweites Gerät“ eingeben</span><b class="sycode">${esc(syFmt(SY.code))}</b>${SY.saved?'':'<p class="note warnt">Heb den Code gut auf, zum Beispiel in Notizen oder deiner Passwort-App. Gehen beide Geräte verloren, kommst du nur mit diesem Code wieder an deine Daten.</p>'}<div class="rowb" style="justify-content:flex-start"><button type="button" id="syKeep"${SY.saved?'':' class="pri"'}>Code sichern</button><button type="button" id="syCopy">Code kopieren</button><button type="button" id="syNow">Jetzt abgleichen</button><button type="button" id="syOff">${syArm==='off'?'Wirklich trennen?':'Trennen'}</button></div></div>
+ <div class="tile fs" style="gap:.5rem"><span class="k">Dein Code – auf dem anderen Gerät unter Anpassen → Abgleich → „Zweites Gerät“ eingeben</span><b class="sycode">${esc(syFmt(SY.code))}</b>${SY.saved?'':'<p class="note warnt">Heb den Code gut auf, zum Beispiel in Notizen oder deiner Passwort-App. Gehen beide Geräte verloren, kommst du nur mit diesem Code wieder an deine Daten.</p>'}<div class="rowb" style="justify-content:flex-start"><button type="button" id="syKeep"${SY.saved?'':' class="pri"'}>Code sichern</button><button type="button" id="syCopy">Code kopieren</button><button type="button" id="syNow">Jetzt abgleichen</button><button type="button" id="syOff">${syArm==='off'?'Wirklich trennen?':'Trennen'}</button><button type="button" id="syWipe">${syArm==='wipe'?'Wirklich alles vom Server löschen?':'Trennen und vom Server löschen'}</button></div></div>
  ${SY.old?`<div class="tile fs" style="gap:.4rem"><b>Anderes Gerät hat eine alte Version</b><p class="note">Am ${esc(fmt(new Date(SY.old),{day:'numeric',month:'long'}))} um ${esc(hm(new Date(SY.old)))} Uhr hat ein Gerät mit älterer App-Version Daten geändert. Lade dort die neue Version: Tablet über „Neue Version laden“, iPhone die Web-App schließen und neu öffnen. Bis dahin sieht es nur das erste Fahrzeug und zeigt Ladevorgänge als Liter.</p></div>`:''}
  <div class="tile fs" style="gap:.5rem"><b>Ältere Stände</b><p class="note">Falls aus Versehen etwas gelöscht oder überschrieben wurde, holst du hier einen früheren Stand zurück – auf beiden Geräten.</p><div class="rowb" style="justify-content:flex-start"><button type="button" id="syHist">${syH?'Liste neu laden':'Ältere Stände anzeigen'}</button></div><div id="syHistBox">${syHistHtml()}</div></div>
  <p class="note">Gemeinsam: Auto, Tankbuch, Kosten, Wartung, Reifen, Fahrten, Termine, Aufgaben, Notizen, Garage und Handschuhfach mit Fotos, Notfalldaten und Aussehen. Nur auf dem jeweiligen Gerät: eigenes Hintergrundbild, laufende Fahrt, Timer und Bluetooth. Halte den Code geheim.</p></section>`}
@@ -1573,7 +1583,7 @@ async function setupGo(){if(SU.busy)return;SU.busy=true;SU.msg='Standort wird ab
  catch(e){const m=String(e&&e.message||e);if(m==='Zeit')res.push([1,'Standort erlaubt: Das Wetter passt sich an, sobald das GPS-Signal da ist']);else if(GP.err&&m===GP.err&&/ausgeschaltet/.test(m))res.push([0,m+' Schalte ihn in den Schnelleinstellungen ein, dann klappt es beim nächsten Start.']);else{S.gpsPlace=false;res.push([0,WEBAPP?'Standort wurde nicht erlaubt. Auf dem iPhone: Einstellungen → Datenschutz → Ortungsdienste → Safari-Websites → „Beim Verwenden“.':'Standort wurde nicht erlaubt. Du kannst ihn später unter Anpassen → App einschalten.'])}}
  SU.msg='Benachrichtigungen werden eingeschaltet …';render();
  if(!WEBAPP){try{APP.askNotify()}catch(e){}res.push([1,'Erinnerungen an: Timer, Parkzeit, HU, Wartung und Termine']);
- if(!S.lastBak)backupNow(true);res.push([1,'Sicherung an: jede Woche eine Datei in Downloads/MeinAuto'])}
+ if(!S.lastBak)backupNow(true);res.push([1,'Sicherung an: jede Woche eine Datei in Downloads/'+FNM])}
  syncAlarms();SU.busy=false;SU.res=res;S.setup=UUIDRE.test(S.tk.key||'')?2:1;commit();if(S.gpsPlace)fetchWx(true);if(S.setup===2)toast('Alles eingerichtet ✓')}
 function setupSkip(){const st=S.setup|0;S.setup=2;SU.res=null;commit();toast(st?'Den Schlüssel kannst du jederzeit unter „Auto“ → Spritpreise eintragen.':'Kannst du jederzeit unter Anpassen → App einschalten.')}
 
@@ -1581,9 +1591,9 @@ function setupSkip(){const st=S.setup|0;S.setup=2;SU.res=null;commit();toast(st?
 let alT=0;
 function syncAlarms(){if(!HAS2)return;const now=Date.now(),at9=d=>new Date(d.getFullYear(),d.getMonth(),d.getDate(),9,0).getTime(),ok=!!S.notify;
  const set=(id,at,ti,tx)=>{try{if(ok&&at>now+5000)APP.schedule(id,at,ti,tx);else APP.cancel(id)}catch(e){}};const t=new Date();
- set(1,S.timer.end&&!S.timer.rang?S.timer.end:0,`${S.timer.label||'Timer'} ist abgelaufen`,'Tippen, um Mein Auto zu öffnen');
+ set(1,S.timer.end&&!S.timer.rang?S.timer.end:0,`${S.timer.label||'Timer'} ist abgelaufen`,'Tippen, um '+APPN+' zu öffnen');
  const hu=huDue(S.car.hu);set(2,hu?at9(addD(hu,-14)):0,'HU in 2 Wochen fällig',hu?`Plakette ${fmt(hu,{month:'long',year:'numeric'})} – jetzt einen Termin machen.`:'');
- const md=S.maint.map(m=>({m,r:maintStatus(m,t,carKm())})).filter(x=>x.r.due&&x.r.days>=7).sort((a,b)=>a.r.due-b.r.due)[0];set(3,md?at9(addD(md.r.due,-7)):0,md?`${md.m.n} in einer Woche fällig`:'','Details in Mein Auto → Wartung');
+ const md=S.maint.map(m=>({m,r:maintStatus(m,t,carKm())})).filter(x=>x.r.due&&x.r.days>=7).sort((a,b)=>a.r.due-b.r.due)[0];set(3,md?at9(addD(md.r.due,-7)):0,md?`${md.m.n} in einer Woche fällig`:'','Details in '+APPN+' → Wartung');
  const ev=S.events.map(e=>({e,d:nextOcc(e,t)})).filter(x=>x.d&&at9(x.d)>now).sort((a,b)=>a.d-b.d)[0];set(4,ev?at9(ev.d):0,ev?`Heute: ${ev.e.n}`:'','Dein Countdown ist bei null.');
  const ins=insDeadline(t.getFullYear());set(5,at9(addD(ins,-7)),'Kfz-Versicherung: noch eine Woche',`Kündigungen müssen bis ${fmt(ins,{day:'numeric',month:'long'})} beim Versicherer sein.`);
  set(6,S.park.until||0,'Parkzeit läuft gleich ab','Noch 10 Minuten – Zeit, zum Auto zu gehen.');
@@ -1591,7 +1601,7 @@ function syncAlarms(){if(!HAS2)return;const now=Date.now(),at9=d=>new Date(d.get
 function syncSoon(){clearTimeout(alT);alT=setTimeout(syncAlarms,1500)}
 
 /* Sicherung als Datei */
-function backupNow(auto){if(!HAS2)return false;const d=new Date(),name=`MeinAuto-Sicherung-${iso(d)}-${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}.json`;let p='';try{p=APP.saveBackup(name,JSON.stringify(canon()))}catch(e){}
+function backupNow(auto){if(!HAS2)return false;const d=new Date(),name=`${FNM}-Sicherung-${iso(d)}-${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}.json`;let p='';try{p=APP.saveBackup(name,JSON.stringify(canon()))}catch(e){}
  if(p){S.lastBak=Date.now();save();toast(WEBAPP?'Wähle jetzt „In Dateien sichern“ oder Drive':(auto?'Automatische Sicherung: ':'Gesichert: ')+p);return true}if(!auto)toast('Die Sicherung konnte nicht gespeichert werden.');return false}
 window.__restoreFile=txt=>{try{const d=JSON.parse(txt);if(!d||typeof d!=='object'||!d.car)throw 0;const old=JSON.stringify(canon()),cid=S.carId;d.carId=cid;S=merge(d);carAfterLoad();commit(true);toast('Sicherung wiederhergestellt',()=>{S=merge(JSON.parse(old));carAfterLoad();commit(true)})}catch(e){toast('Das ist keine gültige Sicherung.')}};
 
@@ -1888,7 +1898,7 @@ $('#standby').addEventListener('click',closeSB);
 
 /* Einstellungen */
 const SW=(k,l,sub)=>`<label class="tg"><span>${l}${sub?`<small>${sub}</small>`:''}</span><input type="checkbox" role="switch" data-sw="${k}"${S[k]?' checked':''}></label>`;
-function renderSet(){const c=S.car,p=S.place,city=CITIES.find(x=>x[0]===p.n&&Math.abs(x[1]-p.lat)<.01),secs=[['set-look','Aussehen'],['set-gen','Allgemein'],...(APP?[['set-app','App']]:[]),['set-ber','Bereiche'],['set-auto','Auto'],['set-sync','Abgleich'],['set-bk','Sicherung'],['set-lock','Sperre'],['set-siri','Siri'],['set-check','App-Check']];
+function renderSet(){const c=S.car,p=S.place,city=CITIES.find(x=>x[0]===p.n&&Math.abs(x[1]-p.lat)<.01),secs=[['set-look','Aussehen'],['set-gen','Allgemein'],...(APP?[['set-app','App']]:[]),['set-ber','Bereiche'],['set-auto','Auto'],['set-sync','Abgleich'],['set-bk','Sicherung'],['set-lock','Sperre'],...(IOS?[['set-siri','Siri']]:[]),['set-check','App-Check'],['set-about','Über']];
  $('#pane').innerHTML=`<div class="head"><div class="hd"><h2 id="setT">Anpassen</h2><button class="pri" type="button" id="closeSet">Fertig</button></div><div class="seg" role="group" aria-label="Abschnitte">${secs.map(([i,n])=>`<button type="button" data-go="${i}">${n}</button>`).join('')}</div></div>
  <section class="fs" id="set-look"><h3>Aussehen</h3>
  <div><span class="k">Hintergrund</span><div class="walls" style="margin-top:.4rem">${WALLS.map(w=>`<button type="button" class="wp" data-wall="${w[0]}" aria-pressed="${S.wall===w[0]}"><i style="background:${w[3]}"></i>${w[1]}</button>`).join('')}<button type="button" class="wp" data-act="photo" aria-pressed="${S.wall==='foto'}"><i style="${wallImg?`background:center/cover url('${wallImg}')`:'background:rgb(var(--g)/.4);display:grid;place-items:center;font-size:1.6rem'}">${wallImg?'':'+'}</i>Eigenes Foto</button></div>
@@ -1904,7 +1914,7 @@ function renderSet(){const c=S.car,p=S.place,city=CITIES.find(x=>x[0]===p.n&&Mat
  <label>Ort für Sonne, Mond und Wetter<select id="city"><option value="">Eigener Ort</option>${CITIES.map(([n])=>`<option${city&&city[0]===n?' selected':''}>${esc(n)}</option>`).join('')}</select></label>
  <div class="three"><label>Ortsname<input data-p="n" value="${esc(p.n)}"></label><label>Breitengrad<input data-p="lat" inputmode="decimal" value="${esc(p.lat)}"></label><label>Längengrad<input data-p="lon" inputmode="decimal" value="${esc(p.lon)}"></label></div>
  </section>
- ${APP?`<section class="fs" id="set-app"><h3>App-Funktionen</h3>${HAS2?`${WEBAPP?'':SW('notify','Erinnerungen als Benachrichtigung','Timer, Parkzeit, HU, Wartung, Countdowns, Kfz-Versicherung')}${SW('gpsPlace','Ort automatisch per GPS','Für Wetter, Sonne und Spritpreise')}${WEBAPP?'':SW('autoBak','Automatische Sicherung','Einmal pro Woche eine Datei in Downloads/MeinAuto')}
+ ${APP?`<section class="fs" id="set-app"><h3>App-Funktionen</h3>${HAS2?`${WEBAPP?'':SW('notify','Erinnerungen als Benachrichtigung','Timer, Parkzeit, HU, Wartung, Countdowns, Kfz-Versicherung')}${SW('gpsPlace','Ort automatisch per GPS','Für Wetter, Sonne und Spritpreise')}${WEBAPP?'':SW('autoBak','Automatische Sicherung','Einmal pro Woche eine Datei in Downloads/'+FNM)}
  <div class="rowb" style="justify-content:flex-start"><button type="button" id="bakFile">Jetzt als Datei sichern</button><button type="button" id="bakLoad">Aus Datei wiederherstellen</button></div>${S.lastBak?`<p class="note">Letzte Sicherung: ${esc(fmt(new Date(S.lastBak),{day:'numeric',month:'long'}))}, ${hm(new Date(S.lastBak))} Uhr</p>`:''}
  <div class="two"><label>Tankerkönig-Schlüssel<input data-tk="key" value="${esc(S.tk.key)}" placeholder="xxxxxxxx-xxxx-…" autocapitalize="off"></label><label>Umkreis für Spritpreise<select data-tk="rad">${[2,5,10,15,25].map(r=>`<option value="${r}"${S.tk.rad===r?' selected':''}>${r} km</option>`).join('')}</select></label></div>${set3()}`:upNote()}</section>`:''}
  <section id="set-ber"><h3>Bereiche</h3><p class="note">Was auf den einzelnen Seiten zu sehen ist.</p>${PAGES.filter(x=>x[2].length).map(([pid,pn,ws])=>`<div style="margin-top:.8rem"><span class="k">${pn}</span>${ws.map(([id])=>{const w=S.widgets.find(x=>x.id===id);return`<label class="tg"><span>${WN[id]}</span><input type="checkbox" role="switch" data-won="${id}"${!w||w.on?' checked':''}></label>`}).join('')}</div>`).join('')}</section>
@@ -1917,12 +1927,14 @@ function renderSet(){const c=S.car,p=S.place,city=CITIES.find(x=>x[0]===p.n&&Mat
  <label>Fahrgestellnummer (FIN)<input data-car="fin" value="${esc(c.fin)}" maxlength="17" autocapitalize="characters" autocomplete="off" placeholder="steht im Fahrzeugschein, Feld E"></label></section>
 
  ${setSyncHtml()}
- <section class="fs" id="set-bk"><h3>Sicherung</h3><p class="mini"><b>Status:</b> <span id="syncTxt">${esc(syncTxt)}</span></p><p class="note">Alles speichert automatisch. Zusätzlich kannst du deine Daten als Text kopieren und später hier wieder einfügen (ohne Hintergrundfoto).</p><div class="rowb" style="justify-content:flex-start"><button type="button" id="bkCopy">Daten kopieren</button></div><label>Gesicherten Text einfügen<textarea id="bkIn" rows="3"></textarea></label><div class="rowb" style="justify-content:flex-start"><button type="button" id="bkRes">Wiederherstellen</button><button type="button" id="resetAll">${resetArm?'Wirklich alles zurücksetzen?':'Alles zurücksetzen'}</button></div>${APP&&!WEBAPP?'<div class="tile fs" style="gap:.5rem"><b>App-Oberfläche</b><span class="note">Hast du eine neue index.html bekommen? Hier auswählen – deine Daten bleiben erhalten.</span><div><button type="button" id="appUpd">Neue Version laden</button></div></div>':''}</section>
- ${lockHtml()}${siriHtml()}${setCheckHtml()}`}
+ <section class="fs" id="set-bk"><h3>Sicherung</h3><p class="mini"><b>Status:</b> <span id="syncTxt">${esc(syncTxt)}</span></p><p class="note">Alles speichert automatisch. Zusätzlich kannst du deine Daten als Text kopieren und später hier wieder einfügen (ohne Hintergrundfoto).</p><div class="rowb" style="justify-content:flex-start"><button type="button" id="bkCopy">Daten kopieren</button></div><label>Gesicherten Text einfügen<textarea id="bkIn" rows="3"></textarea></label><div class="rowb" style="justify-content:flex-start"><button type="button" id="bkRes">Wiederherstellen</button><button type="button" id="resetAll">${resetArm?'Wirklich alles zurücksetzen?':'Alles zurücksetzen'}</button></div>${APP&&!WEBAPP&&!STORE?'<div class="tile fs" style="gap:.5rem"><b>App-Oberfläche</b><span class="note">Hast du eine neue index.html bekommen? Hier auswählen – deine Daten bleiben erhalten.</span><div><button type="button" id="appUpd">Neue Version laden</button></div></div>':''}</section>
+ ${lockHtml()}${IOS?siriHtml():''}${setCheckHtml()}${aboutHtml()}`}
 const openSet=()=>{resetArm=false;vt('sheet',()=>{renderSet();showAnim($('#set'));setupLens();$('#closeSet').focus()})};
 const closeSet=()=>{if(VT&&!RM.matches)vt('sheet',()=>{$('#set').hidden=true;$('#openSet').focus()});else{hideAnim($('#set'));$('#openSet').focus()}};
 $('#openSet').addEventListener('click',openSet);
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;const gf=$('#gfull');if(gf&&!gf.hidden){gFullClose();return}const pv=$('#phv');if(pv&&!pv.hidden){pv.hidden=true;return}if(!$('#standby').hidden)closeSB();else if(!$('#set').hidden)closeSet()});
+/* Zurück-Taste/-Geste der Android-App: erst Überlagerungen schließen, dann eine Seite zurück */
+window.__appBack=()=>{try{if(typeof alkOn!=='undefined'&&alkOn)return true;const gf=$('#gfull');if(gf&&!gf.hidden){gFullClose();return true}const pv=$('#phv');if(pv&&!pv.hidden){pv.hidden=true;return true}if(!$('#standby').hidden){closeSB();return true}if(!$('#set').hidden){closeSet();return true}if(page!=='start'){go('start');return true}}catch(e){}return false};
 async function loadPhoto(file){const url=URL.createObjectURL(file);try{const img=new Image();img.src=url;await img.decode();const sc=Math.min(1,1600/Math.max(img.naturalWidth,img.naturalHeight)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.naturalWidth*sc));c.height=Math.max(1,Math.round(img.naturalHeight*sc));c.getContext('2d').drawImage(img,0,0,c.width,c.height);
  let cv=c,q=.82,d=cv.toDataURL('image/jpeg',q);while(d.length>230000&&q>.4){q-=.08;d=cv.toDataURL('image/jpeg',q)}
  while(d.length>230000&&cv.width>320){const c2=document.createElement('canvas');c2.width=Math.round(cv.width*.75);c2.height=Math.round(cv.height*.75);c2.getContext('2d').drawImage(cv,0,0,c2.width,c2.height);cv=c2;d=cv.toDataURL('image/jpeg',.6)}
@@ -1940,7 +1952,7 @@ P.addEventListener('click',async e=>{if(e.target===P)return closeSet();const b=e
  if(ds.glass){const[bl,ti]=ds.glass.split(',').map(Number);S.blur=bl;S.tint=ti;commit(true);refocus(`[data-glass="${ds.glass}"]`);return}
  if(ds.fs){S.fs=+ds.fs;commit(true);refocus(`[data-fs="${ds.fs}"]`);return}
  if(ds.mv){const i=+ds.mv,d=+ds.d,j=i+d;if(j<0||j>=S.widgets.length)return;[S.widgets[i],S.widgets[j]]=[S.widgets[j],S.widgets[i]];commit(true);refocus(`[data-mv="${j}"][data-d="${d}"]:not(:disabled)`);return}
- if(b.id==='appUpd'){try{APP.pickPage()}catch(err){}return}
+ if(b.id==='appUpd'){if(!STORE)try{APP.pickPage()}catch(err){}return}
  if(b.id==='bakFile'){backupNow(false);renderSet();return}
  if(b.id==='syNew'){if(!syOk())return;SY={code:syNewCode(),ver:0,dirty:true,at:0,err:'',at0:0};syK=null;syArm='';sySave();renderSet();syRun().then(()=>{if(!SY.err)toast('Abgleich ist an – gib den Code auf dem zweiten Gerät ein')});return}
  if(b.id==='syJoin'){const inp=$('#syIn'),c=syNorm(inp?inp.value:syPend);if(c.length!==20){toast('Der Code hat 20 Zeichen, zum Beispiel ABCD-EFGH-JKLM-NPQR-STUV.');return}if(syArm!=='join'){syArm='join';syPend=c;renderSet();refocus('#syJoin');return}syJoin(c);return}
@@ -1956,8 +1968,11 @@ P.addEventListener('click',async e=>{if(e.target===P)return closeSet();const b=e
  if(b.id==='syHist'){syArm='';syHistLoad();return}
  if(ds.syh!=null){syHistOpen(+ds.syh);return}
  if(b.id==='syRest'){if(syArm!=='rest'){syArm='rest';syHistUi();refocus('#syRest');return}syRestore();return}
+ if(b.id==='syWipe'){if(syArm!=='wipe'){syArm='wipe';renderSet();refocus('#syWipe');return}
+  try{const k=await syKeys();await syRpc('meinauto_wipe',{p_id:k.id})}catch(err){syArm='';renderSet();toast('Löschen ging gerade nicht – prüf die Internetverbindung.');return}
+  SY={code:'',ver:0,dirty:false,at:0,err:''};syK=null;syArm='';syH=null;FO={n:0,open:0,full:false};sySave();renderSet();toast('Abgleich beendet, alles vom Server gelöscht. Auf diesem Gerät bleibt alles.');return}
  if(b.id==='syOff'){if(syArm!=='off'){syArm='off';renderSet();refocus('#syOff');return}SY={code:'',ver:0,dirty:false,at:0,err:''};syK=null;syArm='';syH=null;FO={n:0,open:0,full:false};sySave();renderSet();toast('Abgleich getrennt – die Daten bleiben auf diesem Gerät');return}
- if(b.id==='bakShare'){const d=new Date(),name=`MeinAuto-Sicherung-${iso(d)}.json`;let ok=false;try{ok=APP.shareFile(name,'application/json',JSON.stringify(canon()))}catch(err){}if(!ok)toast('Teilen klappt hier nicht – nutze „Jetzt als Datei sichern“.');return}
+ if(b.id==='bakShare'){const d=new Date(),name=`${FNM}-Sicherung-${iso(d)}.json`;let ok=false;try{ok=APP.shareFile(name,'application/json',JSON.stringify(canon()))}catch(err){}if(!ok)toast('Teilen klappt hier nicht – nutze „Jetzt als Datei sichern“.');return}
  if(b.id==='btPick'){btPick();return}
  if(b.id==='btClear'){S.bt={a:'',n:'',stop:true};btList=null;try{APP.btWatch('')}catch(err){}commit(true);toast('Bluetooth-Start ist ausgeschaltet');return}
  if(ds.bti!=null){const d=btList&&btList[+ds.bti];if(!d)return;S.bt={a:d.a,n:d.n,stop:true};btList=null;try{APP.btWatch(d.a)}catch(err){}commit(true);toast(`„${d.n}“ gespeichert – beim nächsten Verbinden startet die Fahrt`);return}
