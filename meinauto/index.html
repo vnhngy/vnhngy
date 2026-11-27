@@ -115,6 +115,7 @@ main.band{padding-bottom:120px}
 .sycode{font-size:clamp(20px,5vw,28px);letter-spacing:.06em;font-variant-numeric:tabular-nums;word-break:break-all}
 .dch{display:flex;align-items:center;gap:.8rem;min-width:0}.dct{width:54px;height:54px;flex:none;border-radius:12px;font-size:1.4rem}.dct img{pointer-events:none}.x.bel{font-size:1rem}.x.bel svg{width:18px;height:18px}.x.bel.on{color:var(--acc)}
 .dcv{justify-items:stretch}.dcv .dcvs{width:100%;height:100%;min-height:0;overflow:auto;display:grid;place-items:center;-webkit-overflow-scrolling:touch}.dcv .dcvs img{max-width:100%;max-height:100%;object-fit:contain;border-radius:14px}.dcv.z .dcvs{place-items:start}.dcv.z .dcvs img{max-width:none;max-height:none;width:250%;border-radius:0}.dcv .rowb{flex-wrap:wrap;justify-content:center}.dcv .note{color:#fff}
+.ckl{list-style:none;margin:0;padding:0;display:grid;gap:.45rem}.ck{display:flex;gap:.7rem;align-items:flex-start;padding:.6rem .75rem;border-radius:14px;background:rgb(255 255 255/.05)}.ck .k{overflow-wrap:anywhere}.cki{flex:none;width:1.5rem;height:1.5rem;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:.85rem;background:rgb(255 255 255/.1)}.ck.ok .cki{background:rgb(48 209 88/.2);color:#30d158}.ck.warn .cki{background:rgb(255 159 10/.22);color:#ff9f0a}
 .syhl{display:grid;gap:.4rem}.syh{display:grid;gap:.5rem;padding:.5rem .5rem .5rem .8rem;border-radius:14px;background:rgb(255 255 255/.05)}.syh.on{background:rgb(255 255 255/.09)}.syhr{display:flex;align-items:center;justify-content:space-between;gap:.6rem}.syh .note{margin:0}
 .palarm{display:grid;gap:.55rem;margin-top:.2rem;padding-top:.75rem;border-top:1px solid var(--track)}
 .setup{align-items:flex-start;padding:1.1rem 1.2rem}.setup .sx{flex:1 1 300px;min-width:0;display:grid;gap:.45rem}.setup .sx b{font-size:1.08rem}.setup .sx small{color:var(--mute);font-weight:400;line-height:1.45;font-size:.9rem}.setup .sul{list-style:none;margin:0 0 .3rem;padding:0;display:grid;gap:.3rem;font-weight:400;font-size:.92rem}.setup .sul li::before{content:"✓ ";color:var(--acc);font-weight:700}.setup .sul li.no::before{content:"! ";color:var(--warn)}.setup .inl{grid-template-columns:minmax(0,1fr) auto}
@@ -300,6 +301,10 @@ input[type=range]{padding:0;min-height:34px;background:none;box-shadow:none;acce
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const KEY='startseite-v1',WKEY='startseite-wall',WEB=mkWeb(),APP=window.AndroidApp||WEB||null,WEBAPP=!!WEB&&!window.AndroidApp;
+const APPV='27.11.2026',LOGK='startseite-log';
+function logErr(w,e){try{const m=String(e&&e.message||e||'');if(!m||/ResizeObserver loop|^Script error\.?$/.test(m))return;const L=JSON.parse(localStorage.getItem(LOGK)||'[]');L.push({t:Date.now(),w:String(w).slice(0,60),m:m.slice(0,300),s:String(e&&e.stack||'').split('\n').slice(0,3).join(' | ').slice(0,400)});localStorage.setItem(LOGK,JSON.stringify(L.slice(-30)))}catch(x){}}
+addEventListener('error',e=>logErr(e.filename?String(e.filename).split('/').pop()+':'+e.lineno:'Seite',e.error||e.message));
+addEventListener('unhandledrejection',e=>logErr('Ablauf',e.reason));
 const IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const DEVW=/iPhone|iPod/.test(navigator.userAgent)?'iPhone':IOS?'iPad':/Mobi/.test(navigator.userAgent)&&!window.AndroidApp?'Handy':'Tablet';
 /* Kein Zoomen: Pinch-Gesten und Doppeltipp-Zoom abfangen */
@@ -917,7 +922,7 @@ function wgSync(){const t=new Date(),c=S.car,U=upcoming(t,400).filter(e=>e.k!=='
  if(j===wgLast)return;wgLast=j;try{APP.setWidget(j)}catch(e){}}
 function bgSoon(){if(!HAS3)return;clearTimeout(bgT);bgT=setTimeout(()=>{paSync();wgSync()},1200)}
 let btList=null;
-function set3(){if(WEBAPP)return`<p class="note">„Jetzt als Datei sichern“ öffnet das Teilen-Menü – dort „In Dateien sichern“ oder Google Drive wählen. Eine Sicherung vom Tablet holst du mit „Aus Datei wiederherstellen“ hierher. Fotos aus Garage und Handschuhfach sind nicht enthalten.</p><p class="note">Widget, Preis-Alarm im Hintergrund, Erinnerungen und Bluetooth-Start gibt es nur in der Android-App. Web-Apps auf dem iPhone können das leider nicht.</p>`;
+function set3(){if(WEBAPP)return`<p class="note">„Jetzt als Datei sichern“ öffnet das Teilen-Menü – dort „In Dateien sichern“ oder Google Drive wählen. Eine Sicherung vom Tablet holst du mit „Aus Datei wiederherstellen“ hierher. Fotos aus Garage und Handschuhfach sind nicht enthalten.</p><p class="note">Widget, Preis-Alarm im Hintergrund und Bluetooth-Start gibt es nur in der Android-App – das erlaubt Apple Web-Apps nicht.</p>${puHtml()}`;
  if(!HAS3)return'<p class="note">Preis-Alarm, Widget, Bluetooth-Start und „Sicherung teilen“ kommen mit dem nächsten Update des App-Codes.</p>';
  return`<div class="rowb" style="justify-content:flex-start"><button type="button" id="bakShare">Sicherung teilen (z. B. Google Drive)</button></div><p class="note">Fotos aus der Garage sind nicht in der Sicherung, die bleiben auf dem Tablet.</p>
  <h4 style="margin:.5rem 0 0">Fahrt automatisch starten</h4><p class="note">Wähle dein Auto-Radio. Sobald sich das Tablet damit per Bluetooth verbindet, startet die Fahrtaufzeichnung. Ist die App gerade zu, kommt eine Benachrichtigung zum Antippen.</p>
@@ -1018,6 +1023,86 @@ async function syHistOpen(v){syArm='';if(!syH)return;if(syH.open===v){syH.open=n
 async function syRestore(){const o=syH&&syH.prev,r=syH&&syH.list.find(x=>+x.ver===syH.open);if(!o||!r)return;syArm='';
  try{const k=await syKeys();await syRpc('meinauto_snap',{p_id:k.id})}catch(e){syHistUi();toast('Gerade keine Verbindung – versuch es gleich nochmal.');return}
  syAdopt(o);SY.dirty=true;sySave();await syRun();toast(`Stand von ${syWhen(r.saved_at)} zurückgeholt`);syHistLoad()}
+/* App-Check */
+let CK=null;
+const ago=ms=>{const m=Math.round((Date.now()-ms)/60000);return m<1?'gerade eben':m<60?`vor ${m} Min.`:m<1440?`vor ${Math.round(m/60)} Std.`:`vor ${Math.round(m/1440)} Tagen`};
+const ckLog=()=>{try{return JSON.parse(localStorage.getItem(LOGK)||'[]')}catch(e){return[]}};
+function setCheckHtml(){return`<section class="fs" id="set-check"><h3>App-Check</h3><p class="note">Prüft, ob Speicher, Fotos, Abgleich, Sicherung${WEBAPP?' und Mitteilungen':''} in Ordnung sind.</p><div class="rowb" style="justify-content:flex-start"><button type="button" id="ckRun" class="pri">${CK&&!CK.run?'Nochmal prüfen':'Jetzt prüfen'}</button></div><div id="ckBox">${ckHtml()}</div></section>`}
+function ckHtml(){if(!CK)return ckLog().length?`<p class="note">Es gibt ${ckLog().length} gemerkte Fehler. Tipp auf „Jetzt prüfen“.</p>`:'';if(CK.run)return'<p class="note">Wird geprüft …</p>';const ic={ok:'✓',warn:'!',info:'·'};
+ return`<ul class="ckl">${CK.res.map(([l,a,b])=>`<li class="ck ${l}"><span class="cki" aria-hidden="true">${ic[l]}</span><span><b>${esc(a)}</b><br><span class="k">${esc(b)}</span></span></li>`).join('')}</ul>${ckLog().length?`<div class="rowb" style="justify-content:flex-start"><button type="button" id="ckCopy">Fehlerprotokoll kopieren</button><button type="button" id="ckClear">Protokoll leeren</button></div><p class="note">Kopier das Protokoll und schick es mir im Chat – dann sehe ich, was passiert ist.</p>`:''}`}
+function ckUi(){const e=$('#ckBox');if(e)e.innerHTML=ckHtml();const b=$('#ckRun');if(b)b.textContent=CK&&!CK.run?'Nochmal prüfen':'Jetzt prüfen'}
+async function ckRun(){CK={run:true,res:[]};ckUi();const R=[],add=(l,a,b)=>R.push([l,a,b]);
+ try{const raw=localStorage.getItem(KEY)||'{}';JSON.parse(raw);localStorage.setItem('startseite-ck','1');localStorage.removeItem('startseite-ck');const kb=Math.max(1,Math.round(raw.length/1024));
+  add(kb>3500?'warn':'ok','Gespeicherte Daten',`${nf(kb)} KB · ${nf(S.fuel.length)} Tankfüllungen, ${nf(S.trips.length)} Fahrten, ${nf(S.costs.length)} Ausgaben`+(kb>3500?' – der Speicher wird langsam voll. Alte Fahrten exportieren und löschen hilft.':''))}
+ catch(e){add('warn','Gespeicherte Daten','Speichern klappt gerade nicht: '+String(e&&e.message||e))}
+ try{if(navigator.storage&&navigator.storage.estimate){const q=await navigator.storage.estimate(),pe=navigator.storage.persisted?await navigator.storage.persisted():false;add('info','Speicherplatz',`${nf(Math.max(1,Math.round((q.usage||0)/1048576)))} MB belegt`+(pe?' · vor dem Aufräumen geschützt':''))}}catch(e){}
+ if(window.indexedDB){try{const ks=new Set(await PH.keys()),ids=[...S.projects.flatMap(p=>p.ph.map(f=>f.id)),...S.docs.flatMap(d=>d.ph.map(f=>f.id))],miss=ids.filter(i=>!ks.has(i)).length;
+  add(miss&&!SY.code?'warn':'ok','Fotos',ids.length?`${nf(ids.length-miss)} von ${nf(ids.length)} auf diesem Gerät`+(miss?(SY.code?' – der Rest kommt mit dem Abgleich.':' – die übrigen liegen auf deinem anderen Gerät. Mit dem Abgleich kommen sie hierher.'):''):'Noch keine Fotos')}catch(e){add('warn','Fotos','Der Fotospeicher antwortet nicht.')}}
+ if(!SY.code)add('info','Abgleich','Aus. Unter „Abgleich“ verbindest du Tablet und iPhone.');
+ else{try{const k=await syKeys(),rows=await syRpc('meinauto_get',{p_id:k.id}),r=Array.isArray(rows)&&rows[0];
+  if(!r)add('warn','Abgleich','Auf dem Server liegt noch nichts – tippe unter „Abgleich“ auf „Jetzt abgleichen“.');
+  else{await syDec(r.data);const same=+r.ver===+SY.ver&&!SY.dirty;add(same?'ok':'info','Abgleich',(same?'Alles abgeglichen':'Wird gleich abgeglichen')+(SY.at?' · zuletzt '+ago(SY.at):''))}}
+  catch(e){add('warn','Abgleich',navigator.onLine?'Der Server antwortet gerade nicht oder der Code passt nicht.':'Gerade kein Internet – sobald es wieder da ist, gleicht die App ab.')}}
+ const lb=+S.lastBak||0,dd=lb?Math.floor((Date.now()-lb)/864e5):null;
+ add(SY.code||(dd!==null&&dd<=30)?'ok':'warn','Sicherung',lb?`Letzte Datei-Sicherung ${dd<1?'heute':dd===1?'gestern':'vor '+nf(dd)+' Tagen'}`+(SY.code?' · dazu liegen ältere Stände beim Abgleich':''):(SY.code?'Ältere Stände liegen beim Abgleich. Eine Datei-Sicherung ab und zu schadet trotzdem nicht.':'Noch keine Sicherung – unter „Sicherung“ geht das mit einem Tipp.'));
+ if(WEBAPP)add(...await pushCheck());
+ else if(APP){let v=0;try{v=+APP.appVersion()||0}catch(e){}add(v>=4?'ok':'info','App',`App-Code Version ${v||'?'}`+(v&&v<4?' – für Uhr und Schnellknöpfe gibt es eine neuere Version.':''))}
+ const L=ckLog(),rec=L.filter(x=>Date.now()-x.t<7*864e5);
+ add(rec.length?'warn':'ok','Fehler',rec.length?`${rec.length} in den letzten 7 Tagen – zuletzt: ${rec[rec.length-1].m}`:'Keine in den letzten 7 Tagen');
+ add('info','Version',`Seite vom ${APPV}`+(WEBAPP?' · iPhone-Web-App':APP?' · Android-App':''));
+ CK={run:false,res:R,at:Date.now()};ckUi()}
+async function ckCopy(){const L=ckLog(),txt=['Mein Auto – Fehlerprotokoll','Seite '+APPV+(WEBAPP?' · iPhone':APP?' · Android':''),navigator.userAgent,...L.map(x=>new Date(x.t).toLocaleString('de-DE')+' · '+x.w+' · '+x.m+(x.s?' · '+x.s:''))].join('\n');
+ try{await navigator.clipboard.writeText(txt);toast('Kopiert – füg es im Chat ein')}catch(e){const a=document.createElement('textarea');a.value=txt;a.setAttribute('readonly','');a.style.cssText='position:fixed;opacity:0';document.body.appendChild(a);a.select();let ok=false;try{ok=document.execCommand('copy')}catch(x){}a.remove();toast(ok?'Kopiert – füg es im Chat ein':'Kopieren ging nicht')}}
+
+/* iPhone-Mitteilungen (Web Push): auf dem Server liegen nur Uhrzeiten und anonyme Schlüssel, die Texte bleiben im Gerät */
+const PKEY='startseite-push',VAPID_PUB='BKtWu62Jr0EDj16568r4L-zHEVJXmjxypUiYVZA-QAo-lAwSU9QHTmmjbY5paW9jwCcxLfh4FTCxJhOaTCXTVhA';
+let PU=(()=>{try{return JSON.parse(localStorage.getItem(PKEY))||{}}catch(e){return{}}})(),puT=null,puBusy=false;
+const puSave=()=>{try{localStorage.setItem(PKEY,JSON.stringify(PU))}catch(e){}};
+const puStandalone=()=>!!(navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches));
+const puCan=()=>WEBAPP&&'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
+const puHex=n=>Array.from(crypto.getRandomValues(new Uint8Array(n)),x=>x.toString(16).padStart(2,'0')).join('');
+const puB64u=t=>{const b=t.replace(/-/g,'+').replace(/_/g,'/');return syUnB64(b+'='.repeat((4-b.length%4)%4))};
+function puIdb(){return new Promise((ok,no)=>{const q=indexedDB.open('meinauto-push',1);q.onupgradeneeded=()=>q.result.createObjectStore('n');q.onsuccess=()=>ok(q.result);q.onerror=()=>no(q.error)})}
+async function puStore(map){const db=await puIdb();await new Promise((ok,no)=>{const t=db.transaction('n','readwrite'),st=t.objectStore('n');st.clear();for(const[k,v]of Object.entries(map))st.put(v,k);t.oncomplete=ok;t.onerror=()=>no(t.error)});db.close()}
+async function puKey(x){const h=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(PU.id+':'+x)));return Array.from(h.slice(0,8),b=>b.toString(16).padStart(2,'0')).join('')}
+const puAt=(d,h,back)=>{const x=new Date(d);x.setDate(x.getDate()-back);x.setHours(h,0,0,0);return x};
+async function puPlan(){const t=new Date(),items=[],texts={};
+ for(const x of calItems(t)){const day=fmt(x.d,{weekday:'short',day:'numeric',month:'short'}),al=x.car?[[7,9,'In einer Woche, am '+day],[1,9,'Morgen ist es so weit.']]:[[1,9,'Morgen: '+x.n],[0,8,'Heute: '+x.n]];
+  for(const[b,h,body]of al){const when=puAt(x.d,h,b);if(when<=t)continue;const k=await puKey(x.uid+'@'+when.toISOString());items.push({k,at:when.toISOString()});texts[k]={title:x.car?x.n:'Mein Auto',body}}}
+ items.sort((a,b)=>a.at.localeCompare(b.at));const keep=items.slice(0,150),tx={};for(const i of keep)tx[i.k]=texts[i.k];return{items:keep,texts:tx}}
+async function puSync(force){if(!PU.on||!puCan()||puBusy)return;puBusy=true;
+ try{const reg=await navigator.serviceWorker.ready,sub=await reg.pushManager.getSubscription();
+  if(!sub){if(!PU.lost){PU.lost=true;puSave()}return}if(PU.lost){PU.lost=false;puSave()}
+  const{items,texts}=await puPlan(),js=sub.toJSON(),h=JSON.stringify([js.endpoint,items]);
+  await puStore(texts);
+  if(!force&&h===PU.h&&Date.now()-(PU.at||0)<6*864e5)return;
+  const n=await syRpc('meinauto_push_set',{p_id:PU.id,p_sub:{endpoint:js.endpoint,keys:js.keys},p_items:items});
+  Object.assign(PU,{h,at:Date.now(),n:+n||0,next:items[0]?items[0].at:'',nextT:items[0]?texts[items[0].k].title+' – '+texts[items[0].k].body:''});puSave()}
+ catch(e){logErr('Mitteilungen',e)}finally{puBusy=false;puUi()}}
+function puSoon(){if(!PU.on)return;clearTimeout(puT);puT=setTimeout(()=>puSync(false),4000)}
+async function puOn(){if(!puCan()){toast(IOS&&!puStandalone()?'Öffne Mein Auto dafür vom Home-Bildschirm aus.':'Dieses Gerät kann keine Mitteilungen von Web-Apps.');return}
+ let pm='default';try{pm=await Notification.requestPermission()}catch(e){}
+ if(pm!=='granted'){toast(pm==='denied'?'Mitteilungen sind gesperrt. Erlaube sie in den iPhone-Einstellungen unter Mitteilungen → Mein Auto.':'Ohne deine Erlaubnis geht es leider nicht.');puUi();return}
+ try{const reg=await navigator.serviceWorker.ready;let sub=await reg.pushManager.getSubscription();if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:puB64u(VAPID_PUB)});
+  PU={on:true,id:PU.id||puHex(32)};puSave();await puSync(true);toast(PU.at?'Mitteilungen sind an':'Mitteilungen sind an – die Termine werden gleich übertragen')}
+ catch(e){logErr('Mitteilungen einschalten',e);toast('Das hat nicht geklappt – versuch es gleich nochmal.')}puUi()}
+async function puOff(){const id=PU.id;PU={};puSave();puUi();try{const reg=await navigator.serviceWorker.ready,sub=await reg.pushManager.getSubscription();if(sub)await sub.unsubscribe()}catch(e){}try{if(id)await syRpc('meinauto_push_off',{p_id:id})}catch(e){}toast('Mitteilungen sind aus')}
+async function puTest(){if(!PU.on)return;try{const r=await fetch(CLOUD.url+'/functions/v1/meinauto-push',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({test:PU.id})}),j=await r.json().catch(()=>({}));
+ toast(j.ok?'Test-Mitteilung ist unterwegs':r.status===429?'Kurz warten und nochmal versuchen':'Die Test-Mitteilung kam nicht an. Schalte die Mitteilungen einmal aus und wieder ein.')}catch(e){toast('Gerade kein Internet')}}
+async function pushCheck(){if(!puCan())return['info','Mitteilungen',IOS&&!puStandalone()?'Nur möglich, wenn du Mein Auto vom Home-Bildschirm aus öffnest.':'Auf diesem Gerät nicht möglich.'];
+ if(!PU.on)return['info','Mitteilungen','Aus – unter „App“ kannst du sie einschalten.'];
+ if(Notification.permission!=='granted')return['warn','Mitteilungen','Das iPhone erlaubt sie gerade nicht. Schau in den Einstellungen unter Mitteilungen → Mein Auto.'];
+ try{const reg=await navigator.serviceWorker.ready,sub=await reg.pushManager.getSubscription();if(!sub)return['warn','Mitteilungen','Vom iPhone zurückgesetzt – einmal aus- und wieder einschalten.']}catch(e){}
+ return['ok','Mitteilungen',`An · ${nf(PU.n||0)} Erinnerungen geplant`]}
+function puHtml(){const can=puCan(),pm=('Notification' in window)?Notification.permission:'',home=!(IOS&&!puStandalone());let st;
+ if(!home)st='Öffne Mein Auto vom Home-Bildschirm aus – nur dort erlaubt das iPhone Mitteilungen.';
+ else if(!can)st='Dieses Gerät kann keine Mitteilungen von Web-Apps (iPhone ab iOS 16.4).';
+ else if(!PU.on)st=pm==='denied'?'Gesperrt – erlaube sie in den iPhone-Einstellungen unter Mitteilungen → Mein Auto.':'Aus';
+ else if(PU.lost)st='Das iPhone hat die Mitteilungen zurückgesetzt. Schalte sie einmal aus und wieder ein.';
+ else st=PU.at?`An · ${nf(PU.n||0)} Erinnerungen geplant`+(PU.next?` · als Nächstes am ${fmt(new Date(PU.next),{day:'numeric',month:'short'})} um ${hm(new Date(PU.next))} Uhr: ${PU.nextT||''}`:''):'An · Termine werden übertragen …';
+ return`<h4 style="margin:.9rem 0 0">Mitteilungen</h4><p class="note">Erinnert dich auf dem Sperrbildschirm an HU, Wartung, den Stichtag der Kfz-Versicherung und deine Countdowns – auch wenn die App zu ist. Auf dem Server liegen dafür nur Uhrzeiten, die Texte bleiben auf dem iPhone.</p><p class="mini"><b>Status:</b> <span id="puStat">${esc(st)}</span></p>
+ ${can&&home?`<div class="rowb" style="justify-content:flex-start">${PU.on?'<button type="button" id="puTest">Test-Mitteilung</button><button type="button" id="puOff">Ausschalten</button>':'<button type="button" class="pri" id="puOn">Mitteilungen einschalten</button>'}</div>`:''}`}
+function puUi(){if(!$('#set').hidden&&$('#puStat'))renderSet()}
 function setSyncHtml(){if(!syOk())return'<section class="fs" id="set-sync"><h3>Abgleich zwischen Geräten</h3><p class="note">Auf diesem Gerät geht der Abgleich leider nicht.</p></section>';
  if(!SY.code)return`<section class="fs" id="set-sync"><h3>Abgleich zwischen Geräten</h3><p class="note">Damit Tablet und iPhone dieselben Daten haben. Alles wird auf dem Gerät verschlüsselt, bevor es ins Internet geht – lesen kann es nur, wer deinen Code hat.</p>
  <div class="tile fs" style="gap:.6rem"><b>Erstes Gerät</b><p class="note">Hier einschalten. Du bekommst einen Code für dein zweites Gerät.</p><div class="rowb" style="justify-content:flex-start"><button type="button" class="pri" id="syNew">Abgleich einschalten</button></div></div>
@@ -1168,13 +1253,14 @@ function render(){const t=new Date();applyLook();header(t);renderTabs();lastDay=
  const pg=PAGES.find(x=>x[0]===page)||PAGES[0],on=pg[2].filter(([id])=>(S.widgets.find(w=>w.id===id)||{on:true}).on);
  const ban=page==='auto'&&hasSamples()?'<div class="banner glass full"><span>Du siehst noch Beispieldaten. Trag dein Auto unter „Anpassen“ ein oder entferne die Beispiele.</span><button type="button" class="sm" data-act="clearsamples">Beispiele entfernen</button></div>':'';
  if(page==='mehr'){$('#grid').innerHTML=moreHtml();senStop();gpsNeed('tacho',false);setupLens();return}
- $('#grid').innerHTML=setupBan()+ban+(on.length?on.map(([id,sz])=>`<section class="card glass lens${sz?' '+sz:''}${id==='timer'&&timerDone()?' alarm':''}" id="w-${id}" aria-labelledby="h-${id}">${W[id](t)}</section>`).join(''):'<p class="glass empty full">Auf dieser Seite sind alle Bereiche ausgeblendet – unter „Anpassen“ schaltest du sie wieder ein.</p>');
+ $('#grid').innerHTML=setupBan()+ban+(on.length?on.map(([id,sz])=>`<section class="card glass lens${sz?' '+sz:''}${id==='timer'&&timerDone()?' alarm':''}" id="w-${id}" aria-labelledby="h-${id}">${safeW(id,t)}</section>`).join(''):'<p class="glass empty full">Auf dieser Seite sind alle Bereiche ausgeblendet – unter „Anpassen“ schaltest du sie wieder ein.</p>');
  setNeedle(t);setupLens();fillPhotos();if(page==='cockpit'){senStart();gpsNeed('tacho',true);updTacho()}else{senStop();gpsNeed('tacho',false)}if(page==='auto')loadSprit();drawCharts()}
 function go(p){if(!PAGES.some(x=>x[0]===p))p='start';if(p!==page){page=p;swept=false;render();window.scrollTo(0,0)}try{if(location.hash.slice(1)!==p)location.hash=p}catch(e){}}
 window.addEventListener('hashchange',()=>gFullClose());addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h!==page&&PAGES.some(x=>x[0]===h)){page=h;swept=false;render();window.scrollTo(0,0)}});
 {const h=location.hash.slice(1);if(PAGES.some(x=>x[0]===h))page=h}
 $('#tabbar').addEventListener('click',e=>{const b=e.target.closest('[data-page]');if(b)go(b.dataset.page)});
-function renderCard(id){const s=$('#w-'+id);if(!s)return;s.innerHTML=W[id](new Date());if(s.querySelector('.fig[data-chart]'))drawCharts();if(id==='timer')s.classList.toggle('alarm',timerDone());if(id==='uhr')setNeedle(new Date());fillPhotos()}
+function safeW(id,t){try{return W[id](t)}catch(e){logErr('Karte '+id,e);const n=(WIDGETS.find(x=>x[0]===id)||[0,'Bereich'])[1];return`<div class="ch"><h2 id="h-${id}">${esc(n)}</h2></div><p class="note">Hier ist gerade ein Fehler passiert. Der Rest der App läuft normal weiter. Unter Anpassen → App-Check kannst du mir den Fehler schicken.</p>`}}
+function renderCard(id){const s=$('#w-'+id);if(!s)return;s.innerHTML=safeW(id,new Date());if(s.querySelector('.fig[data-chart]'))drawCharts();if(id==='timer')s.classList.toggle('alarm',timerDone());if(id==='uhr')setNeedle(new Date());fillPhotos()}
 let pend=false;const busy=()=>{const a=document.activeElement;return a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&a.type!=='checkbox'&&a.type!=='range'};
 function renderSoon(){if(busy()){pend=true;return}render();if(!$('#set').hidden)renderSet()}
 document.addEventListener('focusout',()=>setTimeout(()=>{if(pend&&!busy()){pend=false;renderSoon()}},80));
@@ -1197,7 +1283,7 @@ setInterval(()=>{if(S.sw.t0){const e=$('#swT');if(e)e.textContent=swFmt(swEl())}
 /* Speichern */
 let ref=null,wref=null,writing=false,again=false,saveT;
 let syncTxt='Wird geladen …';function setSync(s){const m={ok:['ok','In deinem Konto gespeichert – auf allen Geräten gleich'],local:['',(()=>{try{return(JSON.parse(localStorage.getItem('startseite-sync'))||{}).code}catch(e){}})()?'Auf diesem Gerät gespeichert und mit deinem anderen Gerät abgeglichen':'Nur auf diesem Gerät gespeichert'],load:['','Wird geladen …'],slow:['warn','Speicher gerade nicht erreichbar'],full:['warn','Speicher voll']}[s];syncTxt=m[1];const e=$('#sync');e.className='sync glass '+m[0];e.lastElementChild.textContent=m[1];e.hidden=m[0]!=='warn';const x=$('#syncTxt');if(x)x.textContent=m[1]}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}clearTimeout(saveT);saveT=setTimeout(flush,700);syncSoon();bgSoon();syDirty()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){logErr('Speichern',e)}clearTimeout(saveT);saveT=setTimeout(flush,700);syncSoon();bgSoon();syDirty();puSoon()}
 async function flush(){if(!ref)return;if(writing){again=true;return}writing=true;again=false;const body=JSON.parse(JSON.stringify(S));
  for(let i=0;i<2;i++){try{await ref.set(body);setSync('ok');break}catch(e){const c=e&&e.code;if(c==='unavailable'&&i===0){await new Promise(r=>setTimeout(r,800+Math.random()*1200));continue}setSync(c==='quota_exceeded'?'full':'local');break}}
  writing=false;if(again)flush()}
@@ -1322,7 +1408,7 @@ $('#standby').addEventListener('click',closeSB);
 
 /* Einstellungen */
 const SW=(k,l,sub)=>`<label class="tg"><span>${l}${sub?`<small>${sub}</small>`:''}</span><input type="checkbox" role="switch" data-sw="${k}"${S[k]?' checked':''}></label>`;
-function renderSet(){const c=S.car,p=S.place,city=CITIES.find(x=>x[0]===p.n&&Math.abs(x[1]-p.lat)<.01),secs=[['set-look','Aussehen'],['set-gen','Allgemein'],...(APP?[['set-app','App']]:[]),['set-ber','Bereiche'],['set-auto','Auto'],['set-sync','Abgleich'],['set-bk','Sicherung']];
+function renderSet(){const c=S.car,p=S.place,city=CITIES.find(x=>x[0]===p.n&&Math.abs(x[1]-p.lat)<.01),secs=[['set-look','Aussehen'],['set-gen','Allgemein'],...(APP?[['set-app','App']]:[]),['set-ber','Bereiche'],['set-auto','Auto'],['set-sync','Abgleich'],['set-bk','Sicherung'],['set-check','App-Check']];
  $('#pane').innerHTML=`<div class="head"><div class="hd"><h2 id="setT">Anpassen</h2><button class="pri" type="button" id="closeSet">Fertig</button></div><div class="seg" role="group" aria-label="Abschnitte">${secs.map(([i,n])=>`<button type="button" data-go="${i}">${n}</button>`).join('')}</div></div>
  <section class="fs" id="set-look"><h3>Aussehen</h3>
  <div><span class="k">Hintergrund</span><div class="walls" style="margin-top:.4rem">${WALLS.map(w=>`<button type="button" class="wp" data-wall="${w[0]}" aria-pressed="${S.wall===w[0]}"><i style="background:${w[3]}"></i>${w[1]}</button>`).join('')}<button type="button" class="wp" data-act="photo" aria-pressed="${S.wall==='foto'}"><i style="${wallImg?`background:center/cover url('${wallImg}')`:'background:rgb(var(--g)/.4);display:grid;place-items:center;font-size:1.6rem'}">${wallImg?'':'+'}</i>Eigenes Foto</button></div>
@@ -1349,7 +1435,8 @@ function renderSet(){const c=S.car,p=S.place,city=CITIES.find(x=>x[0]===p.n&&Mat
  <label>Aufgezogene Reifen<select data-car="tires">${TIRES.map(([v,n])=>`<option value="${v}"${c.tires===v?' selected':''}>${n}</option>`).join('')}</select></label></section>
 
  ${setSyncHtml()}
- <section class="fs" id="set-bk"><h3>Sicherung</h3><p class="mini"><b>Status:</b> <span id="syncTxt">${esc(syncTxt)}</span></p><p class="note">Alles speichert automatisch. Zusätzlich kannst du deine Daten als Text kopieren und später hier wieder einfügen (ohne Hintergrundfoto).</p><div class="rowb" style="justify-content:flex-start"><button type="button" id="bkCopy">Daten kopieren</button></div><label>Gesicherten Text einfügen<textarea id="bkIn" rows="3"></textarea></label><div class="rowb" style="justify-content:flex-start"><button type="button" id="bkRes">Wiederherstellen</button><button type="button" id="resetAll">${resetArm?'Wirklich alles zurücksetzen?':'Alles zurücksetzen'}</button></div>${APP&&!WEBAPP?'<div class="tile fs" style="gap:.5rem"><b>App-Oberfläche</b><span class="note">Hast du eine neue index.html bekommen? Hier auswählen – deine Daten bleiben erhalten.</span><div><button type="button" id="appUpd">Neue Version laden</button></div></div>':''}</section>`}
+ <section class="fs" id="set-bk"><h3>Sicherung</h3><p class="mini"><b>Status:</b> <span id="syncTxt">${esc(syncTxt)}</span></p><p class="note">Alles speichert automatisch. Zusätzlich kannst du deine Daten als Text kopieren und später hier wieder einfügen (ohne Hintergrundfoto).</p><div class="rowb" style="justify-content:flex-start"><button type="button" id="bkCopy">Daten kopieren</button></div><label>Gesicherten Text einfügen<textarea id="bkIn" rows="3"></textarea></label><div class="rowb" style="justify-content:flex-start"><button type="button" id="bkRes">Wiederherstellen</button><button type="button" id="resetAll">${resetArm?'Wirklich alles zurücksetzen?':'Alles zurücksetzen'}</button></div>${APP&&!WEBAPP?'<div class="tile fs" style="gap:.5rem"><b>App-Oberfläche</b><span class="note">Hast du eine neue index.html bekommen? Hier auswählen – deine Daten bleiben erhalten.</span><div><button type="button" id="appUpd">Neue Version laden</button></div></div>':''}</section>
+ ${setCheckHtml()}`}
 const openSet=()=>{resetArm=false;renderSet();$('#set').hidden=false;setupLens();$('#closeSet').focus()};
 const closeSet=()=>{$('#set').hidden=true;$('#openSet').focus()};
 $('#openSet').addEventListener('click',openSet);
@@ -1377,6 +1464,12 @@ P.addEventListener('click',async e=>{if(e.target===P)return closeSet();const b=e
  if(b.id==='syJoin'){const inp=$('#syIn'),c=syNorm(inp?inp.value:syPend);if(c.length!==20){toast('Der Code hat 20 Zeichen, zum Beispiel ABCD-EFGH-JKLM-NPQR-STUV.');return}if(syArm!=='join'){syArm='join';syPend=c;renderSet();refocus('#syJoin');return}syJoin(c);return}
  if(b.id==='syCopy'){const t=syFmt(SY.code);try{if(APP)APP.copy(t);else navigator.clipboard.writeText(t)}catch(err){}toast('Code kopiert');return}
  if(b.id==='syNow'){syRun();return}
+ if(b.id==='ckRun'){ckRun();return}
+ if(b.id==='ckCopy'){ckCopy();return}
+ if(b.id==='ckClear'){try{localStorage.removeItem(LOGK)}catch(e){}ckRun();return}
+ if(b.id==='puOn'){puOn();return}
+ if(b.id==='puOff'){puOff();return}
+ if(b.id==='puTest'){puTest();return}
  if(b.id==='syHist'){syArm='';syHistLoad();return}
  if(ds.syh!=null){syHistOpen(+ds.syh);return}
  if(b.id==='syRest'){if(syArm!=='rest'){syArm='rest';syHistUi();refocus('#syRest');return}syRestore();return}
@@ -1415,6 +1508,7 @@ if(window.indexedDB)setTimeout(phGC,8000);
 if(HAS3){try{APP.btWatch(S.bt.a||'')}catch(e){}bgSoon();setTimeout(()=>window.__appAct(),400)}
 if(WEBAPP&&'serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 if(SY.code){syLast=JSON.stringify(syOut());setTimeout(syRun,900)}
+if(PU.on)setTimeout(()=>puSync(false),2500);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')puSoon()});
 document.addEventListener('visibilitychange',()=>{if(SY.code)syRun()});addEventListener('online',()=>{if(SY.code)syRun()});
 setInterval(()=>{if(SY.code&&document.visibilityState==='visible')syRun()},45000);
 }
