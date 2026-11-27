@@ -1,5 +1,5 @@
 /* Mein Auto – Offline-Speicher: zeigt sofort die gespeicherte Version und holt im Hintergrund die neueste */
-const CACHE = 'meinauto-v15';
+const CACHE = 'meinauto-v16';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-180.png', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));
@@ -39,6 +39,8 @@ self.addEventListener('push', e => {
   const opt = (body, tag) => ({ body, tag, icon: 'icon-192.png', data: { url: './' } });
   e.waitUntil((async () => {
     if (d.t === 'test') return self.registration.showNotification('Mein Auto', opt('Mitteilungen funktionieren.', 'meinauto-test'));
+    // Spritpreis-Alarm: der Text kommt vom Server (nur Preis und Tankstelle)
+    if (d.pa && typeof d.pa.title === 'string') return self.registration.showNotification(d.pa.title.slice(0, 80), opt(String(d.pa.body || '').slice(0, 200), 'meinauto-preis'));
     const ks = Array.isArray(d.ks) ? d.ks.slice(0, 8) : [];
     if (!ks.length) return self.registration.showNotification('Mein Auto', opt('Du hast eine Erinnerung.', 'meinauto'));
     for (const k of ks) {
