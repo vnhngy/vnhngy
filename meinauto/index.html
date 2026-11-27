@@ -162,10 +162,12 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .clkb{display:grid;place-items:center;min-width:0}
 .aclk{display:block;width:100%;max-width:min(320px,100%);aspect-ratio:1;margin:0 auto;overflow:visible}
 .aclk .face{fill:rgb(var(--g)/.35);stroke:var(--track);stroke-width:2}
-.aclk .hand{transform-box:view-box;transform-origin:0 0;transition:transform .45s cubic-bezier(.3,1.4,.5,1)}
-.aclk #hS{transition:transform .22s cubic-bezier(.3,1.9,.5,1)}.aclk #hS line{filter:drop-shadow(0 0 4px var(--acc))}
+.aclk .hand{transform-box:view-box;transform-origin:0 0}
+@keyframes clkspin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.aclk.sweep #hS{animation:clkspin 60s linear infinite}.aclk.sweep #hM{animation:clkspin 3600s linear infinite}.aclk.sweep #hH{animation:clkspin 43200s linear infinite}
+.aclk #hS line{filter:drop-shadow(0 0 4px var(--acc))}
 .aclk .hub{fill:rgb(var(--g));stroke:var(--acc);stroke-width:3}
-@media(prefers-reduced-motion:reduce){.aclk .hand{transition:none}}
+@media(prefers-reduced-motion:reduce){.aclk.sweep .hand{animation:none!important}}
 .dbar{position:relative;height:8px;border-radius:99px;background:var(--track);margin-top:.3rem}.dbar i{position:absolute;display:block}.dbar .day{top:0;bottom:0;border-radius:99px;background:var(--sun)}
 .dbar .now{top:50%;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 3px rgb(var(--g)),0 0 14px var(--acc);transition:left .6s}
 .dlab{display:flex;justify-content:space-between;margin-top:.45rem;font-size:.78rem;color:var(--mute);font-variant-numeric:tabular-nums}
@@ -272,6 +274,25 @@ input[type=range]{padding:0;min-height:34px;background:none;box-shadow:none;acce
 .li span{display:grid;overflow:hidden}.li small{color:var(--mute);font-size:.78rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .toast{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);z-index:40;display:flex;gap:.8rem;align-items:center;padding:.45rem .5rem .45rem 1.1rem;border-radius:999px;max-width:calc(100% - 24px);font-weight:600;--tint:.6}
 .toast[hidden]{display:none}
+@media(prefers-reduced-motion:no-preference){
+@keyframes contIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.card.enter>*{animation:contIn .46s cubic-bezier(.2,.8,.2,1) both;animation-delay:var(--d,0ms)}
+@keyframes sheetIn{from{opacity:0;transform:translateY(26px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes sheetOut{to{opacity:0;transform:translateY(18px) scale(.985)}}
+#set:not([hidden]) .pane{animation:sheetIn .36s cubic-bezier(.2,.9,.25,1) both}#set.out .pane{animation:sheetOut .2s ease-in both}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes fadeOut{to{opacity:0}}
+@keyframes zoomIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+#standby:not([hidden]){animation:fadeIn .3s ease both}#standby.out{animation:fadeOut .22s ease both}#standby:not([hidden]) .sb{animation:zoomIn .4s cubic-bezier(.2,.9,.25,1) both}
+.phv:not([hidden]){animation:fadeIn .22s ease both}.phv:not([hidden]) img{animation:zoomIn .32s cubic-bezier(.2,.9,.25,1) both}
+.gfull:not([hidden]){animation:fadeIn .25s ease both}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,16px) scale(.96)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes toastOut{to{opacity:0;transform:translate(-50%,10px) scale(.97)}}
+.toast:not([hidden]){animation:toastIn .34s cubic-bezier(.2,.9,.3,1.15) both}.toast.out{animation:toastOut .2s ease-in both}
+@keyframes popIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.pop{animation:popIn .3s cubic-bezier(.2,.8,.2,1) both}
+.tabbar button{transition:transform .4s cubic-bezier(.34,1.56,.64,1),background .25s,color .25s,box-shadow .25s}
+}
+body.scrolling #wall{animation-play-state:paused}
 #standby{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:4vw;background:rgb(0 0 0/.22);-webkit-backdrop-filter:blur(22px) saturate(160%);backdrop-filter:blur(22px) saturate(160%);cursor:pointer}
 #standby[hidden]{display:none}
 .sb{padding:clamp(1.5rem,5vw,4rem) clamp(2rem,7vw,6rem);border-radius:48px;text-align:center;display:grid;gap:.6rem;--tint:.18;--blur:10px}
@@ -305,6 +326,9 @@ const APPV='27.11.2026',LOGK='startseite-log';
 function logErr(w,e){try{const m=String(e&&e.message||e||'');if(!m||/ResizeObserver loop|^Script error\.?$/.test(m))return;const L=JSON.parse(localStorage.getItem(LOGK)||'[]');L.push({t:Date.now(),w:String(w).slice(0,60),m:m.slice(0,300),s:String(e&&e.stack||'').split('\n').slice(0,3).join(' | ').slice(0,400)});localStorage.setItem(LOGK,JSON.stringify(L.slice(-30)))}catch(x){}}
 addEventListener('error',e=>logErr(e.filename?String(e.filename).split('/').pop()+':'+e.lineno:'Seite',e.error||e.message));
 addEventListener('unhandledrejection',e=>logErr('Ablauf',e.reason));
+const RM=window.matchMedia?matchMedia('(prefers-reduced-motion: reduce)'):{matches:false};
+function hideAnim(el,cb){if(!el||el.hidden){if(cb)cb();return}clearTimeout(el._ht);if(RM.matches){el.hidden=true;if(cb)cb();return}el.classList.add('out');el._ht=setTimeout(()=>{el.classList.remove('out');el.hidden=true;if(cb)cb()},190)}
+function showAnim(el){if(!el)return;clearTimeout(el._ht);el.classList.remove('out');el.hidden=false}
 const IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const DEVW=/iPhone|iPod/.test(navigator.userAgent)?'iPhone':IOS?'iPad':/Mobi/.test(navigator.userAgent)&&!window.AndroidApp?'Handy':'Tablet';
 /* Kein Zoomen: Pinch-Gesten und Doppeltipp-Zoom abfangen */
@@ -492,13 +516,14 @@ const moreBtn=(k,n,lim)=>n>lim?`<button type="button" class="sm more" data-more=
 const calc={vs:'14,4',vf:'2,0',ma:'20',n:'1',pers:'1',u:{}};
 
 /* Kacheln */
+function clkDel(t){const s=t.getSeconds()+t.getMilliseconds()/1000,m=t.getMinutes()*60+s;return[((t.getHours()%12)*3600+m).toFixed(2),m.toFixed(2),s.toFixed(2)]}
 function clkAng(t){const sec=t.getHours()*3600+t.getMinutes()*60+t.getSeconds();return[sec/120,sec/10,sec*6]}
-function aClock(t){const[ah,am,as]=clkAng(t);let tk='';
+function aClock(t){const[ah,am,as]=clkAng(t),[dh,dm,ds]=clkDel(t);let tk='';
  for(let i=0;i<60;i++){const a=i*6*Math.PI/180,big=i%5===0,q=i%15===0,r1=91,r2=q?75:big?80:86,x=Math.sin(a),y=-Math.cos(a);tk+=`<line x1="${(x*r1).toFixed(2)}" y1="${(y*r1).toFixed(2)}" x2="${(x*r2).toFixed(2)}" y2="${(y*r2).toFixed(2)}" stroke="var(--ink)" stroke-opacity="${big?.9:.3}" stroke-width="${q?3.4:big?2.4:1}" stroke-linecap="round"/>`}
- return`<svg class="aclk" viewBox="-100 -100 200 200" role="img" aria-label="Uhr, jetzt ${hm(t)} Uhr"><circle r="97" class="face"/>${tk}
- <g class="hand" id="hH" style="transform:rotate(${ah}deg)"><line x1="0" y1="12" x2="0" y2="-48" stroke="var(--ink)" stroke-width="7" stroke-linecap="round"/></g>
- <g class="hand" id="hM" style="transform:rotate(${am}deg)"><line x1="0" y1="14" x2="0" y2="-74" stroke="var(--ink)" stroke-width="4.5" stroke-linecap="round"/></g>
- <g class="hand" id="hS" style="transform:rotate(${as}deg)"><line x1="0" y1="22" x2="0" y2="-84" stroke="var(--acc)" stroke-width="2.6" stroke-linecap="round"/></g>
+ return`<svg class="aclk sweep" viewBox="-100 -100 200 200" role="img" aria-label="Uhr, jetzt ${hm(t)} Uhr"><circle r="97" class="face"/>${tk}
+ <g class="hand" id="hH" style="transform:rotate(${ah}deg);animation-delay:-${dh}s"><line x1="0" y1="12" x2="0" y2="-48" stroke="var(--ink)" stroke-width="7" stroke-linecap="round"/></g>
+ <g class="hand" id="hM" style="transform:rotate(${am}deg);animation-delay:-${dm}s"><line x1="0" y1="14" x2="0" y2="-74" stroke="var(--ink)" stroke-width="4.5" stroke-linecap="round"/></g>
+ <g class="hand" id="hS" style="transform:rotate(${as}deg);animation-delay:-${ds}s"><line x1="0" y1="22" x2="0" y2="-84" stroke="var(--acc)" stroke-width="2.6" stroke-linecap="round"/></g>
  <circle class="hub" r="9"/><circle r="3" fill="var(--acc)"/></svg>`}
 function wUhr(t){const p=S.place,sn=sun(t,p.lat,p.lon),sy=sun(addD(t,-1),p.lat,p.lon),dm=Math.round((sn.len-sy.len)*60),mo=moon(t);
  const len=sn.rise?`${Math.floor(sn.len)}:${String(Math.round(sn.len%1*60)%60).padStart(2,'0')} h`:sn.polar==='tag'?'24 h':'0 h',pc=h=>(Math.max(0,Math.min(24,h))/24*100).toFixed(2);
@@ -789,14 +814,15 @@ function tripStart(){S.tripLive={s:Date.now(),m:0,mov:0,vmax:0,last:null};gpsNee
 function tripStop(){const L=S.tripLive;if(!L)return;S.tripLive=null;gpsNeed('trip',false);try{if(page!=='cockpit'&&$('#standby').hidden)APP.keepOn(false)}catch(e){}
  if(L.m>=100){const T={id:uid(),s:L.s,e:Date.now(),km:Math.round(L.m/100)/10,mov:L.mov,vmax:Math.round(L.vmax)};S.trips.unshift(T);S.trips=S.trips.slice(0,300);commit();toast(`Fahrt gespeichert: ${nf(T.km,1)} km`)}else{save();renderCard('tacho');toast('Fahrt war zu kurz und wurde nicht gespeichert')}}
 const dur=ms=>{const m=Math.round(ms/6e4),h=Math.floor(m/60);return h?`${h}:${String(m%60).padStart(2,'0')} h`:`${m} Min.`};
+let spdA=0;function spdTo(el,v){const from=el.dataset.v===''||el.dataset.v==null?null:+el.dataset.v;el.dataset.v=v;if(from===null||RM.matches||Math.abs(v-from)>60){el.textContent=nf(v);return}if(from===v)return;cancelAnimationFrame(spdA);const t0=performance.now(),step=n=>{const k=Math.min(1,(n-t0)/900);el.textContent=nf(Math.round(from+(v-from)*k));if(k<1)spdA=requestAnimationFrame(step)};spdA=requestAnimationFrame(step)}
 function updTacho(){const f=GP.fix,T=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};if(!$('#w-tacho'))return;
- T('tSpd',f?nf(f.v<1.5?0:f.v):'–');T('tAcc',f?`Genauigkeit ±${nf(f.acc)} m`:GP.err||'Suche GPS-Signal …');T('tAlt',f&&f.alt!=null?nf(f.alt)+' m':'–');T('tDir',f&&f.brg!=null&&f.v>3?DIRS[Math.round(f.brg/22.5)%16]:'–');
+ {const e=document.getElementById('tSpd');if(e){if(f)spdTo(e,Math.round(f.v<1.5?0:f.v));else{e.dataset.v='';e.textContent='–'}}}T('tAcc',f?`Genauigkeit ±${nf(f.acc)} m`:GP.err||'Suche GPS-Signal …');T('tAlt',f&&f.alt!=null?nf(f.alt)+' m':'–');T('tDir',f&&f.brg!=null&&f.v>3?DIRS[Math.round(f.brg/22.5)%16]:'–');
  const L=S.tripLive;if(L){T('tKm',nf(L.m/1000,1)+' km');T('tDur',dur(Date.now()-L.s));T('tMax',nf(L.vmax)+' km/h');T('tAvg',L.mov>60000?nf(L.m/1000/(L.mov/36e5))+' km/h':'–')}
  const arc=document.getElementById('tArc');if(arc&&f){const v=Math.min(240,f.v<1.5?0:f.v);arc.setAttribute('stroke-dasharray',`${(v/240*424).toFixed(1)} 600`)}}
 function wTacho(){if(!HAS2)return`<div class="ch"><h2 id="h-tacho">Tacho</h2></div>${APP?upNote():'<p class="note">Den GPS-Tacho gibt es nur in der Android-App.</p>'}`;
  const L=S.tripLive;
  return`<div class="ch"><h2 id="h-tacho">Tacho</h2><span class="k" id="tAcc">${GP.err?esc(GP.err):GP.fix?'':'Suche GPS-Signal …'}</span></div>
- <div class="tacho"><svg viewBox="0 0 200 130" aria-hidden="true"><path d="M20 120A80 80 0 0 1 180 120" fill="none" stroke="var(--track)" stroke-width="14" stroke-linecap="round"/><path id="tArc" d="M20 120A80 80 0 0 1 180 120" fill="none" stroke="var(--acc)" stroke-width="14" stroke-linecap="round" stroke-dasharray="0 600" style="transition:stroke-dasharray .6s ease;filter:drop-shadow(0 0 6px var(--acc))"/></svg><div class="tnum"><b id="tSpd">–</b><span class="k">km/h</span></div></div>
+ <div class="tacho"><svg viewBox="0 0 200 130" aria-hidden="true"><path d="M20 120A80 80 0 0 1 180 120" fill="none" stroke="var(--track)" stroke-width="14" stroke-linecap="round"/><path id="tArc" d="M20 120A80 80 0 0 1 180 120" fill="none" stroke="var(--acc)" stroke-width="14" stroke-linecap="round" stroke-dasharray="0 600" style="transition:stroke-dasharray .95s linear;filter:drop-shadow(0 0 6px var(--acc))"/></svg><div class="tnum"><b id="tSpd">–</b><span class="k">km/h</span></div></div>
  <div class="facts"><div><span class="k">Richtung</span><b id="tDir">–</b></div><div><span class="k">Höhe</span><b id="tAlt">–</b></div><div><span class="k">${L?'Strecke':'Fahrt'}</span><b id="tKm">${L?nf(L.m/1000,1)+' km':'–'}</b></div></div>
  ${L?`<div class="facts"><div><span class="k">Dauer</span><b id="tDur">${dur(Date.now()-L.s)}</b></div><div><span class="k">Ø in Bewegung</span><b id="tAvg">–</b></div><div><span class="k">Höchstwert</span><b id="tMax">${nf(L.vmax)} km/h</b></div></div>`:''}
  <div class="rowb" style="justify-content:flex-start">${L?'<button type="button" class="pri" data-act="tripstop">Fahrt beenden</button>':'<button type="button" class="pri" data-act="tripstart">Fahrt aufzeichnen</button>'}</div>
@@ -1239,13 +1265,17 @@ function applyLens(el){const r=el.getBoundingClientRect(),W=Math.round(r.width),
  el.style.backdropFilter=el.style.webkitBackdropFilter=`url(#${key}) blur(var(--blur)) saturate(var(--sat))`}
 const lensObs=typeof ResizeObserver==='function'?new ResizeObserver(es=>{for(const e of es)if(e.target.isConnected)applyLens(e.target)}):null;
 function setupLens(){if(!lensObs)return;for(const el of $$('.lens')){const want=S.lens&&lensOK&&!(el.classList.contains('card')&&S.blur>12);if(want)lensObs.observe(el);else{lensObs.unobserve(el);el.style.backdropFilter=el.style.webkitBackdropFilter=''}}}
-let shR=0;document.addEventListener('pointermove',e=>{if(!S.shine)return;const g=e.target.closest&&e.target.closest('.glass');if(!g)return;cancelAnimationFrame(shR);shR=requestAnimationFrame(()=>{const r=g.getBoundingClientRect();g.style.setProperty('--mx',((e.clientX-r.left)/r.width*100).toFixed(1)+'%');g.style.setProperty('--my',((e.clientY-r.top)/r.height*100).toFixed(1)+'%')})},{passive:true});
+let scrollingNow=false,scrT=0;addEventListener('scroll',()=>{if(!scrollingNow){scrollingNow=true;document.body.classList.add('scrolling')}clearTimeout(scrT);scrT=setTimeout(()=>{scrollingNow=false;document.body.classList.remove('scrolling')},160)},{passive:true});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){clkAt=0;setNeedle(new Date())}});
+let shR=0;document.addEventListener('pointermove',e=>{if(!S.shine||scrollingNow)return;const g=e.target.closest&&e.target.closest('.glass');if(!g)return;cancelAnimationFrame(shR);shR=requestAnimationFrame(()=>{const r=g.getBoundingClientRect();g.style.setProperty('--mx',((e.clientX-r.left)/r.width*100).toFixed(1)+'%');g.style.setProperty('--my',((e.clientY-r.top)/r.height*100).toFixed(1)+'%')})},{passive:true});
 
 /* Darstellung */
 const greet=h=>h<5?'Gute Nacht':h<11?'Guten Morgen':h<18?'Guten Tag':h<22?'Guten Abend':'Gute Nacht';
 function header(t){const pg=PAGES.find(x=>x[0]===page)||PAGES[0];$('#greet').textContent=page==='start'?greet(t.getHours())+(S.name.trim()?', '+S.name.trim():''):pg[1];$('#dateline').textContent=`${fmt(t,{weekday:'long',day:'numeric',month:'long',year:'numeric'})} · KW ${isoWeek(t)}`}
-let swept=false,lastDay='',lastMin=-1;
-function setNeedle(t){const n=$('#dNow');if(n)n.style.left=(hrs(t)/24*100).toFixed(2)+'%';const h=$('#hH');if(!h)return;const[ah,am,as]=clkAng(t);h.style.transform=`rotate(${ah}deg)`;$('#hM').style.transform=`rotate(${am}deg)`;$('#hS').style.transform=`rotate(${as}deg)`}
+let swept=false,lastDay='',lastMin=-1,clkAt=0,entering=true;
+function setNeedle(t){const n=$('#dNow');if(n)n.style.left=(hrs(t)/24*100).toFixed(2)+'%';const h=$('#hH');if(!h)return;
+ if(!RM.matches){if(!h.dataset.sync||t-clkAt>60000){const[dh,dm,ds]=clkDel(new Date());h.style.animationDelay=`-${dh}s`;$('#hM').style.animationDelay=`-${dm}s`;$('#hS').style.animationDelay=`-${ds}s`;h.dataset.sync=1;clkAt=+t}return}
+ const[ah,am,as]=clkAng(t);h.style.transform=`rotate(${ah}deg)`;$('#hM').style.transform=`rotate(${am}deg)`;$('#hS').style.transform=`rotate(${as}deg)`}
 const TABIC={start:'home',auto:'car',cockpit:'gauge',planen:'cal',mehr:'grid'};
 function renderTabs(){const act=MAIN.includes(page)?page:'mehr';$('#tabbar').innerHTML=MAIN.map(id=>`<button type="button" data-page="${id}" aria-current="${act===id?'page':'false'}">${IC[TABIC[id]]}<span>${(PAGES.find(x=>x[0]===id)||[0,id])[1]}</span></button>`).join('')}
 const hasSamples=()=>S.car.sample||S.fuel.some(f=>f.s)||S.costs.some(c=>c.s)||S.tiresets.some(r=>r.s)||S.maintSample;
@@ -1254,9 +1284,11 @@ function render(){const t=new Date();applyLook();header(t);renderTabs();lastDay=
  const ban=page==='auto'&&hasSamples()?'<div class="banner glass full"><span>Du siehst noch Beispieldaten. Trag dein Auto unter „Anpassen“ ein oder entferne die Beispiele.</span><button type="button" class="sm" data-act="clearsamples">Beispiele entfernen</button></div>':'';
  if(page==='mehr'){$('#grid').innerHTML=moreHtml();senStop();gpsNeed('tacho',false);setupLens();return}
  $('#grid').innerHTML=setupBan()+ban+(on.length?on.map(([id,sz])=>`<section class="card glass lens${sz?' '+sz:''}${id==='timer'&&timerDone()?' alarm':''}" id="w-${id}" aria-labelledby="h-${id}">${safeW(id,t)}</section>`).join(''):'<p class="glass empty full">Auf dieser Seite sind alle Bereiche ausgeblendet – unter „Anpassen“ schaltest du sie wieder ein.</p>');
+ if(entering){entering=false;cardsIn()}
  setNeedle(t);setupLens();fillPhotos();if(page==='cockpit'){senStart();gpsNeed('tacho',true);updTacho()}else{senStop();gpsNeed('tacho',false)}if(page==='auto')loadSprit();drawCharts()}
-function go(p){if(!PAGES.some(x=>x[0]===p))p='start';if(p!==page){page=p;swept=false;render();window.scrollTo(0,0)}try{if(location.hash.slice(1)!==p)location.hash=p}catch(e){}}
-window.addEventListener('hashchange',()=>gFullClose());addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h!==page&&PAGES.some(x=>x[0]===h)){page=h;swept=false;render();window.scrollTo(0,0)}});
+function cardsIn(){if(RM.matches)return;const cs=$$('#grid > .card');cs.forEach((c,i)=>{if(i<10){c.style.setProperty('--d',(i*45)+'ms');c.classList.add('enter')}});clearTimeout(cardsIn.t);cardsIn.t=setTimeout(()=>$$('#grid > .card.enter').forEach(c=>c.classList.remove('enter')),1100)}
+function go(p){if(!PAGES.some(x=>x[0]===p))p='start';if(p!==page){page=p;swept=false;entering=true;render();window.scrollTo(0,0)}try{if(location.hash.slice(1)!==p)location.hash=p}catch(e){}}
+window.addEventListener('hashchange',()=>gFullClose());addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h!==page&&PAGES.some(x=>x[0]===h)){page=h;swept=false;entering=true;render();window.scrollTo(0,0)}});
 {const h=location.hash.slice(1);if(PAGES.some(x=>x[0]===h))page=h}
 $('#tabbar').addEventListener('click',e=>{const b=e.target.closest('[data-page]');if(b)go(b.dataset.page)});
 function safeW(id,t){try{return W[id](t)}catch(e){logErr('Karte '+id,e);const n=(WIDGETS.find(x=>x[0]===id)||[0,'Bereich'])[1];return`<div class="ch"><h2 id="h-${id}">${esc(n)}</h2></div><p class="note">Hier ist gerade ein Fehler passiert. Der Rest der App läuft normal weiter. Unter Anpassen → App-Check kannst du mir den Fehler schicken.</p>`}}
@@ -1299,8 +1331,8 @@ function saveWall(){try{if(wallImg)localStorage.setItem(WKEY,JSON.stringify({img
   wref.onSnapshot(s=>{if(s.metadata.hasPendingWrites)return;if(s.exists){const im=(s.data()||{}).img;if(typeof im==='string'&&WALLRE.test(im)&&im!==wallImg){wallImg=im;try{localStorage.setItem(WKEY,JSON.stringify({img:im}))}catch(e){}applyLook()}}else if(!s.metadata.fromCache&&wallImg)wref.set({img:wallImg}).catch(()=>{})},()=>{})}catch(e){setSync('local')}})();
 
 /* Toast */
-let toastT,undoFn=null;function toast(msg,undo){$('#toastT').textContent=msg;undoFn=undo||null;$('#toastU').hidden=!undo;$('#toast').hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>{$('#toast').hidden=true;undoFn=null},undo?7000:2800)}
-$('#toastU').addEventListener('click',()=>{if(undoFn)undoFn();undoFn=null;$('#toast').hidden=true});
+let toastT,undoFn=null;function toast(msg,undo){const TE=$('#toast');clearTimeout(TE._ht);TE.classList.remove('out');$('#toastT').textContent=msg;undoFn=undo||null;$('#toastU').hidden=!undo;$('#toast').hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>{hideAnim($('#toast'));undoFn=null},undo?7000:2800)}
+$('#toastU').addEventListener('click',()=>{if(undoFn)undoFn();undoFn=null;hideAnim($('#toast'))});
 
 /* Kacheln: Eingaben */
 const G=$('#grid');
@@ -1335,7 +1367,7 @@ G.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!G.cont
  if(ds.pjpdel){const[pid,xid]=ds.pjpdel.split(':'),p=S.projects.find(x=>x.id===pid);if(!p)return;const i=p.parts.findIndex(x=>x.id===xid);if(i<0)return;const[g]=p.parts.splice(i,1);commit();toast('Teil entfernt',()=>{p.parts.splice(i,0,g);commit()});return}
  if(ds.pjt!=null){const n=PJT[+ds.pjt];if(!n)return;const id=uid();S.projects.unshift({id,n,st:'idee',d:iso(new Date()),notes:'',parts:[],ph:[]});pjOpen=id;commit();refocus(`[data-pj="${id}"]`);return}
  if(ds.ph){phView(ds.id,ds.ph);return}
- if(ds.open){const k=ds.open,wid={fuel:'tank',maint:'wartung',cost:'kosten',event:'termine',trip:'fahrtenbuch',proj:'projekte',doc:'fach'}[k];openF[k]=!openF[k];renderCard(wid);refocus(openF[k]?`[data-form="${k}"] input:not([type=date])`:`[data-open="${k}"]`);return}
+ if(ds.open){const k=ds.open,wid={fuel:'tank',maint:'wartung',cost:'kosten',event:'termine',trip:'fahrtenbuch',proj:'projekte',doc:'fach'}[k];openF[k]=!openF[k];renderCard(wid);if(openF[k]&&!RM.matches){const f=$(`[data-form="${k}"]`);if(f)f.classList.add('pop')}refocus(openF[k]?`[data-form="${k}"] input:not([type=date])`:`[data-open="${k}"]`);return}
  if(ds.more){const k=ds.more,wid=k==='tpl'?'aufgaben':k;more[k]=!more[k];renderCard(wid);refocus(`[data-more="${k}"]`);return}
  if(ds.tab){if(ds.tab==='t'){ttab=ds.k;renderCard('timer')}else{wtab=ds.k;renderCard('werkstatt')}refocus(`[data-tab="${ds.tab}"][data-k="${ds.k}"]`);return}
  if(ds.tmin){startTimer(+ds.tmin,ds.lab||'');return}
@@ -1402,8 +1434,8 @@ G.addEventListener('input',e=>{const el=e.target,ds=el.dataset;
 /* Suche & Standby */
 $('#sbBtn').innerHTML=IC.screen;$('#openSet').innerHTML=`${IC.sliders}<span class="hide-s">Anpassen</span>`;
 $('#sbBtn').addEventListener('click',()=>openSB());
-function openSB(){const s=$('#standby');s.hidden=false;updStandby(new Date(),true);setupLens();try{if(APP)APP.keepOn(true);else{const p=document.documentElement.requestFullscreen?.();if(p&&p.catch)p.catch(()=>{})}}catch(e){}}
-function closeSB(){$('#standby').hidden=true;try{if(APP)APP.keepOn(false)}catch(e){}try{if(document.fullscreenElement){const p=document.exitFullscreen();if(p&&p.catch)p.catch(()=>{})}}catch(e){}$('#sbBtn').focus()}
+function openSB(){const s=$('#standby');showAnim(s);updStandby(new Date(),true);setupLens();try{if(APP)APP.keepOn(true);else{const p=document.documentElement.requestFullscreen?.();if(p&&p.catch)p.catch(()=>{})}}catch(e){}}
+function closeSB(){hideAnim($('#standby'));try{if(APP)APP.keepOn(false)}catch(e){}try{if(document.fullscreenElement){const p=document.exitFullscreen();if(p&&p.catch)p.catch(()=>{})}}catch(e){}$('#sbBtn').focus()}
 $('#standby').addEventListener('click',closeSB);
 
 /* Einstellungen */
@@ -1437,8 +1469,8 @@ function renderSet(){const c=S.car,p=S.place,city=CITIES.find(x=>x[0]===p.n&&Mat
  ${setSyncHtml()}
  <section class="fs" id="set-bk"><h3>Sicherung</h3><p class="mini"><b>Status:</b> <span id="syncTxt">${esc(syncTxt)}</span></p><p class="note">Alles speichert automatisch. Zusätzlich kannst du deine Daten als Text kopieren und später hier wieder einfügen (ohne Hintergrundfoto).</p><div class="rowb" style="justify-content:flex-start"><button type="button" id="bkCopy">Daten kopieren</button></div><label>Gesicherten Text einfügen<textarea id="bkIn" rows="3"></textarea></label><div class="rowb" style="justify-content:flex-start"><button type="button" id="bkRes">Wiederherstellen</button><button type="button" id="resetAll">${resetArm?'Wirklich alles zurücksetzen?':'Alles zurücksetzen'}</button></div>${APP&&!WEBAPP?'<div class="tile fs" style="gap:.5rem"><b>App-Oberfläche</b><span class="note">Hast du eine neue index.html bekommen? Hier auswählen – deine Daten bleiben erhalten.</span><div><button type="button" id="appUpd">Neue Version laden</button></div></div>':''}</section>
  ${setCheckHtml()}`}
-const openSet=()=>{resetArm=false;renderSet();$('#set').hidden=false;setupLens();$('#closeSet').focus()};
-const closeSet=()=>{$('#set').hidden=true;$('#openSet').focus()};
+const openSet=()=>{resetArm=false;renderSet();showAnim($('#set'));setupLens();$('#closeSet').focus()};
+const closeSet=()=>{hideAnim($('#set'));$('#openSet').focus()};
 $('#openSet').addEventListener('click',openSet);
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;const gf=$('#gfull');if(gf&&!gf.hidden){gFullClose();return}const pv=$('#phv');if(pv&&!pv.hidden){pv.hidden=true;return}if(!$('#standby').hidden)closeSB();else if(!$('#set').hidden)closeSet()});
 async function loadPhoto(file){const url=URL.createObjectURL(file);try{const img=new Image();img.src=url;await img.decode();const sc=Math.min(1,1600/Math.max(img.naturalWidth,img.naturalHeight)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.naturalWidth*sc));c.height=Math.max(1,Math.round(img.naturalHeight*sc));c.getContext('2d').drawImage(img,0,0,c.width,c.height);
