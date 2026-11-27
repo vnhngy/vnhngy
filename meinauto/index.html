@@ -115,6 +115,18 @@ main.band{padding-bottom:120px}
 .sycode{font-size:clamp(20px,5vw,28px);letter-spacing:.06em;font-variant-numeric:tabular-nums;word-break:break-all}
 .dch{display:flex;align-items:center;gap:.8rem;min-width:0}.dct{width:54px;height:54px;flex:none;border-radius:12px;font-size:1.4rem}.dct img{pointer-events:none}.x.bel{font-size:1rem}.x.bel svg{width:18px;height:18px}.x.bel.on{color:var(--acc)}
 .dcv{justify-items:stretch}.dcv .dcvs{width:100%;height:100%;min-height:0;overflow:auto;display:grid;place-items:center;-webkit-overflow-scrolling:touch}.dcv .dcvs img{max-width:100%;max-height:100%;object-fit:contain;border-radius:14px}.dcv.z .dcvs{place-items:start}.dcv.z .dcvs img{max-width:none;max-height:none;width:250%;border-radius:0}.dcv .rowb{flex-wrap:wrap;justify-content:center}.dcv .note{color:#fff}
+.rbnav{display:flex;align-items:center;gap:.4rem}.rbnav b{min-width:9.5rem;text-align:center;font-variant-numeric:tabular-nums}
+.rbsum{font-size:1.02rem;line-height:1.45;margin:.1rem 0 .7rem;color:var(--ink)}
+.rbbars{display:grid;gap:.45rem;margin:.7rem 0 .5rem}.rbr{display:grid;grid-template-columns:minmax(6.5rem,28%) 1fr auto;gap:.6rem;align-items:center;font-size:.9rem}
+.rbr i{display:block;height:10px;border-radius:99px;width:var(--w);min-width:4px;background:var(--acc)}.rbr b{font-variant-numeric:tabular-nums;font-weight:600}
+.rbfoot{display:flex;flex-wrap:wrap;gap:.4rem 1rem;align-items:center;justify-content:space-between;margin-top:.6rem}.rbfoot .rowb{gap:.5rem}
+details.siri{padding:.7rem .9rem}details.siri summary{cursor:pointer;display:flex;flex-direction:column;gap:.1rem;list-style:none}details.siri summary::-webkit-details-marker{display:none}
+details.siri .steps{margin:.7rem 0 .6rem 1.2rem;display:grid;gap:.4rem;font-size:.92rem;line-height:1.4}details.siri .url{display:grid;gap:.5rem}
+details.siri code{display:block;font-size:.78rem;overflow-wrap:anywhere;padding:.5rem .6rem;border-radius:10px;background:rgb(255 255 255/.06)}
+#alk{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:1.5rem;background:rgb(12 12 16/.97);-webkit-backdrop-filter:blur(28px);backdrop-filter:blur(28px)}#alk[hidden]{display:none}
+.alkc{width:min(340px,100%);display:grid;gap:.9rem;text-align:center;color:var(--ink)}.alki{font-size:2.8rem;line-height:1}.alkc h2{margin:0}
+#alkF{display:grid;gap:.6rem}#alkPin{font-size:1.5rem;text-align:center;letter-spacing:.35em}#alkRec{display:grid;gap:.6rem}
+html.alk-on body{overflow:hidden}
 .note.warnt{color:var(--ink);border-left:3px solid var(--sun);padding-left:.6rem}
 .carseg{margin-bottom:.6rem;overflow-x:auto;flex-wrap:nowrap}.carseg button{white-space:nowrap}
 .accf{display:grid;gap:.75rem}.acch{margin:.6rem 0 0;font-size:1.02rem}.umst{display:grid;gap:2px;border-radius:14px;overflow:hidden}.umh,.umr{display:grid;grid-template-columns:minmax(0,1fr) 3.4rem 3.4rem;align-items:center;gap:.3rem;padding:.35rem .6rem}.umh{font-size:.82rem;color:var(--mute)}.umh b{text-align:center;font-weight:600}.umr{background:rgb(255 255 255/.05)}.umr:nth-child(odd){background:rgb(255 255 255/.03)}.umr input{justify-self:center;width:24px;height:24px;accent-color:var(--acc)}.sk{border-radius:14px;overflow:hidden;background:#fff}.sk canvas{display:block;width:100%;height:min(62vw,340px);touch-action:none;cursor:crosshair}.skdot{display:inline-block;width:.7rem;height:.7rem;border-radius:50%;margin-right:.35rem;vertical-align:-1px}
@@ -382,9 +394,9 @@ function mkWeb(){if(window.AndroidApp)return null;let top=true;try{top=window.to
   shareFile(name,mime,text){out(name,mime,text);return true},
   pickBackup(){const i=document.createElement('input');i.type='file';i.accept='.json,application/json,text/plain';i.style.display='none';document.body.appendChild(i);i.addEventListener('change',()=>{const f=i.files&&i.files[0];i.remove();if(f)f.text().then(t=>window.__restoreFile&&window.__restoreFile(t))});i.click()}}}
 const CITIES=[["Berlin",52.520,13.405],["Hamburg",53.551,9.994],["München",48.137,11.576],["Köln",50.938,6.960],["Frankfurt am Main",50.111,8.682],["Stuttgart",48.776,9.183],["Düsseldorf",51.228,6.774],["Leipzig",51.340,12.375],["Dresden",51.050,13.738],["Hannover",52.376,9.732],["Nürnberg",49.452,11.077],["Bremen",53.079,8.802],["Dortmund",51.514,7.465],["Freiburg",47.999,7.842],["Rostock",54.092,12.099],["Kiel",54.323,10.123]];
-const PAGES=[["start","Start",[["uhr","wide"],["wetter",""],["kurz",""],["hinweise",""],["demn",""]]],["auto","Auto",[["auto",""],["sprit",""],["fahrten",""],["tank","wide"],["kosten",""],["wartung","wide"],["reifen","full"],["fach","full"]]],["cockpit","Cockpit",[["tacho","wide"],["gmeter",""],["fahrtenbuch","full"]]],["planen","Planen",[["kalender",""],["termine",""],["aufgaben",""],["notizen","full"]]],["mehr","Mehr",[]],["garage","Garage",[["projekte","full"],["einkauf",""]]],["werkzeuge","Werkzeuge",[["timer",""],["werkstatt","wide"]]],["statistik","Statistik",[["stkosten","wide"],["rekorde",""],["stverbrauch","wide"],["stkm",""],["spverlauf","full"]]],["notfall","Notfall",[["notruf",""],["unfall","wide"],["ubericht","full"],["sosdaten","full"]]]];
+const PAGES=[["start","Start",[["uhr","wide"],["wetter",""],["kurz",""],["hinweise",""],["demn",""]]],["auto","Auto",[["auto",""],["sprit",""],["fahrten",""],["tank","wide"],["kosten",""],["wartung","wide"],["reifen","full"],["fach","full"]]],["cockpit","Cockpit",[["tacho","wide"],["gmeter",""],["fahrtenbuch","full"]]],["planen","Planen",[["kalender",""],["termine",""],["aufgaben",""],["notizen","full"]]],["mehr","Mehr",[]],["garage","Garage",[["projekte","full"],["einkauf",""]]],["werkzeuge","Werkzeuge",[["timer",""],["werkstatt","wide"]]],["statistik","Statistik",[["rueckblick","full"],["stkosten","wide"],["rekorde",""],["stverbrauch","wide"],["stkm",""],["spverlauf","full"]]],["notfall","Notfall",[["notruf",""],["unfall","wide"],["ubericht","full"],["sosdaten","full"]]]];
 const MAIN=["start","auto","cockpit","planen","mehr"];
-const WIDGETS=[["uhr","Uhr & Himmel"],["wetter","Wetter"],["kurz","Auto-Überblick"],["hinweise","Hinweise"],["demn","Demnächst"],["aufgaben","Aufgaben"],["auto","Mein Auto"],["tank","Tankbuch"],["wartung","Wartung"],["kosten","Autokosten"],["fach","Handschuhfach"],["reifen","Reifen"],["sprit","Spritpreise"],["fahrten","Fahrten"],["tacho","Tacho"],["gmeter","G-Kraft-Messer"],["kalender","Kalender"],["termine","Countdowns"],["notizen","Notizen"],["timer","Timer & Parken"],["werkstatt","Werkstatt-Rechner"],["stkosten","Kosten pro Monat"],["rekorde","Rekorde"],["stverbrauch","Verbrauchsverlauf"],["spverlauf","Spritpreis-Verlauf"],["stkm","Kilometer pro Monat"],["notruf","Notruf"],["unfall","Unfall & Panne"],["sosdaten","Meine Notfalldaten"],["ubericht","Unfallbericht"],["projekte","Projekte"],["einkauf","Einkaufsliste"],["fahrtenbuch","Fahrtenbuch"]];
+const WIDGETS=[["uhr","Uhr & Himmel"],["wetter","Wetter"],["kurz","Auto-Überblick"],["hinweise","Hinweise"],["demn","Demnächst"],["aufgaben","Aufgaben"],["auto","Mein Auto"],["tank","Tankbuch"],["wartung","Wartung"],["kosten","Autokosten"],["fach","Handschuhfach"],["reifen","Reifen"],["sprit","Spritpreise"],["fahrten","Fahrten"],["tacho","Tacho"],["gmeter","G-Kraft-Messer"],["kalender","Kalender"],["termine","Countdowns"],["notizen","Notizen"],["timer","Timer & Parken"],["werkstatt","Werkstatt-Rechner"],["stkosten","Kosten pro Monat"],["rekorde","Rekorde"],["stverbrauch","Verbrauchsverlauf"],["spverlauf","Spritpreis-Verlauf"],["rueckblick","Monatsrückblick"],["stkm","Kilometer pro Monat"],["notruf","Notruf"],["unfall","Unfall & Panne"],["sosdaten","Meine Notfalldaten"],["ubericht","Unfallbericht"],["projekte","Projekte"],["einkauf","Einkaufsliste"],["fahrtenbuch","Fahrtenbuch"]];
 const WN=Object.fromEntries(WIDGETS.map(w=>[w[0],w[1]]));
 const ACC=[["Rennrot","#e0101a"],["Blau","#0071e3"],["Indigo","#5e5ce6"],["Violett","#a24bd8"],["Pink","#e0357a"],["Rot","#d92b25"],["Orange","#f26b1d"],["Gelb","#e6b800"],["Grün","#1f9d55"],["Mint","#0e9f8f"]];
 const WALLS=[["rot","Schwarz-Rot","d","radial-gradient(45% 55% at 10% 12%,#ff1f2d 0,transparent 62%),radial-gradient(38% 45% at 90% 20%,#c4001f 0,transparent 60%),radial-gradient(55% 50% at 72% 95%,#ff3b1f 0,transparent 62%),radial-gradient(35% 40% at 28% 78%,#8a0016 0,transparent 60%),linear-gradient(160deg,#160307,#000 55%,#1c0207)"],
@@ -455,7 +467,7 @@ function defaults(){return{v:3,name:"",place:{n:"Berlin",lat:52.52,lon:13.405},a
  fuel:[{id:"s1",d:"2026-09-14",km:82310,l:40.1,eur:70.58,s:1},{id:"s2",d:"2026-10-02",km:82905,l:41.8,eur:72.73,s:1},{id:"s3",d:"2026-10-21",km:83520,l:40.6,eur:70.24,s:1},{id:"s4",d:"2026-11-08",km:84140,l:42.9,eur:73.79,s:1},{id:"s5",d:"2026-11-21",km:84730,l:39.7,eur:67.89,s:1}],
  costs:[{id:"k1",d:"2026-01-07",c:"versicherung",eur:486,n:"Haftpflicht und Teilkasko",s:1},{id:"k2",d:"2026-03-12",c:"steuer",eur:98,n:"",s:1},{id:"k3",d:"2026-06-20",c:"werkstatt",eur:312.4,n:"Inspektion",s:1},{id:"k4",d:"2026-08-02",c:"pflege",eur:24,n:"Waschanlage",s:1},{id:"k5",d:"2026-10-18",c:"parken",eur:36,n:"Parkhaus",s:1}],
  maint:[{id:"m1",n:"Ölwechsel",km:15000,mo:12,lk:75000,ld:"2025-12-10"},{id:"m2",n:"Bremsflüssigkeit",km:0,mo:24,lk:0,ld:"2025-04-15"},{id:"m3",n:"Innenraumfilter",km:15000,mo:12,lk:75000,ld:"2025-12-10"},{id:"m4",n:"Klimaanlagen-Service",km:0,mo:24,lk:0,ld:"2024-06-01"},{id:"m5",n:"Zahnriemen",km:120000,mo:72,lk:0,ld:"2021-05-01"}],maintSample:true,
- docs:[],calSent:[],acc:[],plog:[],cars:[],carId:'',
+ docs:[],calSent:[],acc:[],plog:[],cars:[],carId:'',inbox:'',rbNote:true,rbSeen:'',
  tasks:[{id:"a1",t:"Frostschutz ins Wischwasser",d:false},{id:"a2",t:"Reifendruck prüfen",d:true}],
  events:[{id:"e1",n:"Silvester",d:"2026-12-31",y:true}],zones:["America/New_York","Asia/Tokyo","Australia/Sydney"],
  links:[{n:"Wetter",u:"https://www.dwd.de"},{n:"ADAC",u:"https://www.adac.de"},{n:"YouTube",u:"https://www.youtube.com"},{n:"Karten",u:"https://www.google.com/maps"}],notes:"",
@@ -472,6 +484,7 @@ function merge(d){const b=defaults();if(!d||typeof d!=='object'){b.cars=[{id:'c1
  arr('acc',x=>typeof x.id==='string');for(const x of o.acc){for(const k of['d','ort','gps','verl','pol','az','zeugen','herg','sa','sb','sk','car'])x[k]=String(x[k]??'').slice(0,k==='herg'?4000:600);if(!['ja','nein'].includes(x.verl))x.verl='nein';if(!['ja','nein'].includes(x.pol))x.pol='nein';x.b=x.b&&typeof x.b==='object'&&!Array.isArray(x.b)?x.b:{};for(const k in x.b)x.b[k]=String(x.b[k]??'').slice(0,200);for(const k of['ca','cb'])x[k]=Array.isArray(x[k])?[...new Set(x[k].map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<17))]:[];x.ph=Array.isArray(x.ph)?x.ph.filter(y=>y&&typeof y.id==='string'):[]}
  o.cars=Array.isArray(d.cars)?d.cars.filter((x,i,a)=>x&&typeof x.id==='string'&&x.id&&a.findIndex(y=>y&&y.id===x.id)===i).map(x=>({id:x.id.slice(0,40),data:x.data&&typeof x.data==='object'?x.data:null})):[];if(!o.cars.length)o.cars=[{id:'c1',data:null}];o.cars[0].data=null;for(const c of o.cars.slice(1))c.data=carNorm(c.data);o.carId=typeof d.carId==='string'?d.carId.slice(0,40):'';
  for(const k of['kz','ez','fin','akku'])o.car[k]=String(o.car[k]??'').slice(0,40);
+ o.inbox=/^[0-9a-f]{32}$/.test(String(d.inbox||''))?d.inbox:'';o.rbNote=d.rbNote!==false;o.rbSeen=/^\d{4}-\d{2}$/.test(String(d.rbSeen||''))?d.rbSeen:'';
  o.plog=Array.isArray(d.plog)?d.plog.filter(r=>Array.isArray(r)&&r.length===3&&Number.isFinite(+r[0])&&+r[1]>500&&+r[1]<5000&&[0,1,2].includes(+r[2])).map(r=>[+r[0],+r[1],+r[2]]).slice(-3000):[];
  o.palarm.on=!!o.palarm.on;o.palarm.limit=String(o.palarm.limit||'').slice(0,8);o.bt.a=String(o.bt.a||'').slice(0,40);o.bt.n=String(o.bt.n||'').slice(0,60);
  if(!(o.tripLive&&typeof o.tripLive==='object'&&isFinite(+o.tripLive.s)))o.tripLive=null;o.tk.key=String(o.tk.key||'').trim().slice(0,40);if(!['','e5','e10','diesel'].includes(o.tk.type))o.tk.type='';o.tk.rad=clamp(+o.tk.rad,1,25,5);
@@ -996,6 +1009,122 @@ async function saleBook(){const t=new Date(),c=S.car,km=carKm(),B=[],real=a=>a.f
  let first=true,n=0;for(const x of D)for(let i=0;i<x.ph.length&&n<24;i++){try{const b=await PH.get(x.ph[i].id);if(!b)continue;if(first){B.push(['pb'],['h2','Belegfotos']);first=false}B.push(['img',b,`${dcName(x)}${x.d?' · '+dd(x.d):''}${x.ph.length>1?` (${i+1}/${x.ph.length})`:''}`,560]);n++}catch(e){}}
  await reportOut('Fahrzeugmappe',`Fahrzeugmappe-${String(c.name||'Auto').replace(/[^\wäöüÄÖÜß-]+/g,'-').slice(0,30)}-${iso(t)}.pdf`,B)}
 
+const ddmy=x=>{const d=pD(x);return d?fmt(d,{day:'2-digit',month:'2-digit',year:'numeric'}):String(x||'')};
+
+/* ---------- Monatsrückblick ---------- */
+let rbOff=null;
+/* nächste Rückblick-Mitteilung: am 1. um 9 Uhr – ist heute der 1. und noch vor 9, dann heute */
+function rbNext(t){const d=t.getDate()===1&&t.getHours()<9?new Date(t.getFullYear(),t.getMonth(),1,9,0):new Date(t.getFullYear(),t.getMonth()+1,1,9,0);return{d,name:fmt(new Date(d.getFullYear(),d.getMonth()-1,1),{month:'long'})}}
+function rbMonth(t,off){const d=new Date(t.getFullYear(),t.getMonth()+off,1);return{d,k:iso(d).slice(0,7),name:fmt(d,{month:'long'}),full:fmt(d,{month:'long',year:'numeric'})}}
+function rbData(k){const F=S.fuel.filter(f=>!f.s).sort((a,b)=>a.km-b.km),inM=x=>String(x.d).startsWith(k),fu=F.filter(inM),co=S.costs.filter(c=>!c.s&&inM(c));
+ const fuelE=fu.reduce((a,f)=>a+(+f.eur||0),0),other=co.reduce((a,c)=>a+(+c.eur||0),0),cat={};for(const c of co){const k2=CATS.some(x=>x[0]===c.c)?c.c:'sonst';cat[k2]=(cat[k2]||0)+(+c.eur||0)}
+ let km=0;for(let i=1;i<F.length;i++)if(inM(F[i])){const dk=F[i].km-F[i-1].km;if(dk>0&&dk<5000)km+=dk}
+ if(!km)km=S.trips.filter(x=>iso(new Date(x.s)).startsWith(k)).reduce((a,x)=>a+(+x.km||0),0);
+ const u=mainU(),FU=F.filter(f=>fU(f)===u);let L=0,D=0;for(let i=1;i<FU.length;i++)if(inM(FU[i])){const dk=FU[i].km-FU[i-1].km;if(dk>0){L+=+FU[i].l;D+=dk}}
+ const P=fu.filter(f=>fU(f)===u&&+f.eur>0&&+f.l>0).map(f=>f.eur/f.l);
+ return{fuelE,other,cat,tot:fuelE+other,km:Math.round(km),cons:D>0?L/D*100:null,pmin:P.length?Math.min(...P):null,stops:fu.length}}
+const rbYears=()=>[...new Set(S.fuel.concat(S.costs).filter(x=>!x.s).map(x=>String(x.d).slice(0,4)).filter(y=>/^\d{4}$/.test(y)))].sort().reverse();
+function wRueckblick(t){if(rbOff==null)rbOff=t.getDate()<=10?-1:0;const m=rbMonth(t,rbOff),p=rbMonth(t,rbOff-1),a=rbData(m.k),b=rbData(p.k),N=UN[mainU()],cur=rbOff===0,has=a.tot>0||a.km>0,diff=a.tot-b.tot,yrs=rbYears(),cy=String(t.getFullYear());
+ const fig=(k,v)=>`<div><span class="k">${k}</span><b>${v}</b></div>`;
+ const rows=[[isEV()?'Laden':isHy()?'Sprit & Strom':'Sprit',a.fuelE],...CATS.map(([k,n])=>[n,a.cat[k]||0])].filter(r=>r[1]>0).sort((x,y)=>y[1]-x[1]),mx=Math.max(1,...rows.map(r=>r[1]));
+ const sum=!has?`Für ${m.full} ist noch nichts eingetragen.`:`${cur?'Bisher hast du im '+m.name:'Im '+m.name+' hast du'} ${nf(a.tot,2)} € fürs Auto ausgegeben${b.tot>0?` – ${Math.abs(diff)<1?'etwa so viel wie':nf(Math.abs(diff),0)+' € '+(diff<0?'weniger':'mehr')+' als'} im ${p.name}`:''}.`;
+ const cmp=b.cons&&a.cons?` Verbrauch ${Math.abs(a.cons-b.cons)<.05?'wie':a.cons<b.cons?'besser als':'höher als'} im ${p.name} (${nf(b.cons,1)} ${N.s}).`:'';
+ return`<div class="ch"><h2 id="h-rueckblick">Monatsrückblick</h2><div class="rbnav"><button type="button" class="sm" data-rb="-1" aria-label="Monat davor">‹</button><b aria-live="polite">${esc(m.full)}${cur?' · bisher':''}</b><button type="button" class="sm" data-rb="1" aria-label="Monat danach"${rbOff>=0?' disabled':''}>›</button></div></div>
+ <p class="rbsum">${esc(sum)}</p>
+ ${has?`<div class="figs">${fig('Ausgaben',nf(a.tot,2)+' €')}${fig('Gefahren',a.km?nf(a.km)+' km':'–')}${fig('Pro km',a.km&&a.tot?(a.tot/a.km>=1?nf(a.tot/a.km,2)+' €':nf(a.tot/a.km*100,0)+' ct'):'–')}${fig('Ø Verbrauch',a.cons?nf(a.cons,1)+' '+N.s:'–')}</div>
+ ${rows.length?`<div class="rbbars">${rows.map(([n,v])=>`<div class="rbr"><span>${esc(n)}</span><i style="--w:${(v/mx*100).toFixed(1)}%"></i><b>${nf(v,2)} €</b></div>`).join('')}</div>`:''}
+ ${a.stops||cmp?`<p class="note">${a.stops?`${a.stops} ${a.stops===1?N.stop:N.stops}${a.pmin?`, günstigster ${N.pp} ${nf(a.pmin,N.dec)} €`:''}.`:''}${cmp}</p>`:''}`:''}
+ <div class="rbfoot"><label class="ck"><input type="checkbox" data-rbnote${S.rbNote?' checked':''}> Am Monatsersten um 9 Uhr erinnern</label>${yrs.length?`<div class="rowb"><select id="yrSel" aria-label="Jahr für die Übersicht">${yrs.map(y=>`<option${y===cy?' selected':''}>${y}</option>`).join('')}</select><button type="button" data-act="yearpdf">Jahresübersicht als PDF</button></div>`:''}</div>`}
+function rbHint(){const t=new Date();if(t.getDate()>7)return;const m=rbMonth(t,-1);if(S.rbSeen===m.k)return;const a=rbData(m.k);if(!(a.tot>0||a.km>0))return;S.rbSeen=m.k;save();
+ setTimeout(()=>toast(`Dein Rückblick für ${m.name} ist da`,()=>{rbOff=-1;go('statistik');setTimeout(()=>{const h=$('#h-rueckblick');if(h)h.scrollIntoView({block:'start',behavior:RM.matches?'auto':'smooth'})},400)},'Ansehen'),2500)}
+
+/* ---------- Jahresübersicht ---------- */
+async function yearPdf(y){const c=S.car,F=S.fuel.filter(f=>!f.s).sort((a,b)=>a.km-b.km),inY=x=>String(x.d).startsWith(y),fy=F.filter(inY),co=S.costs.filter(x=>!x.s&&inY(x)).sort((a,b)=>String(a.d).localeCompare(String(b.d)));
+ if(!fy.length&&!co.length){toast(`Für ${y} ist nichts eingetragen.`);return}
+ const months=[...Array(12)].map((_,i)=>({n:fmt(new Date(+y,i,1),{month:'long'}),d:rbData(`${y}-${String(i+1).padStart(2,'0')}`)}));
+ const fuelE=fy.reduce((a,f)=>a+(+f.eur||0),0),oth=co.reduce((a,x)=>a+(+x.eur||0),0),tot=fuelE+oth,km=months.reduce((a,m)=>a+m.d.km,0);
+ const u=mainU(),N=UN[u],FU=F.filter(f=>fU(f)===u);let L=0,D=0;for(let i=1;i<FU.length;i++)if(inY(FU[i])){const dk=FU[i].km-FU[i-1].km;if(dk>0){L+=+FU[i].l;D+=dk}}
+ const q=fy.filter(f=>fU(f)===u).reduce((a,f)=>a+ +f.l,0),co2=fy.filter(f=>fU(f)==='l').reduce((a,f)=>a+ +f.l,0)*fuelName()[2],cat={};
+ for(const x of co){const k=CATS.some(z=>z[0]===x.c)?x.c:'sonst';cat[k]=(cat[k]||0)+(+x.eur||0)}
+ const fuelN=isEV()?'Laden':isHy()?'Sprit & Strom':'Sprit';
+ const B=[['h1',`Jahresübersicht ${y}`,[c.name,c.model].filter(Boolean).join(' · ')||'Mein Auto'],
+  ['kv',[['Ausgaben gesamt',nf(tot,2)+' €'],['Davon '+fuelN,nf(fuelE,2)+' €'],['Gefahren',km?nf(km)+' km':''],['Kosten pro km',km&&tot?nf(tot/km,2)+' €':''],['Ø Verbrauch',D>0?nf(L/D*100,1)+' '+N.c:''],[isEV()?'Geladen':'Getankt',q?nf(q,1)+' '+N.s:''],[N.stops,fy.length?String(fy.length):''],['CO2 aus dem Sprit',co2>0?'ca. '+nf(co2)+' kg':'']]],
+  ['h2','Nach Bereichen'],['table',['Bereich','Betrag','Anteil'],[[fuelN,fuelE],...CATS.map(([k,n])=>[n,cat[k]||0])].filter(r=>r[1]>0).sort((a,b)=>b[1]-a[1]).map(([n,v])=>[n,nf(v,2)+' €',tot?(v/tot<.01?'unter 1 %':nf(v/tot*100,0)+' %'):'']),[50,30,20]],
+  ['h2','Nach Monaten'],['table',['Monat',fuelN,'Sonstiges','Gesamt','km'],months.filter(m=>m.d.tot>0||m.d.km>0).map(m=>[m.n,nf(m.d.fuelE,2)+' €',nf(m.d.other,2)+' €',nf(m.d.tot,2)+' €',m.d.km?nf(m.d.km):'–']),[22,20,20,20,18]]];
+ if(co.length)B.push(['h2','Alle Ausgaben'],['table',['Datum','Bereich','Notiz','Betrag'],co.map(x=>[ddmy(x.d),(CATS.find(k=>k[0]===x.c)||['','Sonstiges'])[1],x.n||'',nf(x.eur,2)+' €']),[16,22,44,18]]);
+ if(fy.length)B.push(['h2',bookName()],['table',['Datum','km',isHy()?'Menge':N.q,'Betrag','Preis'],fy.slice().sort((a,b)=>String(a.d).localeCompare(String(b.d))||a.km-b.km).map(f=>[ddmy(f.d),nf(f.km),nf(f.l,1)+(isHy()?' '+UN[fU(f)].s:''),+f.eur?nf(f.eur,2)+' €':'–',+f.eur&&+f.l?nf(f.eur/f.l,UN[fU(f)].dec)+' €':'–']),[18,18,20,22,22]]);
+ B.push(['gap',6],['p',`Erstellt mit Mein Auto am ${fmt(new Date(),{day:'numeric',month:'long',year:'numeric'})}.${S.cars.length>1?' Gilt nur für dieses Fahrzeug.':''}`,{muted:true}]);
+ await reportOut(`Jahresübersicht ${y}`,`MeinAuto-Jahresuebersicht-${y}-${String(c.name||'Auto').replace(/[^\wäöüÄÖÜß-]+/g,'-').slice(0,30)}.pdf`,B)}
+
+/* ---------- Siri & Kurzbefehle: Einträge warten auf dem Server, bis die App sie abholt ---------- */
+let inAt=0,inBusy=false,inArm=false;
+const inURL=(a,q)=>`${CLOUD.url}/functions/v1/meinauto-in?t=${S.inbox}&a=${a}${q}`;
+function inNewTok(){S.inbox=Array.from(crypto.getRandomValues(new Uint8Array(16)),x=>x.toString(16).padStart(2,'0')).join('');commit(true)}
+function carDataFor(name){const L=carsList(),n=String(name||'').trim().toLowerCase(),c=(n&&L.find(x=>x.name.trim().toLowerCase()===n))||L.find(x=>x.active);if(c.active)return S;const e=S.cars.find(x=>x.id===c.id);if(!e.data)e.data=carNorm(null);return e.data}
+async function inTake(force){if(!/^[0-9a-f]{32}$/.test(S.inbox||'')||inBusy||(!force&&Date.now()-inAt<60e3))return;inBusy=true;inAt=Date.now();
+ try{const rows=await syRpc('meinauto_inbox_take',{p_token:S.inbox});if(!Array.isArray(rows)||!rows.length){if(force)toast('Keine neuen Einträge von Siri.');return}
+  rows.sort((a,b)=>String(a.at).localeCompare(String(b.at)));let n=0;
+  for(const r of rows){const x=r&&r.data||{},d=carDataFor(x.car),day=iso(new Date(r.at||Date.now()));
+   if(x.a==='tanken'&&+x.km>0&&+x.l>0){if(d.fuel.some(f=>f.s))d.fuel=d.fuel.filter(f=>!f.s);const fe={id:uid(),d:day,km:Math.round(+x.km),l:Math.round(+x.l*100)/100,eur:Math.round((+x.eur||0)*100)/100};if(x.u==='kwh')fe.u='kwh';d.fuel.push(fe);if(fe.km>pInt(d.car.km))d.car.km=fe.km;n++}
+   else if(x.a==='km'&&+x.km>0){d.car.km=Math.round(+x.km);n++}
+   else if(x.a==='ausgabe'&&+x.eur>0){if(d.costs.some(c=>c.s))d.costs=d.costs.filter(c=>!c.s);d.costs.push({id:uid(),d:day,c:CATS.some(c=>c[0]===x.c)?x.c:'sonst',eur:Math.round(+x.eur*100)/100,n:String(x.n||'').slice(0,80)});n++}}
+  if(n){commit();toast(n===1?'1 Eintrag von Siri übernommen':`${n} Einträge von Siri übernommen`)}}
+ catch(e){logErr('Siri-Eingang',e);if(force)toast('Abholen ging gerade nicht – prüf die Internetverbindung.')}finally{inBusy=false}}
+function siriHtml(){const tok=/^[0-9a-f]{32}$/.test(S.inbox||''),ev=isEV(),many=S.cars.length>1;
+ const sc=(name,q,url,steps)=>`<details class="tile siri"><summary><b>„${name}“</b><span class="note">${q}</span></summary><ol class="steps">${steps}</ol><div class="url"><code>${esc(url)}</code><button type="button" class="sm" data-copy="${esc(url)}">Adresse kopieren</button></div></details>`;
+ const st=(qs,repl)=>`<li>Öffne die App <b>Kurzbefehle</b>, tippe oben rechts auf <b>＋</b> und gib dem Kurzbefehl den Namen von oben.</li><li>Füge ${qs.length===1?'die Aktion':['','','zweimal','dreimal'][qs.length]+' die Aktion'} <b>„Nach Eingabe fragen“</b> hinzu – ${qs.map(q=>`„${q[0]}“ (Typ ${q[1]})`).join(', ')}.</li><li>Füge <b>„Inhalte von URL abrufen“</b> hinzu und setze die Adresse unten ein.</li><li>Ersetze in der Adresse ${repl}: Wort löschen und an seiner Stelle die passende Antwort einsetzen: Über der Tastatur erscheinen blaue Felder für die Antworten deiner Fragen – nimm sie in der Reihenfolge der Fragen.</li><li>Füge zum Schluss <b>„Ergebnis anzeigen“</b> hinzu. Dann sagt dir Siri, was eingetragen wurde.</li>`;
+ return`<section class="fs" id="set-siri"><h3>Siri & Kurzbefehle</h3><p class="note">Sag zum Beispiel <b>„Hey Siri, ${ev?'Geladen':'Getankt'}“</b> – Siri fragt nach den Werten und trägt sie ein, ohne dass du die App öffnest. Die Einträge warten kurz auf dem Server und landen beim nächsten Öffnen von Mein Auto im Tankbuch – auf dem iPhone oder dem Tablet, je nachdem was du zuerst öffnest.</p>
+ ${!tok?`<div class="rowb" style="justify-content:flex-start"><button type="button" class="pri" id="inSetup">Kurzbefehle einrichten</button></div>`:`
+ ${ev?sc('Geladen','fragt Kilometerstand, kWh und Betrag',inURL('laden','&km=KM&l=KWH&eur=BETRAG'),st([['Kilometerstand?','Zahl'],['Wie viele kWh?','Zahl'],['Wie viel hast du bezahlt?','Zahl']],'<b>KM</b>, <b>KWH</b> und <b>BETRAG</b>'))
+   :sc('Getankt','fragt Kilometerstand, Liter und Betrag',inURL('tanken','&km=KM&l=LITER&eur=BETRAG'),st([['Kilometerstand?','Zahl'],['Wie viele Liter?','Zahl'],['Wie viel hast du bezahlt?','Zahl']],'<b>KM</b>, <b>LITER</b> und <b>BETRAG</b>'))}
+ ${isHy()?sc('Geladen','fragt Kilometerstand, kWh und Betrag',inURL('laden','&km=KM&l=KWH&eur=BETRAG'),st([['Kilometerstand?','Zahl'],['Wie viele kWh?','Zahl'],['Wie viel hast du bezahlt?','Zahl']],'<b>KM</b>, <b>KWH</b> und <b>BETRAG</b>')):''}
+ ${sc('Kilometerstand','fragt nur den Kilometerstand',inURL('km','&km=KM'),st([['Kilometerstand?','Zahl']],'<b>KM</b>'))}
+ ${sc('Autokosten','fragt Betrag und wofür, z.B. „Waschanlage“ oder „Werkstatt“',inURL('ausgabe','&eur=BETRAG&n=WOFUER'),st([['Wie viel?','Zahl'],['Wofür?','Text']],'<b>BETRAG</b> und <b>WOFUER</b>'))}
+ ${many?'<p class="note">Mehrere Fahrzeuge: Hänge an die Adresse zum Beispiel <code>&car=Vespa</code> an. Sonst landet der Eintrag beim Fahrzeug, das in der App gerade ausgewählt ist.</p>':''}
+ <p class="note">Die Adressen enthalten einen geheimen Schlüssel – gib sie nicht weiter. Auf dem Server liegen die Werte nur, bis die App sie abholt, höchstens 30 Tage.</p>
+ <div class="rowb" style="justify-content:flex-start;flex-wrap:wrap"><button type="button" id="inGet">Jetzt abholen</button><button type="button" id="inNew">${inArm?'Wirklich? Alte Kurzbefehle gehen dann nicht mehr':'Neuen Schlüssel erzeugen'}</button></div>`}</section>`}
+
+/* ---------- App-Sperre (Face ID / Fingerabdruck und PIN) ---------- */
+const ALKK='meinauto-sperre',alkB64=u=>btoa(String.fromCharCode(...new Uint8Array(u))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''),alkUnb64=t=>Uint8Array.from(atob(t.replace(/-/g,'+').replace(/_/g,'/')+'='.repeat((4-t.length%4)%4)),c=>c.charCodeAt(0));
+let ALK=(()=>{try{const o=JSON.parse(localStorage.getItem(ALKK)||'{}');return o&&typeof o==='object'?o:{}}catch(e){return{}}})(),alkOK=false,alkStep='',alkTmp='',alkOn=false,alkRec=false;
+const alkSave=()=>{try{localStorage.setItem(ALKK,JSON.stringify(ALK))}catch(e){}},BIO=IOS?'Face ID':'Fingerabdruck';
+(async()=>{try{alkOK=!!(window.PublicKeyCredential&&PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable&&await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable())}catch(e){}})();
+async function alkHash(pin,salt){return alkB64(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(salt+':'+pin)))}
+function alkEl(){let e=$('#alk');if(e)return e;e=document.createElement('div');e.id='alk';e.hidden=true;e.setAttribute('role','dialog');e.setAttribute('aria-modal','true');e.setAttribute('aria-labelledby','alkT');
+ e.innerHTML=`<div class="alkc"><div class="alki" aria-hidden="true">🔒</div><h2 id="alkT">Mein Auto ist gesperrt</h2><button type="button" class="pri" id="alkBio">Mit ${BIO} entsperren</button><form id="alkF" autocomplete="off"><label>PIN<input id="alkPin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="off"></label><button class="pri" id="alkGo">Entsperren</button></form><p class="note" id="alkMsg" role="status"></p><button type="button" class="sm" id="alkForgot">PIN vergessen?</button><div id="alkRec" hidden></div></div>`;
+ document.body.appendChild(e);
+ e.addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;if(b.id==='alkBio')alkBio();else if(b.id==='alkForgot')alkForgot();else if(b.id==='alkRecGo')alkRecover();else if(b.id==='alkWipe')alkWipe()});
+ e.querySelector('#alkF').addEventListener('submit',ev=>{ev.preventDefault();alkPin()});return e}
+function alkShow(){if(!ALK.on||alkOn)return;const e=alkEl();alkOn=true;alkRec=false;e.querySelector('#alkBio').hidden=!(ALK.cred&&alkOK!==null);e.querySelector('#alkMsg').textContent='';e.querySelector('#alkRec').hidden=true;e.querySelector('#alkPin').value='';
+ for(const x of document.body.children)if(x!==e)x.inert=true;e.hidden=false;document.documentElement.classList.add('alk-on');setTimeout(()=>{const f=ALK.cred?e.querySelector('#alkBio'):e.querySelector('#alkPin');if(f)f.focus({preventScroll:true})},50)}
+function alkUnlock(){const e=$('#alk');alkOn=false;ALK.fail=0;ALK.hid=0;alkSave();for(const x of document.body.children)x.inert=false;if(e)e.hidden=true;document.documentElement.classList.remove('alk-on')}
+async function alkBio(){if(!ALK.cred)return;const m=$('#alkMsg');try{await navigator.credentials.get({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),rpId:location.hostname,allowCredentials:[{type:'public-key',id:alkUnb64(ALK.cred)}],userVerification:'required',timeout:60000}});alkUnlock()}
+ catch(e){m.textContent=e&&e.name==='NotAllowedError'?`Abgebrochen – versuch es nochmal oder nimm die PIN.`:`${BIO} ging gerade nicht – nimm die PIN.`}}
+async function alkPin(){const i=$('#alkPin'),m=$('#alkMsg'),w=(ALK.until||0)-Date.now();if(w>0){m.textContent=`Zu viele Versuche – warte noch ${Math.ceil(w/1000)} Sekunden.`;return}
+ if(ALK.pinH&&await alkHash(i.value,ALK.salt)===ALK.pinH){alkUnlock();return}
+ ALK.fail=(ALK.fail||0)+1;if(ALK.fail>=5)ALK.until=Date.now()+Math.min(15*6e4,30e3*2**(ALK.fail-5));alkSave();i.value='';m.textContent=ALK.fail>=5?'Falsche PIN. Kurz warten, dann nochmal.':'Falsche PIN.';i.focus()}
+function alkForgot(){const r=$('#alkRec');alkRec=!alkRec;r.hidden=!alkRec;if(!alkRec)return;
+ r.innerHTML=SY.code?`<p class="note">Gib den Code vom Abgleich ein (steht in deinen Notizen oder unter Anpassen → Abgleich auf dem anderen Gerät). Danach ist die Sperre aus und du kannst sie neu einrichten.</p><input id="alkCode" autocomplete="off" autocapitalize="off" placeholder="Abgleich-Code"><button type="button" class="pri" id="alkRecGo">Mit Code entsperren</button>`
+  :`<p class="note">Ohne PIN geht es nur mit ${BIO}. Klappt beides nicht, kannst du die Daten auf diesem Gerät löschen – Sicherungen und dein anderes Gerät bleiben unberührt. Tippe dafür <b>LÖSCHEN</b> ein.</p><input id="alkCode" autocomplete="off" placeholder="LÖSCHEN"><button type="button" id="alkWipe">Daten auf diesem Gerät löschen</button>`;
+ const f=$('#alkCode');if(f)f.focus()}
+function alkRecover(){const v=String(($('#alkCode')||{}).value||'').replace(/[^a-z0-9]/gi,'').toLowerCase();if(v&&v===String(SY.code||'').replace(/[^a-z0-9]/gi,'').toLowerCase()){ALK={};alkSave();alkUnlock();toast('Sperre aufgehoben – richte sie unter Anpassen → Sperre neu ein.')}else $('#alkMsg').textContent='Der Code passt nicht.'}
+function alkWipe(){if(String(($('#alkCode')||{}).value||'').trim().toUpperCase()!=='LÖSCHEN'){$('#alkMsg').textContent='Tippe LÖSCHEN ein, um zu bestätigen.';return}try{localStorage.removeItem(KEY);localStorage.removeItem(ALKK)}catch(e){}location.reload()}
+async function alkBioSetup(){try{const c=await navigator.credentials.create({publicKey:{rp:{name:'Mein Auto',id:location.hostname},user:{id:crypto.getRandomValues(new Uint8Array(16)),name:'Mein Auto',displayName:'Mein Auto – App-Sperre'},challenge:crypto.getRandomValues(new Uint8Array(32)),pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required',residentKey:'discouraged'},timeout:60000,attestation:'none'}});
+ ALK.cred=alkB64(c.rawId);alkSave();toast(`${BIO} ist eingerichtet`);return true}catch(e){toast(e&&e.name==='NotAllowedError'?'Abgebrochen.':`${BIO} ließ sich nicht einrichten – die PIN reicht auch.`);return false}}
+function lockHtml(){const on=!!ALK.on,A=+ALK.after||0;
+ const pinForm=(title,btn)=>`<p class="note">${title}</p><div class="two"><label>Neue PIN (4–8 Ziffern)<input id="alkP1" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="new-password"></label><label>Nochmal<input id="alkP2" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="new-password"></label></div><div class="rowb" style="justify-content:flex-start"><button type="button" class="pri" id="alkPinOk">${btn}</button><button type="button" id="alkCancel">Abbrechen</button></div>`;
+ return`<section class="fs" id="set-lock"><h3>App-Sperre</h3><p class="note">Schützt deine Daten und die Fotos im Handschuhfach vor neugierigen Blicken, wenn jemand anderes dein ${DEVW} in der Hand hat. Sie gilt nur auf diesem Gerät. Gegen Profis mit Werkzeug schützt sie nicht.</p>
+ ${alkStep==='pin'?pinForm(on?'Neue PIN festlegen:':'Leg eine PIN fest. Sie entsperrt die App, wenn '+BIO+' nicht klappt.',on?'PIN ändern':'Weiter')
+  :alkStep==='bio'?`<p class="note">Fertig fast: Willst du mit ${BIO} entsperren? Sonst reicht die PIN.</p><div class="rowb" style="justify-content:flex-start"><button type="button" class="pri" id="alkBioAdd">${BIO} einrichten</button><button type="button" id="alkPinOnly">Nur PIN</button></div>`
+  :on?`<p class="mini"><b>Sperre ist an</b> – mit PIN${ALK.cred?' und '+BIO:''}.</p><label>Sperren, wenn die App weg war<select id="alkAfter">${[[0,'sofort'],[1,'nach 1 Minute'],[5,'nach 5 Minuten'],[15,'nach 15 Minuten']].map(([v,n])=>`<option value="${v}"${A===v?' selected':''}>${n}</option>`).join('')}</select></label>
+   <div class="rowb" style="justify-content:flex-start;flex-wrap:wrap">${alkOK&&!ALK.cred?`<button type="button" class="pri" id="alkBioAdd">${BIO} dazunehmen</button>`:''}<button type="button" id="alkNow">Jetzt sperren</button><button type="button" id="alkPinNew">PIN ändern</button><button type="button" id="alkOff">Sperre ausschalten</button></div>`
+  :`<div class="rowb" style="justify-content:flex-start"><button type="button" class="pri" id="alkSetup">Sperre einrichten</button></div>${alkOK?'':`<p class="note">${BIO} gibt es hier nicht – die Sperre geht dann mit PIN.</p>`}`}</section>`}
+async function alkPinSave(){const a=String(($('#alkP1')||{}).value||''),b=String(($('#alkP2')||{}).value||'');if(!/^\d{4,8}$/.test(a)){toast('Die PIN braucht 4 bis 8 Ziffern.');refocus('#alkP1');return}if(a!==b){toast('Die beiden PINs sind verschieden.');refocus('#alkP2');return}
+ const salt=alkB64(crypto.getRandomValues(new Uint8Array(12))),pinH=await alkHash(a,salt),was=!!ALK.on;Object.assign(ALK,{salt,pinH,fail:0,until:0});if(ALK.after==null)ALK.after=1;
+ if(was){alkSave();alkStep='';renderSet();toast('PIN geändert');return}
+ if(alkOK){alkStep='bio';renderSet();refocus('#alkBioAdd');return}
+ ALK.on=1;alkSave();alkStep='';renderSet();toast('Sperre ist an')}
+
 /* ---------- Spritpreis-Verlauf ---------- */
 const PTY=['e5','e10','diesel'];
 function plogMerge(a,b){const m=new Map();for(const r of[].concat(Array.isArray(a)?a:[],Array.isArray(b)?b:[]))if(Array.isArray(r)&&r.length===3)m.set(r[0]+':'+r[2],r);return[...m.values()].sort((x,y)=>x[0]-y[0]).slice(-3000)}
@@ -1236,7 +1365,7 @@ window.__appAct=()=>{let a='';try{a=APP.takeAct()}catch(e){}if(!a)return;
 /* ---------- Abgleich zwischen Geräten (Ende-zu-Ende verschlüsselt, gespeichert bei Supabase) ---------- */
 const CLOUD={url:'https://mcihdwskqdljescdiinr.supabase.co',key:'sb_publishable_ijaVxe5ZB9EP-11GiY9-cQ_VCOocDVo',anon:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jaWhkd3NrcWRsamVzY2RpaW5yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1MjA4MzIsImV4cCI6MjEwODA5NjgzMn0.hNJR2C5xJ7hxelM_eRQrVSg5vKECdmOqL2pcs_dCq-I'};
 const SYKEY='startseite-sync',SYA='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-const SY_LOCAL=['bt','cockpit','tripLive','setup','notify','autoBak','lastBak','gpsPlace','timer','sw','calSent','carId'];
+const SY_LOCAL=['bt','cockpit','tripLive','setup','notify','autoBak','lastBak','gpsPlace','timer','sw','calSent','carId','rbNote','rbSeen'];
 const SY_ARR=['fuel','costs','maint','tasks','events','trips','projects','tiresets','links','docs','acc'];
 let SY={code:'',ver:0,dirty:false,at:0,err:''},syBusy=false,syAgain=false,syT=0,syApplying=false,syK=null,syArm='',syPend='',syLast='';
 try{Object.assign(SY,JSON.parse(localStorage.getItem(SYKEY)||'{}'))}catch(e){}
@@ -1373,6 +1502,7 @@ const puAt=(d,h,back)=>{const x=new Date(d);x.setDate(x.getDate()-back);x.setHou
 async function puPlan(){const t=new Date(),items=[],texts={};
  for(const x of calItems(t)){const day=fmt(x.d,{weekday:'short',day:'numeric',month:'short'}),al=x.car?[[7,9,'In einer Woche, am '+day],[1,9,'Morgen ist es so weit.']]:[[1,9,'Morgen: '+x.n],[0,8,'Heute: '+x.n]];
   for(const[b,h,body]of al){const when=puAt(x.d,h,b);if(when<=t)continue;const k=await puKey(x.uid+'@'+when.toISOString());items.push({k,at:when.toISOString()});texts[k]={title:x.car?x.n:'Mein Auto',body}}}
+ if(S.rbNote&&(S.fuel.some(f=>!f.s)||S.costs.some(c=>!c.s))){const R=rbNext(t),nx=R.d,lm=R.name,k=await puKey('rb@'+nx.toISOString());items.push({k,at:nx.toISOString()});texts[k]={title:`Dein ${lm} mit dem Auto`,body:'Kosten, Kilometer und Verbrauch im Überblick – tippe zum Ansehen.'}}
  items.sort((a,b)=>a.at.localeCompare(b.at));const keep=items.slice(0,150),tx={};for(const i of keep)tx[i.k]=texts[i.k];return{items:keep,texts:tx}}
 async function puSync(force){if(!PU.on||!puCan()||puBusy)return;puBusy=true;
  try{const reg=await navigator.serviceWorker.ready,sub=await reg.pushManager.getSubscription();
@@ -1443,7 +1573,8 @@ function syncAlarms(){if(!HAS2)return;const now=Date.now(),at9=d=>new Date(d.get
  const md=S.maint.map(m=>({m,r:maintStatus(m,t,carKm())})).filter(x=>x.r.due&&x.r.days>=7).sort((a,b)=>a.r.due-b.r.due)[0];set(3,md?at9(addD(md.r.due,-7)):0,md?`${md.m.n} in einer Woche fällig`:'','Details in Mein Auto → Wartung');
  const ev=S.events.map(e=>({e,d:nextOcc(e,t)})).filter(x=>x.d&&at9(x.d)>now).sort((a,b)=>a.d-b.d)[0];set(4,ev?at9(ev.d):0,ev?`Heute: ${ev.e.n}`:'','Dein Countdown ist bei null.');
  const ins=insDeadline(t.getFullYear());set(5,at9(addD(ins,-7)),'Kfz-Versicherung: noch eine Woche',`Kündigungen müssen bis ${fmt(ins,{day:'numeric',month:'long'})} beim Versicherer sein.`);
- set(6,S.park.until||0,'Parkzeit läuft gleich ab','Noch 10 Minuten – Zeit, zum Auto zu gehen.')}
+ set(6,S.park.until||0,'Parkzeit läuft gleich ab','Noch 10 Minuten – Zeit, zum Auto zu gehen.');
+ const rbHas=S.fuel.some(f=>!f.s)||S.costs.some(c=>!c.s);const R=rbNext(t);set(7,S.rbNote&&rbHas?R.d.getTime():0,`Dein ${R.name} mit dem Auto`,'Kosten, Kilometer und Verbrauch im Überblick – tippe zum Ansehen.')}
 function syncSoon(){clearTimeout(alT);alT=setTimeout(syncAlarms,1500)}
 
 /* Sicherung als Datei */
@@ -1519,7 +1650,7 @@ function wWerkstatt(){const tabs=[['fahrt','Fahrtkosten'],['ohm','Ohm'],['led','
  else b=`<div class="form">${inp('code','Fehlercode aus dem OBD-Auslesegerät','z.B. P0420','text')}</div>`;
  return`<div class="ch"><h2 id="h-werkstatt">Werkstatt-Rechner</h2></div><div class="seg" role="group" aria-label="Rechner">${tabs.map(([k,n])=>`<button type="button" data-tab="w" data-k="${k}" aria-pressed="${wtab===k}">${n}</button>`).join('')}</div>${b}<div class="out" id="cOut">${calcOut()}</div>`}
 function wNotizen(){return`<div class="ch"><h2 id="h-notizen">Notizen</h2></div><textarea id="notes" aria-labelledby="h-notizen" placeholder="Was du nicht vergessen willst …" style="flex:1;min-height:160px">${esc(S.notes)}</textarea>`}
-const W={tacho:wTacho,fahrten:wFahrten,sprit:wSprit,wetter:wWetter,reifen:wReifen,gmeter:wGmeter,stkosten:wStkosten,stverbrauch:wStverbrauch,stkm:wStkm,rekorde:wRekorde,notruf:wNotruf,unfall:wUnfall,sosdaten:wSosdaten,uhr:wUhr,kurz:wKurz,auto:wAuto,hinweise:wHinweise,demn:wDemn,tank:wTank,timer:wTimer,aufgaben:wAufgaben,kalender:wKalender,termine:wTermine,wartung:wWartung,kosten:wKosten,fach:wFach,werkstatt:wWerkstatt,notizen:wNotizen,projekte:wProjekte,einkauf:wEinkauf,fahrtenbuch:wFahrtenbuch,ubericht:wUbericht,spverlauf:wSpverlauf};
+const W={tacho:wTacho,fahrten:wFahrten,sprit:wSprit,wetter:wWetter,reifen:wReifen,gmeter:wGmeter,stkosten:wStkosten,stverbrauch:wStverbrauch,stkm:wStkm,rekorde:wRekorde,notruf:wNotruf,unfall:wUnfall,sosdaten:wSosdaten,uhr:wUhr,kurz:wKurz,auto:wAuto,hinweise:wHinweise,demn:wDemn,tank:wTank,timer:wTimer,aufgaben:wAufgaben,kalender:wKalender,termine:wTermine,wartung:wWartung,kosten:wKosten,fach:wFach,werkstatt:wWerkstatt,notizen:wNotizen,projekte:wProjekte,einkauf:wEinkauf,fahrtenbuch:wFahrtenbuch,ubericht:wUbericht,spverlauf:wSpverlauf,rueckblick:wRueckblick};
 
 /* Aussehen & Lichtbrechung */
 function onColor(hex){const m=/^#?([0-9a-f]{6})$/i.exec(hex||'');if(!m)return'#fff';const n=parseInt(m[1],16),ch=[n>>16&255,n>>8&255,n&255].map(v=>{v/=255;return v<=.03928?v/12.92:((v+.055)/1.055)**2.4});return .2126*ch[0]+.7152*ch[1]+.0722*ch[2]>.179?'#111':'#fff'}
@@ -1645,6 +1776,7 @@ G.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!G.cont
  if(ds.del){delItem(ds.del,ds.id);return}
  if(ds.go){go(ds.go);return}
  if(ds.carsw){carSwitch(ds.carsw);return}
+ if(ds.rb){rbOff=Math.max(-60,Math.min(0,(rbOff??0)+ +ds.rb));renderCard('rueckblick');refocus(`[data-rb="${ds.rb}"]:not([disabled])`);return}
  if(ds.accopen){accOpen=ds.accopen;accArm='';renderCard('ubericht');refocus('#h-ubericht');return}
  if(ds.skcol){skCol=ds.skcol;$$('[data-skcol]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.skcol===skCol)));return}
  if(ds.dc){dcOpen=dcOpen===ds.dc?'':ds.dc;dcArm='';renderCard('fach');refocus(`[data-dc="${ds.dc}"]`);return}
@@ -1686,6 +1818,7 @@ G.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!G.cont
  else if(a==='accph'){if(!window.indexedDB){toast('Fotos werden hier leider nicht unterstützt.');return}phTarget='acc:'+accOpen;$('#phFile').click()}
  else if(a==='accpdf'){const o=accCur();if(o)accPdf(o)}
  else if(a==='salepdf')saleBook();
+ else if(a==='yearpdf'){const y=($('#yrSel')||{}).value||String(new Date().getFullYear());yearPdf(y)}
  else if(a==='accdel'){const o=accCur();if(!o)return;if(accArm!=='del'){accArm='del';renderCard('ubericht');refocus('[data-act="accdel"]');return}accArm='';accOpen='';S.acc=S.acc.filter(x=>x.id!==o.id);for(const q of o.ph){PH.del(q.id).catch(()=>{});foDel(q.id)}if(o.sk){PH.del(o.sk).catch(()=>{});foDel(o.sk)}commit();toast('Unfallbericht gelöscht')}
  else if(a==='skundo'){skStrokes.pop();skDraw();clearTimeout(skT);skT=setTimeout(skSave,300)}
  else if(a==='skclear'){const c=$('#accSk');skStrokes=[];if(c)c._base=null;skDraw();skSave()}
@@ -1716,6 +1849,7 @@ G.addEventListener('change',e=>{const el=e.target;
  if(el.dataset.pjpart){const[pid,xid]=el.dataset.pjpart.split(':'),p=S.projects.find(x=>x.id===pid),x=p&&p.parts.find(y=>y.id===xid);if(x){x.ok=el.checked;commit();refocus(`[data-pjpart="${el.dataset.pjpart}"]`)}return}
  if(el.dataset.tzw){const x=S.trips.find(y=>y.id===el.dataset.tzw);if(x){x.zw=el.value;save();renderCard('fahrtenbuch');refocus(`[data-tzw="${x.id}"]`)}return}
  if(el.dataset.fbp!=null){fbP=el.value;more.fb=false;renderCard('fahrtenbuch');refocus('[data-fbp]');return}
+ if(el.dataset.rbnote!=null){S.rbNote=el.checked;save();toast(el.checked?'Am Monatsersten bekommst du den Rückblick':'Keine Erinnerung mehr');return}
  if(el.dataset.pa==='on'){S.palarm.on=el.checked;if(el.checked){if(!pDec(S.palarm.limit)){const o=SP.data&&SP.data.filter(s=>s.isOpen!==false)[0];S.palarm.limit=o?nf(Math.floor((+o.price-0.02)*100)/100,2):''}S.notify=true;try{APP.askNotify()}catch(err){}}save();renderCard('sprit');refocus(el.checked?'[data-pa=limit]':'[data-pa=on]');if(el.checked)toast(pDec(S.palarm.limit)>0?`Preis-Alarm an: ab ${S.palarm.limit} € bekommst du Bescheid`:'Trag noch deinen Wunschpreis ein');return}
  if(el.dataset.pa==='limit'){const v=pDec(el.value);if(!(v>0.5&&v<5)){toast('Bitte einen Preis wie 1,65 eintragen.');return}S.palarm.limit=nf(v,2);save();renderCard('sprit');toast(`Wunschpreis: ${S.palarm.limit} €`);return}
  if(el.dataset.task){const x=S.tasks.find(y=>y.id===el.dataset.task);if(x){x.d=el.checked;commit();refocus(`[data-task="${x.id}"]`)}return}
@@ -1741,7 +1875,7 @@ $('#standby').addEventListener('click',closeSB);
 
 /* Einstellungen */
 const SW=(k,l,sub)=>`<label class="tg"><span>${l}${sub?`<small>${sub}</small>`:''}</span><input type="checkbox" role="switch" data-sw="${k}"${S[k]?' checked':''}></label>`;
-function renderSet(){const c=S.car,p=S.place,city=CITIES.find(x=>x[0]===p.n&&Math.abs(x[1]-p.lat)<.01),secs=[['set-look','Aussehen'],['set-gen','Allgemein'],...(APP?[['set-app','App']]:[]),['set-ber','Bereiche'],['set-auto','Auto'],['set-sync','Abgleich'],['set-bk','Sicherung'],['set-check','App-Check']];
+function renderSet(){const c=S.car,p=S.place,city=CITIES.find(x=>x[0]===p.n&&Math.abs(x[1]-p.lat)<.01),secs=[['set-look','Aussehen'],['set-gen','Allgemein'],...(APP?[['set-app','App']]:[]),['set-ber','Bereiche'],['set-auto','Auto'],['set-sync','Abgleich'],['set-bk','Sicherung'],['set-lock','Sperre'],['set-siri','Siri'],['set-check','App-Check']];
  $('#pane').innerHTML=`<div class="head"><div class="hd"><h2 id="setT">Anpassen</h2><button class="pri" type="button" id="closeSet">Fertig</button></div><div class="seg" role="group" aria-label="Abschnitte">${secs.map(([i,n])=>`<button type="button" data-go="${i}">${n}</button>`).join('')}</div></div>
  <section class="fs" id="set-look"><h3>Aussehen</h3>
  <div><span class="k">Hintergrund</span><div class="walls" style="margin-top:.4rem">${WALLS.map(w=>`<button type="button" class="wp" data-wall="${w[0]}" aria-pressed="${S.wall===w[0]}"><i style="background:${w[3]}"></i>${w[1]}</button>`).join('')}<button type="button" class="wp" data-act="photo" aria-pressed="${S.wall==='foto'}"><i style="${wallImg?`background:center/cover url('${wallImg}')`:'background:rgb(var(--g)/.4);display:grid;place-items:center;font-size:1.6rem'}">${wallImg?'':'+'}</i>Eigenes Foto</button></div>
@@ -1771,7 +1905,7 @@ function renderSet(){const c=S.car,p=S.place,city=CITIES.find(x=>x[0]===p.n&&Mat
 
  ${setSyncHtml()}
  <section class="fs" id="set-bk"><h3>Sicherung</h3><p class="mini"><b>Status:</b> <span id="syncTxt">${esc(syncTxt)}</span></p><p class="note">Alles speichert automatisch. Zusätzlich kannst du deine Daten als Text kopieren und später hier wieder einfügen (ohne Hintergrundfoto).</p><div class="rowb" style="justify-content:flex-start"><button type="button" id="bkCopy">Daten kopieren</button></div><label>Gesicherten Text einfügen<textarea id="bkIn" rows="3"></textarea></label><div class="rowb" style="justify-content:flex-start"><button type="button" id="bkRes">Wiederherstellen</button><button type="button" id="resetAll">${resetArm?'Wirklich alles zurücksetzen?':'Alles zurücksetzen'}</button></div>${APP&&!WEBAPP?'<div class="tile fs" style="gap:.5rem"><b>App-Oberfläche</b><span class="note">Hast du eine neue index.html bekommen? Hier auswählen – deine Daten bleiben erhalten.</span><div><button type="button" id="appUpd">Neue Version laden</button></div></div>':''}</section>
- ${setCheckHtml()}`}
+ ${lockHtml()}${siriHtml()}${setCheckHtml()}`}
 const openSet=()=>{resetArm=false;vt('sheet',()=>{renderSet();showAnim($('#set'));setupLens();$('#closeSet').focus()})};
 const closeSet=()=>{if(VT&&!RM.matches)vt('sheet',()=>{$('#set').hidden=true;$('#openSet').focus()});else{hideAnim($('#set'));$('#openSet').focus()}};
 $('#openSet').addEventListener('click',openSet);
@@ -1815,6 +1949,17 @@ P.addEventListener('click',async e=>{if(e.target===P)return closeSet();const b=e
  if(b.id==='btClear'){S.bt={a:'',n:'',stop:true};btList=null;try{APP.btWatch('')}catch(err){}commit(true);toast('Bluetooth-Start ist ausgeschaltet');return}
  if(ds.bti!=null){const d=btList&&btList[+ds.bti];if(!d)return;S.bt={a:d.a,n:d.n,stop:true};btList=null;try{APP.btWatch(d.a)}catch(err){}commit(true);toast(`„${d.n}“ gespeichert – beim nächsten Verbinden startet die Fahrt`);return}
  if(b.id==='bakLoad'){try{APP.pickBackup()}catch(err){}return}
+ if(ds.copy){const t=ds.copy;try{if(APP)APP.copy(t);else await navigator.clipboard.writeText(t)}catch(err){}toast('Adresse kopiert');return}
+ if(b.id==='inSetup'){inNewTok();renderSet();refocus('#set-siri summary');return}
+ if(b.id==='inGet'){inTake(true);return}
+ if(b.id==='inNew'){if(!inArm){inArm=true;renderSet();refocus('#inNew');return}inArm=false;inNewTok();renderSet();toast('Neuer Schlüssel – kopier die Adressen neu in deine Kurzbefehle.');return}
+ if(b.id==='alkSetup'||b.id==='alkPinNew'){alkStep='pin';renderSet();refocus('#alkP1');return}
+ if(b.id==='alkCancel'){alkStep='';renderSet();refocus('#set-lock');return}
+ if(b.id==='alkPinOk'){await alkPinSave();return}
+ if(b.id==='alkBioAdd'){const ok=await alkBioSetup();if(alkStep==='bio'){ALK.on=1;alkSave();alkStep='';toast(ok?'Sperre ist an – mit PIN und '+BIO:'Sperre ist an – mit PIN')}renderSet();refocus('#set-lock');return}
+ if(b.id==='alkPinOnly'){ALK.on=1;alkSave();alkStep='';renderSet();toast('Sperre ist an');return}
+ if(b.id==='alkNow'){closeSet();setTimeout(alkShow,350);return}
+ if(b.id==='alkOff'){ALK={};alkSave();alkStep='';renderSet();toast('Sperre ist aus');return}
  if(b.id==='carNew'){carNewOpen=true;carArm='';renderSet();refocus('#carNewN');return}
  if(b.id==='carNewX'){carNewOpen=false;renderSet();refocus('#carNew');return}
  if(b.id==='carNewOk'){const n=($('#carNewN')||{}).value||'',f=($('#carNewF')||{}).value||'benzin';if(!n.trim()){toast('Gib dem Fahrzeug einen Namen.');refocus('#carNewN');return}carAdd(n.trim(),f);refocus('#set-auto');return}
@@ -1831,6 +1976,7 @@ P.addEventListener('input',e=>{const el=e.target,ds=el.dataset;if(el.type==='che
  if(el.id==='accC'){S.accent=el.value;applyLook();save()}});
 P.addEventListener('change',async e=>{const el=e.target,ds=el.dataset;
  if(el.id==='accC'){commit(true);return}
+ if(el.id==='alkAfter'){ALK.after=+el.value;alkSave();return}
  if(ds.r){commit();return}
  if(ds.won||ds.wide){const w=S.widgets.find(x=>x.id===(ds.won||ds.wide));if(w){w[ds.won?'on':'wide']=el.checked;commit()}return}
  if(ds.sw){S[ds.sw]=el.checked;commit();if(ds.sw==='notify'&&el.checked)try{APP.askNotify()}catch(e){}if(ds.sw==='gpsPlace'&&el.checked)placeFromGps();if(ds.sw==='autoBak'&&el.checked&&!S.lastBak)backupNow(true);return}
@@ -1844,6 +1990,8 @@ P.addEventListener('toggle',e=>{if(e.target.classList&&e.target.classList.contai
 setInterval(()=>fetchWx(),10*6e4);
 setInterval(()=>{if(document.visibilityState==='visible'&&HAS2&&UUIDRE.test(S.tk.key||'')&&!SP.busy&&Date.now()-(SP.at||0)>30*6e4)loadSprit(true)},5*6e4);
 render();fetchWx();
+if(ALK.on)alkShow();rbHint();setTimeout(()=>inTake(),1500);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){if(ALK.on&&!alkOn){ALK.hid=Date.now();alkSave();if(!(+ALK.after))alkShow()}}else{if(ALK.on&&!alkOn&&ALK.hid&&Date.now()-ALK.hid>=(+ALK.after||0)*6e4)alkShow();inTake()}});
 if(HAS2){if(S.tripLive){gpsNeed('trip',true);try{APP.keepOn(true)}catch(e){}}syncAlarms();placeFromGps();if(S.autoBak&&!WEBAPP&&Date.now()-(S.lastBak||0)>7*864e5)setTimeout(()=>backupNow(true),4000)}if(mig&&!ref)try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
 document.body.insertAdjacentHTML('beforeend','<input type="file" id="phFile" accept="image/*" hidden>');$('#phFile').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(f)addPhoto(f)});
 if(window.indexedDB)setTimeout(phGC,8000);
