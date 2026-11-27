@@ -160,16 +160,18 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .uhr{display:grid;gap:1.1rem;align-items:center;align-content:center;height:100%}
 @container (min-width:600px){.uhr{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}}
 .clkb{display:grid;place-items:center;min-width:0}
-.aclk{display:block;width:100%;max-width:min(320px,100%);aspect-ratio:1;margin:0 auto;overflow:visible}
+.aclk{position:relative;display:block;width:100%;max-width:min(320px,100%);aspect-ratio:1;margin:0 auto;container-type:inline-size}.aclk svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .aclk .face{fill:rgb(var(--g)/.35);stroke:var(--track);stroke-width:2}
-.aclk .hand{transform-box:view-box;transform-origin:0 0}
+.aclk .hand{position:absolute;inset:0;transform-origin:50% 50%;will-change:transform;pointer-events:none;backface-visibility:hidden}.aclk .hand::before{content:"";position:absolute;border-radius:99px}
+.aclk .hh::before{left:48.25%;width:3.5%;top:24.25%;height:33.5%;background:var(--ink)}.aclk .hm::before{left:48.875%;width:2.25%;top:11.875%;height:46.25%;background:var(--ink)}.aclk .hs::before{left:49.35%;width:1.3%;top:7.35%;height:54.3%;background:var(--acc);box-shadow:0 0 2.5cqi var(--acc)}
+.aclk .hub{position:absolute;left:44.75%;top:44.75%;width:10.5%;height:10.5%;border-radius:50%;background:rgb(var(--g));box-shadow:inset 0 0 0 1.5cqi var(--acc);display:grid;place-items:center;pointer-events:none}.aclk .hub::after{content:"";width:28.6%;height:28.6%;border-radius:50%;background:var(--acc)}
 @keyframes clkspin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 .aclk.sweep #hS{animation:clkspin 60s linear infinite}.aclk.sweep #hM{animation:clkspin 3600s linear infinite}.aclk.sweep #hH{animation:clkspin 43200s linear infinite}
-.aclk #hS line{filter:drop-shadow(0 0 4px var(--acc))}
-.aclk .hub{fill:rgb(var(--g));stroke:var(--acc);stroke-width:3}
+
+
 @media(prefers-reduced-motion:reduce){.aclk.sweep .hand{animation:none!important}}
 .dbar{position:relative;height:8px;border-radius:99px;background:var(--track);margin-top:.3rem}.dbar i{position:absolute;display:block}.dbar .day{top:0;bottom:0;border-radius:99px;background:var(--sun)}
-.dbar .now{top:50%;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 3px rgb(var(--g)),0 0 14px var(--acc);transition:left .6s}
+.dbar .now{top:50%;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 3px rgb(var(--g)),0 0 14px var(--acc)}
 .dlab{display:flex;justify-content:space-between;margin-top:.45rem;font-size:.78rem;color:var(--mute);font-variant-numeric:tabular-nums}
 .side{display:grid;gap:.85rem}
 .facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.6rem}
@@ -279,10 +281,10 @@ input[type=range]{padding:0;min-height:34px;background:none;box-shadow:none;acce
 .card.enter>*{animation:contIn .46s cubic-bezier(.2,.8,.2,1) both;animation-delay:var(--d,0ms)}
 @keyframes sheetIn{from{opacity:0;transform:translateY(26px) scale(.985)}to{opacity:1;transform:none}}
 @keyframes sheetOut{to{opacity:0;transform:translateY(18px) scale(.985)}}
-#set:not([hidden]) .pane{animation:sheetIn .36s cubic-bezier(.2,.9,.25,1) both}#set.out .pane{animation:sheetOut .2s ease-in both}
+@supports not (view-transition-name:none){#set:not([hidden]) .pane{animation:sheetIn .36s cubic-bezier(.2,.9,.25,1) both}#set.out .pane{animation:sheetOut .2s ease-in both}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes fadeOut{to{opacity:0}}
 @keyframes zoomIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
-#standby:not([hidden]){animation:fadeIn .3s ease both}#standby.out{animation:fadeOut .22s ease both}#standby:not([hidden]) .sb{animation:zoomIn .4s cubic-bezier(.2,.9,.25,1) both}
+@supports not (view-transition-name:none){#standby:not([hidden]){animation:fadeIn .3s ease both}#standby.out{animation:fadeOut .22s ease both}#standby:not([hidden]) .sb{animation:zoomIn .4s cubic-bezier(.2,.9,.25,1) both}}
 .phv:not([hidden]){animation:fadeIn .22s ease both}.phv:not([hidden]) img{animation:zoomIn .32s cubic-bezier(.2,.9,.25,1) both}
 .gfull:not([hidden]){animation:fadeIn .25s ease both}
 @keyframes toastIn{from{opacity:0;transform:translate(-50%,16px) scale(.96)}to{opacity:1;transform:translate(-50%,0)}}
@@ -291,6 +293,21 @@ input[type=range]{padding:0;min-height:34px;background:none;box-shadow:none;acce
 @keyframes popIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
 .pop{animation:popIn .3s cubic-bezier(.2,.8,.2,1) both}
 .tabbar button{transition:transform .4s cubic-bezier(.34,1.56,.64,1),background .25s,color .25s,box-shadow .25s}
+@supports (view-transition-name:none){
+#wall{view-transition-name:wall}.tabbar{view-transition-name:tabbar}.pane{view-transition-name:sheet}.sb{view-transition-name:sb}
+::view-transition{pointer-events:none}
+::view-transition-group(*){animation-duration:.26s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+::view-transition-group(wall){animation:none}::view-transition-old(wall){display:none}::view-transition-new(wall){animation:none}
+html.vt-page::view-transition-old(root){animation:vtOut .14s ease-in both}
+html.vt-page::view-transition-new(root){animation:vtIn .28s cubic-bezier(.2,.8,.2,1) both}
+@keyframes vtOut{to{opacity:0}}@keyframes vtIn{from{opacity:0;transform:translateY(16px)}}
+html.vt-sheet::view-transition-old(root),html.vt-sheet::view-transition-new(root),html.vt-fade::view-transition-old(root),html.vt-fade::view-transition-new(root){animation-duration:.22s}
+::view-transition-new(sheet):only-child{animation:sheetIn .3s cubic-bezier(.2,.9,.25,1) both}
+::view-transition-old(sheet):only-child{animation:sheetOut .2s ease-in both}
+::view-transition-new(sb):only-child{animation:zoomIn .4s cubic-bezier(.2,.9,.25,1) both}
+::view-transition-old(sb):only-child{animation:fadeOut .22s ease both}
+}
+@media(min-width:700px){@keyframes sheetIn{from{opacity:0;transform:translateX(36px)}to{opacity:1;transform:none}}@keyframes sheetOut{to{opacity:0;transform:translateX(28px)}}}
 }
 body.scrolling #wall{animation-play-state:paused}
 #standby{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:4vw;background:rgb(0 0 0/.22);-webkit-backdrop-filter:blur(22px) saturate(160%);backdrop-filter:blur(22px) saturate(160%);cursor:pointer}
@@ -303,7 +320,7 @@ body.scrolling #wall{animation-play-state:paused}
 .empty{padding:1.5rem;text-align:center}
 @media(max-width:600px){table{font-size:.82rem}.stack thead{display:none}.stack tr{display:grid;padding-block:.5rem;border-bottom:1px solid var(--track)}.stack td{display:flow-root;border:0;padding:.15rem 0;padding-inline-start:7em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:6.5em;margin-inline-start:-7em;white-space:normal;color:var(--mute)}.stack td:empty{display:none}}
 </style>
-<script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
+<script>new MutationObserver(()=>{if(!document.getElementsByClassName('stack').length)return;for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
 </head>
 <body>
 <div id="wall" aria-hidden="true"></div>
@@ -323,10 +340,12 @@ const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const KEY='startseite-v1',WKEY='startseite-wall',WEB=mkWeb(),APP=window.AndroidApp||WEB||null,WEBAPP=!!WEB&&!window.AndroidApp;
 const APPV='27.11.2026',LOGK='startseite-log';
-function logErr(w,e){try{const m=String(e&&e.message||e||'');if(!m||/ResizeObserver loop|^Script error\.?$/.test(m))return;const L=JSON.parse(localStorage.getItem(LOGK)||'[]');L.push({t:Date.now(),w:String(w).slice(0,60),m:m.slice(0,300),s:String(e&&e.stack||'').split('\n').slice(0,3).join(' | ').slice(0,400)});localStorage.setItem(LOGK,JSON.stringify(L.slice(-30)))}catch(x){}}
+function logErr(w,e){try{const m=String(e&&e.message||e||'');if(!m||/ResizeObserver loop|^Script error\.?$|Transition was (skipped|aborted)/.test(m))return;const L=JSON.parse(localStorage.getItem(LOGK)||'[]');L.push({t:Date.now(),w:String(w).slice(0,60),m:m.slice(0,300),s:String(e&&e.stack||'').split('\n').slice(0,3).join(' | ').slice(0,400)});localStorage.setItem(LOGK,JSON.stringify(L.slice(-30)))}catch(x){}}
 addEventListener('error',e=>logErr(e.filename?String(e.filename).split('/').pop()+':'+e.lineno:'Seite',e.error||e.message));
 addEventListener('unhandledrejection',e=>logErr('Ablauf',e.reason));
 const RM=window.matchMedia?matchMedia('(prefers-reduced-motion: reduce)'):{matches:false};
+const VT=typeof document.startViewTransition==='function';
+function vt(kind,fn){if(!VT||RM.matches||document.hidden){fn();return}const r=document.documentElement;r.classList.add('vt-'+kind);let tr;try{tr=document.startViewTransition(()=>{try{fn()}catch(e){logErr('Übergang',e)}})}catch(e){r.classList.remove('vt-'+kind);fn();return}tr.ready.catch(()=>{});tr.updateCallbackDone.catch(()=>{});tr.finished.catch(()=>{}).finally(()=>r.classList.remove('vt-'+kind))}
 function hideAnim(el,cb){if(!el||el.hidden){if(cb)cb();return}clearTimeout(el._ht);if(RM.matches){el.hidden=true;if(cb)cb();return}el.classList.add('out');el._ht=setTimeout(()=>{el.classList.remove('out');el.hidden=true;if(cb)cb()},190)}
 function showAnim(el){if(!el)return;clearTimeout(el._ht);el.classList.remove('out');el.hidden=false}
 const IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
@@ -391,7 +410,7 @@ const day0=d=>new Date(d.getFullYear(),d.getMonth(),d.getDate());
 const addD=(d,n)=>new Date(d.getFullYear(),d.getMonth(),d.getDate()+n);
 const addM=(d,n)=>new Date(d.getFullYear(),d.getMonth()+n,d.getDate());
 const diffD=(a,b)=>Math.round((day0(b)-day0(a))/864e5);
-const fmt=(d,o)=>d.toLocaleDateString('de-DE',o);
+const FMTC=new Map();const fmt=(d,o)=>{const k=o?JSON.stringify(o):'';let f=FMTC.get(k);if(!f){const q=Object.assign({},o||{});if(!('weekday' in q||'year' in q||'month' in q||'day' in q))Object.assign(q,{year:'numeric',month:'numeric',day:'numeric'});f=new Intl.DateTimeFormat('de-DE',q);FMTC.set(k,f)}return f.format(d)};
 const nf=(n,f=0)=>Number(n).toLocaleString('de-DE',{minimumFractionDigits:f,maximumFractionDigits:f});
 const nfx=(n,m=2)=>Number(n).toLocaleString('de-DE',{maximumFractionDigits:m});
 const hm=d=>d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
@@ -520,11 +539,8 @@ function clkDel(t){const s=t.getSeconds()+t.getMilliseconds()/1000,m=t.getMinute
 function clkAng(t){const sec=t.getHours()*3600+t.getMinutes()*60+t.getSeconds();return[sec/120,sec/10,sec*6]}
 function aClock(t){const[ah,am,as]=clkAng(t),[dh,dm,ds]=clkDel(t);let tk='';
  for(let i=0;i<60;i++){const a=i*6*Math.PI/180,big=i%5===0,q=i%15===0,r1=91,r2=q?75:big?80:86,x=Math.sin(a),y=-Math.cos(a);tk+=`<line x1="${(x*r1).toFixed(2)}" y1="${(y*r1).toFixed(2)}" x2="${(x*r2).toFixed(2)}" y2="${(y*r2).toFixed(2)}" stroke="var(--ink)" stroke-opacity="${big?.9:.3}" stroke-width="${q?3.4:big?2.4:1}" stroke-linecap="round"/>`}
- return`<svg class="aclk sweep" viewBox="-100 -100 200 200" role="img" aria-label="Uhr, jetzt ${hm(t)} Uhr"><circle r="97" class="face"/>${tk}
- <g class="hand" id="hH" style="transform:rotate(${ah}deg);animation-delay:-${dh}s"><line x1="0" y1="12" x2="0" y2="-48" stroke="var(--ink)" stroke-width="7" stroke-linecap="round"/></g>
- <g class="hand" id="hM" style="transform:rotate(${am}deg);animation-delay:-${dm}s"><line x1="0" y1="14" x2="0" y2="-74" stroke="var(--ink)" stroke-width="4.5" stroke-linecap="round"/></g>
- <g class="hand" id="hS" style="transform:rotate(${as}deg);animation-delay:-${ds}s"><line x1="0" y1="22" x2="0" y2="-84" stroke="var(--acc)" stroke-width="2.6" stroke-linecap="round"/></g>
- <circle class="hub" r="9"/><circle r="3" fill="var(--acc)"/></svg>`}
+ return`<div class="aclk sweep" role="img" aria-label="Uhr, jetzt ${hm(t)} Uhr"><svg viewBox="-100 -100 200 200" aria-hidden="true"><circle r="97" class="face"/>${tk}</svg>
+ <i class="hand hh" id="hH" style="transform:rotate(${ah}deg);animation-delay:-${dh}s"></i><i class="hand hm" id="hM" style="transform:rotate(${am}deg);animation-delay:-${dm}s"></i><i class="hand hs" id="hS" style="transform:rotate(${as}deg);animation-delay:-${ds}s"></i><i class="hub"></i></div>`}
 function wUhr(t){const p=S.place,sn=sun(t,p.lat,p.lon),sy=sun(addD(t,-1),p.lat,p.lon),dm=Math.round((sn.len-sy.len)*60),mo=moon(t);
  const len=sn.rise?`${Math.floor(sn.len)}:${String(Math.round(sn.len%1*60)%60).padStart(2,'0')} h`:sn.polar==='tag'?'24 h':'0 h',pc=h=>(Math.max(0,Math.min(24,h))/24*100).toFixed(2);
  const day=sn.rise?`<i class="day" style="left:${pc(hrs(sn.rise))}%;width:${(pc(hrs(sn.set))-pc(hrs(sn.rise))).toFixed(2)}%"></i>`:sn.polar==='tag'?'<i class="day" style="left:0;width:100%"></i>':'';
@@ -1273,7 +1289,7 @@ let shR=0;document.addEventListener('pointermove',e=>{if(!S.shine||scrollingNow)
 const greet=h=>h<5?'Gute Nacht':h<11?'Guten Morgen':h<18?'Guten Tag':h<22?'Guten Abend':'Gute Nacht';
 function header(t){const pg=PAGES.find(x=>x[0]===page)||PAGES[0];$('#greet').textContent=page==='start'?greet(t.getHours())+(S.name.trim()?', '+S.name.trim():''):pg[1];$('#dateline').textContent=`${fmt(t,{weekday:'long',day:'numeric',month:'long',year:'numeric'})} · KW ${isoWeek(t)}`}
 let swept=false,lastDay='',lastMin=-1,clkAt=0,entering=true;
-function setNeedle(t){const n=$('#dNow');if(n)n.style.left=(hrs(t)/24*100).toFixed(2)+'%';const h=$('#hH');if(!h)return;
+function setNeedle(t){const n=$('#dNow');if(n){const v=(hrs(t)/24*100).toFixed(1)+'%';if(n.style.left!==v)n.style.left=v}const h=$('#hH');if(!h)return;
  if(!RM.matches){if(!h.dataset.sync||t-clkAt>60000){const[dh,dm,ds]=clkDel(new Date());h.style.animationDelay=`-${dh}s`;$('#hM').style.animationDelay=`-${dm}s`;$('#hS').style.animationDelay=`-${ds}s`;h.dataset.sync=1;clkAt=+t}return}
  const[ah,am,as]=clkAng(t);h.style.transform=`rotate(${ah}deg)`;$('#hM').style.transform=`rotate(${am}deg)`;$('#hS').style.transform=`rotate(${as}deg)`}
 const TABIC={start:'home',auto:'car',cockpit:'gauge',planen:'cal',mehr:'grid'};
@@ -1287,8 +1303,8 @@ function render(){const t=new Date();applyLook();header(t);renderTabs();lastDay=
  if(entering){entering=false;cardsIn()}
  setNeedle(t);setupLens();fillPhotos();if(page==='cockpit'){senStart();gpsNeed('tacho',true);updTacho()}else{senStop();gpsNeed('tacho',false)}if(page==='auto')loadSprit();drawCharts()}
 function cardsIn(){if(RM.matches)return;const cs=$$('#grid > .card');cs.forEach((c,i)=>{if(i<10){c.style.setProperty('--d',(i*45)+'ms');c.classList.add('enter')}});clearTimeout(cardsIn.t);cardsIn.t=setTimeout(()=>$$('#grid > .card.enter').forEach(c=>c.classList.remove('enter')),1100)}
-function go(p){if(!PAGES.some(x=>x[0]===p))p='start';if(p!==page){page=p;swept=false;entering=true;render();window.scrollTo(0,0)}try{if(location.hash.slice(1)!==p)location.hash=p}catch(e){}}
-window.addEventListener('hashchange',()=>gFullClose());addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h!==page&&PAGES.some(x=>x[0]===h)){page=h;swept=false;entering=true;render();window.scrollTo(0,0)}});
+function go(p){if(!PAGES.some(x=>x[0]===p))p='start';if(p!==page){page=p;swept=false;entering=!VT;vt('page',()=>{render();window.scrollTo(0,0)})}try{if(location.hash.slice(1)!==p)location.hash=p}catch(e){}}
+window.addEventListener('hashchange',()=>gFullClose());addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h!==page&&PAGES.some(x=>x[0]===h)){page=h;swept=false;entering=!VT;vt('page',()=>{render();window.scrollTo(0,0)})}});
 {const h=location.hash.slice(1);if(PAGES.some(x=>x[0]===h))page=h}
 $('#tabbar').addEventListener('click',e=>{const b=e.target.closest('[data-page]');if(b)go(b.dataset.page)});
 function safeW(id,t){try{return W[id](t)}catch(e){logErr('Karte '+id,e);const n=(WIDGETS.find(x=>x[0]===id)||[0,'Bereich'])[1];return`<div class="ch"><h2 id="h-${id}">${esc(n)}</h2></div><p class="note">Hier ist gerade ein Fehler passiert. Der Rest der App läuft normal weiter. Unter Anpassen → App-Check kannst du mir den Fehler schicken.</p>`}}
@@ -1434,8 +1450,8 @@ G.addEventListener('input',e=>{const el=e.target,ds=el.dataset;
 /* Suche & Standby */
 $('#sbBtn').innerHTML=IC.screen;$('#openSet').innerHTML=`${IC.sliders}<span class="hide-s">Anpassen</span>`;
 $('#sbBtn').addEventListener('click',()=>openSB());
-function openSB(){const s=$('#standby');showAnim(s);updStandby(new Date(),true);setupLens();try{if(APP)APP.keepOn(true);else{const p=document.documentElement.requestFullscreen?.();if(p&&p.catch)p.catch(()=>{})}}catch(e){}}
-function closeSB(){hideAnim($('#standby'));try{if(APP)APP.keepOn(false)}catch(e){}try{if(document.fullscreenElement){const p=document.exitFullscreen();if(p&&p.catch)p.catch(()=>{})}}catch(e){}$('#sbBtn').focus()}
+function openSB(){const s=$('#standby');if(VT&&!RM.matches)vt('fade',()=>showAnim(s));else showAnim(s);updStandby(new Date(),true);setupLens();try{if(APP)APP.keepOn(true);else{const p=document.documentElement.requestFullscreen?.();if(p&&p.catch)p.catch(()=>{})}}catch(e){}}
+function closeSB(){if(VT&&!RM.matches)vt('fade',()=>{$('#standby').hidden=true});else hideAnim($('#standby'));try{if(APP)APP.keepOn(false)}catch(e){}try{if(document.fullscreenElement){const p=document.exitFullscreen();if(p&&p.catch)p.catch(()=>{})}}catch(e){}$('#sbBtn').focus()}
 $('#standby').addEventListener('click',closeSB);
 
 /* Einstellungen */
@@ -1469,8 +1485,8 @@ function renderSet(){const c=S.car,p=S.place,city=CITIES.find(x=>x[0]===p.n&&Mat
  ${setSyncHtml()}
  <section class="fs" id="set-bk"><h3>Sicherung</h3><p class="mini"><b>Status:</b> <span id="syncTxt">${esc(syncTxt)}</span></p><p class="note">Alles speichert automatisch. Zusätzlich kannst du deine Daten als Text kopieren und später hier wieder einfügen (ohne Hintergrundfoto).</p><div class="rowb" style="justify-content:flex-start"><button type="button" id="bkCopy">Daten kopieren</button></div><label>Gesicherten Text einfügen<textarea id="bkIn" rows="3"></textarea></label><div class="rowb" style="justify-content:flex-start"><button type="button" id="bkRes">Wiederherstellen</button><button type="button" id="resetAll">${resetArm?'Wirklich alles zurücksetzen?':'Alles zurücksetzen'}</button></div>${APP&&!WEBAPP?'<div class="tile fs" style="gap:.5rem"><b>App-Oberfläche</b><span class="note">Hast du eine neue index.html bekommen? Hier auswählen – deine Daten bleiben erhalten.</span><div><button type="button" id="appUpd">Neue Version laden</button></div></div>':''}</section>
  ${setCheckHtml()}`}
-const openSet=()=>{resetArm=false;renderSet();showAnim($('#set'));setupLens();$('#closeSet').focus()};
-const closeSet=()=>{hideAnim($('#set'));$('#openSet').focus()};
+const openSet=()=>{resetArm=false;vt('sheet',()=>{renderSet();showAnim($('#set'));setupLens();$('#closeSet').focus()})};
+const closeSet=()=>{if(VT&&!RM.matches)vt('sheet',()=>{$('#set').hidden=true;$('#openSet').focus()});else{hideAnim($('#set'));$('#openSet').focus()}};
 $('#openSet').addEventListener('click',openSet);
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;const gf=$('#gfull');if(gf&&!gf.hidden){gFullClose();return}const pv=$('#phv');if(pv&&!pv.hidden){pv.hidden=true;return}if(!$('#standby').hidden)closeSB();else if(!$('#set').hidden)closeSet()});
 async function loadPhoto(file){const url=URL.createObjectURL(file);try{const img=new Image();img.src=url;await img.decode();const sc=Math.min(1,1600/Math.max(img.naturalWidth,img.naturalHeight)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.naturalWidth*sc));c.height=Math.max(1,Math.round(img.naturalHeight*sc));c.getContext('2d').drawImage(img,0,0,c.width,c.height);
